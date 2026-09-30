@@ -1,18 +1,46 @@
-# Smart Stock — powered by a Moments Engine
+# Smart Stock — Life Missions, powered by a Moments Engine
 
 **A proactive financial guidance concept for the Tectonic Hackathon, KBC track.**
 
-Smart Stock helps customers decide what their money needs to do next. It combines known expenses, customer goals and changing life circumstances to identify a useful next step. When important context is missing, it asks one short question. When the customer's plans change, the recommendation changes with them.
+Smart Stock helps customers organise their banking around what they are trying to do in life: move home, buy a first home, welcome a baby or start a business. **Life Missions** turn a confirmed goal into a shared, step-by-step plan. The first planned mission is **Moving**, connecting cash planning, existing insurance coverage and information the customer should only need to provide once.
 
-Investing is our first use case. The proposed Moments Engine also coordinates saving and insurance journeys, keeps actions consistent across channels, and suppresses unnecessary nudges.
+The **Moments Engine** supplies the context, rules and next actions behind each mission. Smart Stock's original investment exploration becomes one possible action when it fits the customer's goal. **Tell Once** becomes a reusable step within the Moving mission: confirm relevant information once and reuse it throughout the journey.
 
-**Our vision:** a shared understanding of the customer that turns changing life context into timely, coordinated support across KBC. Smart Stock is our first demonstration.
+**Our vision:** KBC, Kate and the customer's adviser work from the same evolving mission plan, helping the customer complete life goals with less repeated explanation and administration. The prototype focuses on the app and Kate; adviser integration is a future extension.
 
 **Our customer promise:** explain your situation once, correct it easily, and receive help that changes with your life. A decision to keep money available is a successful outcome too.
 
 > **Rules decide. AI explains. Customers stay in control.**
 
 **Current status:** this repository contains the concept, planning documents, shared TypeScript interfaces and six synthetic demo snapshots. The application and decision service have not been implemented yet. The flows below describe the intended MVP, not verified capabilities.
+
+## Life Missions: one goal, one shared plan
+
+A mission groups the relevant tasks, information and services around a customer-confirmed life goal. Kate can suggest a possible mission from appropriate signals, or the customer can start one directly. A signal is a reason to ask; the customer confirms the mission before the experience reorganises around it.
+
+| Mission | Customer goal | Illustrative coordinated support | Scope |
+|---|---|---|---|
+| **Moving** | Be ready for the move without overlooking money or coverage needs. | Confirm the plan once, reserve moving costs, check existing cover and track completed steps. | First planned demo. |
+| **Buying a home** | Understand readiness and the next steps towards a purchase. | Deposit planning, financing preparation and coverage checks. | Reusable-template vision. |
+| **Welcoming a baby** | Prepare household finances for a customer-declared family change. | Review the budget, savings goals and relevant existing cover. | Future, explicitly customer-initiated scenario. |
+| **Starting a business** | Coordinate financial preparation for launching a business. | Separate personal reserves, business funding needs and setup tasks. | Reusable-template vision. |
+
+The home screen would show **Your move**, its progress and one clear next action. Kate would guide the same plan in conversation, and a future adviser view would show the same confirmed facts and completed steps with appropriate access. Customers keep access to normal banking navigation and can edit or pause their mission.
+
+### Tell Once inside the Moving mission
+
+1. **Confirm the mission:** record the move, its date and expected cost.
+2. **Plan the money:** account for the commitment and review the reserve.
+3. **Check existing cover:** record what is already covered, including customer-reported external insurance.
+4. **Reuse and review:** reflect each answer and completed step in both home and Kate, without asking again.
+
+In this MVP, Tell Once means reusing the confirmed moving plan and coverage answer within the session. Updating an address at multiple organisations, contacting providers or submitting applications would require additional integrations and separate customer approval; those tasks are outside the current demo.
+
+### Kate helps complete the next step
+
+The vision includes preparing forms, coordinating follow-up and carrying out supported tasks after explicit approval. The prototype demonstrates recalculation, simulated plan acknowledgement and shared progress. It does not move money, purchase cover or send changes to outside organisations.
+
+An optional **ElevenLabs voice guide** could read the next step and its explanation after the customer chooses to listen. The same text and buttons remain available, and voice failure must not block the journey. Voice is an optional presentation enhancement; speech recognition and voice-based transaction authorisation are outside this MVP.
 
 ## The challenge: save time and money
 
@@ -34,6 +62,7 @@ We propose combining financial facts, behavioural patterns and information the c
 
 - **Financial situation:** accessible balances, known upcoming expenses, emergency reserves and existing commitments.
 - **Behaviour over time:** recurring income and essential-spending patterns, using three months of synthetic summaries in the MVP.
+- **Possible mission signals:** an explicit moving plan, address-change event or a clearly labelled synthetic moving-related transaction can prompt “Are you moving?” before activating a mission. Transaction-triggered mission detection is a planned extension; the current fixtures begin with a direct clarification.
 - **Intent and life context:** a stated goal, its amount and deadline, or a confirmed plan such as moving home.
 - **Feedback:** corrected assumptions, reported external coverage, dismissed actions and paused suggestions.
 
@@ -53,11 +82,11 @@ We represent each customer's current context through three complementary views:
 
 The context changes as the customer's life changes. A current explicit correction overrides a conflicting inference. If a relevant answer is already current, the experience uses it rather than asking the customer to repeat it. “Recognized” here means understood in context; identity verification is outside the prototype.
 
-**Planned proof:** the same Lotte fixture supports a near-term moving plan or a confirmed long-term goal. Those different intentions produce different next steps despite the same starting balance.
+**Planned proof:** the same Lotte fixture supports a near-term Moving mission or a confirmed long-term goal. Those different intentions produce different next steps despite the same starting balance. Mission membership follows a confirmed goal and can change; it is not a permanent customer label.
 
 ### 3. How can personalized experiences automatically adapt to each customer?
 
-After an accepted context update, the engine recalculates available cash, checks candidate actions, and selects at most one primary next step. Adaptation changes the action, amount, explanation and timing. It can also remove a suggestion entirely.
+After an accepted context update, the engine recalculates available cash, checks candidate actions, and selects at most one primary next step. The mission view updates its plan and progress, and the home screen highlights the relevant task. Adaptation changes the action, amount, explanation and timing. It can also remove a suggestion entirely.
 
 For Lotte, adding a €2,500 moving commitment reduces potentially available cash from €2,850 to €350. The investment candidate becomes ineligible, and the interface prioritises reviewing the moving reserve. After she acknowledges that plan, a relevant coverage question can appear. Reporting existing insurance closes that question; pausing suggestions leaves ordinary navigation available without proactive prompts.
 
@@ -65,7 +94,7 @@ For Lotte, adding a €2,500 moving commitment reduces potentially available cas
 
 ### 4. How can this work seamlessly across products, services, and channels?
 
-Our proposed Moments Engine shares customer context and coordinates actions across cash planning, investment exploration and insurance coverage checks. Each product contributes relevant eligibility rules and a next step. A common coordinator handles priority, suppression and resolution so separate services do not repeatedly ask the same question or present conflicting suggestions.
+Our proposed Moments Engine shares customer context and coordinates actions across cash planning, investment exploration and insurance coverage checks. A Life Mission assembles those actions into one plan around the customer's goal. Each product contributes relevant eligibility rules and a next step. A common coordinator handles priority, suppression and resolution so separate services do not repeatedly ask the same question or present conflicting suggestions.
 
 Each action has a stable identity and a shared status. The home screen and Kate conversation read the same state: an answer entered in one is immediately reflected in the other. A customer correction becomes reusable context for subsequent decisions.
 
@@ -73,7 +102,9 @@ Each action has a stable identity and a shared status. The home screen and Kate 
 
 ### 5. How can you create meaningful impact for millions of customers at the same time?
 
-Our scale vision combines reusable processing with measurable customer value. Customer events would update the relevant context and trigger applicable rules. Deterministic filtering and action coordination would run before any optional AI explanation, allowing the core experience to operate without a model call for every customer or event. New domains would reuse that pipeline while supplying their own data, rules and completion journeys.
+Our scale vision combines reusable mission templates with measurable customer value. Each template defines required context, ordered steps, completion conditions and applicable services. The engine instantiates that template using the customer's confirmed circumstances, allowing many customers to follow the same mission structure with different amounts, deadlines and next steps.
+
+Customer events would update the relevant context and trigger applicable rules. Deterministic filtering and action coordination would run before any optional AI explanation, allowing the core experience to operate without a model call for every customer or event. New missions would reuse that pipeline while supplying their own data, rules and completion journeys. Reusable templates make expansion practical; production capacity still needs validation.
 
 Meaningful impact means less decision effort, fewer repeated questions and fewer irrelevant interruptions. We would measure completion time, steps, customer corrections, duplicate prompts and consistency across surfaces. Keeping money available or respecting a dismissal counts as a useful outcome. A limited pilot would establish a baseline and review errors and customer feedback before wider rollout, including customers with incomplete data or changing income.
 
@@ -119,7 +150,9 @@ Our proposed contribution is a decision layer that:
 - Remembers completion, dismissal and corrections across the home screen and Kate conversation.
 - Can remain quiet, with the reason visible in the demo's engine view.
 
-## Main demo: same customer, same balance, new context
+## Main demo: Lotte's Moving mission
+
+The intended mission-led opening is: **synthetic signals arrive → Kate asks whether Lotte is moving → Lotte confirms → a Moving mission appears → the home screen shows her plan → Kate guides the next step, optionally by voice**. The existing fixtures support the customer-confirmation route below; the transaction-triggered opening is not implemented or included in those fixtures yet.
 
 Lotte has a synthetic balance of **€7,850**. Initially, the engine knows about a **€4,000 emergency reserve** and **€1,000 of upcoming expenses**.
 
@@ -155,7 +188,7 @@ Using the same initial customer, Lotte selects **I'm moving** and confirms that 
 = €350 potentially available
 ```
 
-The investment suggestion disappears. Kate shows the updated reserve plan and explains why the recommendation changed.
+The investment candidate is suppressed. The home screen changes to **Your move**, showing the confirmed plan and highlighting **Review your moving reserve**. Kate explains why the next step changed. Mission progress advances when Lotte acknowledges the simulated reserve plan; the commitment remains in the calculation.
 
 If Lotte's insurance situation is unknown, the next relevant action can be **Check my existing cover**. A missing KBC policy does not mean she is uninsured. Coverage has three states: **confirmed covered**, **confirmed need**, and **unknown**.
 
@@ -173,11 +206,12 @@ The planned **What Kate knows** panel shows the current goal, its source and dat
 
 | Surface | Customer experience |
 |---|---|
-| **Home** | At most one primary action, or no nudge when none is useful. |
+| **Home** | A confirmed mission, its progress and at most one primary next action; ordinary banking remains accessible. |
+| **Moving mission** | One plan linking confirmation, reserve review and existing-cover checks. |
 | **Context and intent** | A short calculation, known assumptions and a relevant clarification when needed. |
 | **Next step** | Keep funds flexible, reserve for a near-term goal, or explore an eligible investment simulation. |
 | **Review and confirmation** | Adjustable amount, reasons and explicit simulated confirmation. |
-| **Kate conversation** | The same action and status as the home screen. |
+| **Kate conversation** | The same mission step and action status as the home screen, with optional user-initiated voice guidance. |
 | **Engine view** | Demo-only view of signals, selected action, suppressed candidates and reasons. |
 
 Investment scenarios appear after the intent check. Their labels are **Lower risk**, **Balanced** and **Growth**; lower risk does not mean risk-free. The prototype considers the stated goal, horizon, liquidity needs and completeness of the synthetic investment profile alongside risk tolerance. Missing required information leads to clarification or deferral.
@@ -189,7 +223,8 @@ These scenarios do not replace KBC's suitability process. See [KBC's investment 
 ```mermaid
 flowchart TD
     A[Synthetic signals and customer feedback] --> B[Shared customer context]
-    B --> C[Candidate actions across domains]
+    B --> M[Confirmed mission and reusable plan template]
+    M --> C[Candidate actions across domains]
     C --> D[Eligibility and missing-context checks]
     D --> E[Priority, timing and duplicate suppression]
     E --> F[One action, clarification, or silence]
@@ -199,6 +234,7 @@ flowchart TD
     E --> I[Demo decision trace]
     F -. approved facts only .-> J[Optional LLM explanation]
     J -.-> G
+    G -. optional read-aloud .-> V[ElevenLabs voice guide]
 ```
 
 ### Context and cash calculation
@@ -233,7 +269,7 @@ The optional LLM rewrites approved facts in plain language. It must not invent c
 
 ## Showing reuse and scale
 
-The MVP will demonstrate investment exploration, a moving reserve and an insurance coverage check using shared context. The home screen and Kate conversation will reference the same action ID and state: resolving an action in one surface updates the other.
+The Moving mission will demonstrate a shared plan combining cash preparation and a coverage check. Investment exploration remains an alternate path when a long-term goal is confirmed. Home and Kate will reference the same action ID and state: resolving a step in one surface updates the other. The broader vision extends this shared plan to an adviser with appropriate permissions.
 
 This demonstrates reuse within one prototype. Adding a product still requires relevant data, eligibility rules and a completion journey.
 
@@ -245,13 +281,13 @@ Meaningful scale also requires consistent treatment of customers with incomplete
 
 ## Demo script: under three minutes
 
-1. **Understand:** show Lotte's balance, commitments and missing-context question.
-2. **Adapt:** add the €2,500 moving plan; show the recalculation and withdrawal of the investment suggestion.
-3. **Coordinate:** record “already insured elsewhere” and show the coverage prompt closing on both surfaces.
-4. **Explain:** open the engine trace to show why candidates were selected or suppressed.
+1. **Recognise the mission:** show the available signals and ask about Lotte's plans. If the optional synthetic transaction trigger exists, use it to introduce the question; otherwise use the existing clarification fixture.
+2. **Adapt the home screen:** confirm the move and €2,500 commitment. Show **Your move**, the €350 remaining amount and the reserve-review step.
+3. **Tell Once:** acknowledge the simulated reserve, then record “already insured elsewhere.” Show that step completing on both home and Kate without repeating the answer.
+4. **Guide and explain:** optionally play a short voice explanation; show the decision trace and describe how another mission would reuse the template approach.
 5. **Optional alternate path:** reset the synthetic scenario and show the investment simulation for the confirmed long-term goal.
 
-If time is tight, prioritise the context correction, suppressed investment suggestion and shared action state. Record a successful run as a demo backup.
+If time is tight, prioritise the Moving mission's visible plan, context correction and shared step completion. Keep transaction-triggered detection, voice and adviser integration optional or future scope. Record a successful run as a demo backup.
 
 ## Measuring value
 
@@ -273,10 +309,12 @@ No user-study results, time savings or financial benefits have been measured yet
 - **Synthetic typed fixtures** and a deterministic TypeScript decision engine.
 - **Session-local state** shared by home and Kate views for the MVP.
 - **Optional LLM explanations** with template fallback.
+- **Optional ElevenLabs voice guidance** for reading approved explanations; text remains the default fallback.
 
 | Deliverable | Status |
 |---|---|
 | Product concept and repository instructions | Documented |
+| Life Missions vision and Moving mission presentation | Documented; mission UI not implemented |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
 | Cash-context calculation and decision service | Planned |
 | Intent clarification and recommendation changes | Planned |
@@ -284,6 +322,9 @@ No user-study results, time savings or financial benefits have been measured yet
 | Shared action state across home and Kate | Planned |
 | Investment simulation and confirmation | Planned |
 | Template explanations and optional LLM integration | Planned |
+| Transaction-triggered mission suggestion | Optional extension; not in current fixtures |
+| ElevenLabs voice guidance | Optional; not integrated |
+| Shared adviser mission view and external task execution | Future vision; outside current MVP |
 | Aikido audit and before/after screenshots | Not completed |
 
 **Out of scope:** real banking data or APIs, payments or trading, real authentication, a production suitability process, stock prediction, portfolio optimisation, databases, native apps, multi-agent infrastructure and production-scale deployment.
@@ -295,6 +336,8 @@ Frontend and core logic share [`lib/types.ts`](lib/types.ts) and [`data/demo-fix
 Frontend can render `getDemoSnapshot('initial')` immediately. The main snapshots progress through `initial → moving → coverage-check → covered`; the alternate path is `initial → investing → invested`. Amounts use EUR integer cents. Core logic implements the same `MomentsService` interface and reproduces the typed sample transitions. A shared UI provider keeps home and Kate consistent.
 
 The fixtures are synthetic expected results, not evidence that the decision engine has been implemented.
+
+**Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration and transaction-triggered recognition require an agreed contract and PLAN update before implementation. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
 
 ## Running the project
 
