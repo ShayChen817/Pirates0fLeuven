@@ -24,5 +24,5 @@ We have ~4–5 hours. Speed wins. These are defaults, not bureaucracy — break 
 
 ## Skills
 Shared skills live on the `skills` branch (`skills/<name>/SKILL.md`). Use them when they fit:
-challenge-analysis · brainstorming · rapid-planning · frontend-design ·
+challenge-analysis · brainstorming · rapid-planning · frontend-design · kbc-design ·
 systematic-debugging · verification · code-review · demo-verification
