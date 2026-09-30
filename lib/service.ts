@@ -4,6 +4,9 @@ import { formatEuro, isFutureDate, uniqueCommitments } from './context.ts';
 import { exactKeys, positiveInteger, record, safeId } from './validation.ts';
 import type { Action, CustomerContext, CustomerEvent, DispatchResult, ErrorCode, MomentsService, RuleId, Snapshot } from './types.ts';
 
+/** Smallest illustrative simulation (EUR 100), matching the UI slider minimum. */
+export const MIN_SIMULATION_CENTS = 10000;
+
 function validEvent(value: unknown, context: CustomerContext): value is CustomerEvent {
   if (!record(value) || typeof value.type !== 'string') return false;
   const shape = (...keys: string[]) => exactKeys(value, ['type', ...keys]);
@@ -94,7 +97,13 @@ export function createMomentsService(initial: Snapshot = getDemoSnapshot()): Mom
           if (target?.ruleId !== 'moving-reserve') return error('ACTION_NOT_AVAILABLE', 'Select the current reserve review.');
           resolve('moving-reserve', 'Reserve plan acknowledged. The commitment remains; no money moved.', 'ACTION_COMPLETED', target.evidenceIds, target.amountCents);
           break;
-        case 'REPORT_COVERAGE':
+        case 'REPORT_COVERAGE': {
+          // Coverage is part of the Moving plan: only after a confirmed move whose reserve review is complete.
+          // It stays editable after the question closes, as documented in CONTRACT.md.
+          const reserveDone = current.actions.some(action => action.ruleId === 'moving-reserve' && action.status === 'completed');
+          if (!ctx.commitments.some(item => item.purpose === 'moving') || !reserveDone) {
+            return error('ACTION_NOT_AVAILABLE', 'Review your moving reserve before answering the coverage question.');
+          }
           ctx.coverage = event.coverage;
           ctx.coverageSource = event.coverage === 'confirmed-covered' ? 'customer-reported-external' : 'customer-reported-need';
           changedContext = true;
@@ -104,13 +113,15 @@ export function createMomentsService(initial: Snapshot = getDemoSnapshot()): Mom
             : 'Your request for a coverage review is recorded. No adviser or insurer has been contacted.',
           event.coverage === 'confirmed-covered' ? 'COVERAGE_CONFIRMED' : 'COVERAGE_HELP_REQUESTED', ['coverage']);
           break;
+        }
         case 'DISMISS_ACTION':
           next.actions = next.actions.map(action => action.id === event.actionId ? { ...action, status: 'dismissed', reasonCodes: ['ACTION_DISMISSED'] } : action);
           break;
         case 'CONFIRM_SIMULATION': {
           if (target?.ruleId !== 'explore-investment') return error('ACTION_NOT_AVAILABLE', 'Select the current investment simulation.');
           const checked = evaluateSnapshot(current);
-          if (checked.decision.primaryActionId !== event.actionId || event.amountCents > checked.availableCashCents) {
+          if (checked.decision.primaryActionId !== event.actionId || event.amountCents < MIN_SIMULATION_CENTS ||
+            event.amountCents > checked.availableCashCents) {
             return error('NOT_ELIGIBLE', 'The simulation does not fit the current available amount.');
           }
           resolve('explore-investment', `Your ${formatEuro(event.amountCents)} simulation is complete. No money has moved.`, 'ACTION_COMPLETED', target.evidenceIds, event.amountCents);

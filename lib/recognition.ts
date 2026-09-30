@@ -45,12 +45,16 @@ export function evaluateRecognition(seed: RecognitionSeed, preferences: Recognit
   result.trace = { reasonCode: 'POSSIBLE_MOVE', evidenceIds, locationUsed: cityContext !== null };
   return result;
 }
+/** Same shape as the IDs this module generates: `moving:` + sorted evidence IDs joined by `|`. */
+const hypothesisId = (value: unknown): value is string =>
+  typeof value === 'string' && value.length <= 2000 && /^moving:[a-zA-Z0-9:_-]{1,100}(\|[a-zA-Z0-9:_-]{1,100})*$/.test(value);
+
 function validEvent(value: unknown): value is RecognitionEvent {
   if (!record(value)) return false;
   switch (value.type) {
     case 'SET_SOURCES': return exactKeys(value, ['type', 'purchaseHistory', 'location']) && typeof value.purchaseHistory === 'boolean' && typeof value.location === 'boolean';
-    case 'RECORD_FEEDBACK': return exactKeys(value, ['type', 'hypothesisId', 'decision']) && typeof value.hypothesisId === 'string' &&
-      value.hypothesisId.length <= 10000 && ['confirm', 'reject', 'later'].includes(String(value.decision));
+    case 'RECORD_FEEDBACK': return exactKeys(value, ['type', 'hypothesisId', 'decision']) && hypothesisId(value.hypothesisId) &&
+      ['confirm', 'reject', 'later'].includes(String(value.decision));
     case 'CLEAR_CONFIRMED_MISSION': case 'RESET_DEMO': return exactKeys(value, ['type']);
     default: return false;
   }
@@ -68,7 +72,7 @@ export function createRecognitionService(seed: RecognitionSeed = getRecognitionD
       if (!record(request) || !exactKeys(request, ['expectedRevision', 'event']) || !positiveInteger(request.expectedRevision)) return error('INVALID_EVENT', 'Supply a revision and supported recognition event.');
       if (request.expectedRevision !== current.revision) return error('REVISION_CONFLICT', 'The evidence changed. Review the latest suggestion.');
       if (!validEvent(request.event) || current.revision >= Number.MAX_SAFE_INTEGER) return error('INVALID_EVENT', 'Check the recognition event.');
-      const event = request.event;
+      const event = structuredClone(request.event);
       let preferences = structuredClone(current.preferences), feedback = structuredClone(current.feedback);
       switch (event.type) {
         case 'SET_SOURCES': preferences = { purchaseHistory: event.purchaseHistory, location: event.location }; break;

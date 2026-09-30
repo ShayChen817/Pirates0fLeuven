@@ -32,7 +32,7 @@ const result = await moving.dispatch({
 });
 ```
 
-Cash changes from €2,850 potentially available to €350. Reserve acknowledgement preserves the commitment. External coverage is explicitly customer-reported. Simulation confirmation never changes balances. Invalid payloads, stale revisions, missing/wrong actions and ineligible amounts are rejected without mutation. Reset advances the revision rather than reusing old versions.
+Cash changes from €2,850 potentially available to €350. Reserve acknowledgement preserves the commitment. External coverage is explicitly customer-reported and can only be reported after a confirmed move whose reserve review is complete (it stays editable afterwards). Simulation confirmation requires at least €100 and never changes balances. Invalid payloads, stale revisions, missing/wrong actions and ineligible amounts are rejected without mutation. Reset advances the revision rather than reusing old versions.
 
 ## Saving events
 
@@ -43,8 +43,8 @@ The default seed is the Japan example from README: €650 saved towards €2,000
 | `REVIEW_SUBSCRIPTION` | `merchantId`, `decision: 'unused' \| 'keep'` | Records customer intent; evidence alone never marks a subscription unused. Keeping removes any associated intention. |
 | `ADD_SAVING_INTENTION` | `merchantId` | Requires the current saving-intention action and an unused answer. Changes planned contributions only. |
 | `REMOVE_SAVING_INTENTION` | `merchantId` | Removes the future intention without changing saved funds. |
-| `UPDATE_GOAL` | `title`, `targetCents`, `deadline`, `monthlyContributionCents`, `firstContributionDate` | Recalculates the projection; saved amount is not editable through this event. |
-| `RECORD_CONTRIBUTION` | `contributionId`, `amountCents` | Records a separate synthetic contribution. Duplicate IDs are rejected. This is a demo ledger entry, not a bank transfer. |
+| `UPDATE_GOAL` | `title`, `targetCents`, `deadline`, `monthlyContributionCents`, `firstContributionDate` | Recalculates the projection; saved amount is not editable through this event. The target must stay above the saved amount. |
+| `RECORD_CONTRIBUTION` | `contributionId`, `amountCents` | Records a separate synthetic contribution. Duplicate IDs are rejected and the amount cannot exceed the remaining gap. This is a demo ledger entry, not a bank transfer. |
 | `SNOOZE_ADVICE` | none | Suppresses advice for 30 days relative to the fixed demo clock. |
 | `SET_PROACTIVE` | `enabled` | Pauses/resumes advice while preserving customer facts and resolved choices. |
 | `RESET_DEMO` | none | Restores the seed and increments revision. |
@@ -89,7 +89,7 @@ See `prompts/kate-explanation.ts` and `prompts/README.md`. Raw merchant labels, 
 node scripts/backend-check.mjs
 ```
 
-Requires Node.js 20+ and npm/npx. It uses pinned TypeScript and tsx development tools via the npm cache, so the first run needs network access. It does not change the frontend package manifest. Runtime services work without those tools once bundled by Next.js.
+Requires Node.js 20+ and `npm install` first. It runs the pinned `typescript` and `tsx` devDependencies from `node_modules` directly with Node (no shell, no runtime downloads). Runtime services need neither tool once bundled by Next.js. See [SECURITY.md](../SECURITY.md) for the threat model and business-logic rules.
 
 The checks cover golden transitions, cents arithmetic, concurrency/revisions, cloning, stale data, runtime payload validation, pause/reset/clear, meaningful goal projections and subscription evidence. Browser and Next.js build verification remain the frontend integration stage.
 
