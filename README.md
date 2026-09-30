@@ -51,19 +51,20 @@ Two guardrails keep "buddy" from becoming "surveillance":
 
 **Online and subscriptions are the cleanest signal — lead with them.** Recurring online charges and subscriptions are unambiguous (same merchant, same amount, monthly) and need no location or menu guessing. *"You have 3 streaming subscriptions totalling €38/month — dropping one reaches your Japan goal ~5 weeks sooner"* is a fully-mockable, high-impact demo moment, and a safer opener than the coffee example.
 
-## Kate here is deliberately *not* a chatbot
+## How Kate thinks: you write, an LLM understands, rules decide the money
 
-A key design choice in this proposal, aligned with the team's existing "deterministic-first" stance:
+The customer keeps a **structured profile** (goal, amount, deadline, risk) **and a free-text bio** — they write, in their own words, who they are and what they want ("I'm a student in Leuven; I want to cut my coffee spending and save for Japan").
 
-- **Push-only advice, no free-text conversation.** Kate surfaces at most one advice card with quick replies (Confirm / Not now / Why this?). The customer never types free text at the model.
-- **Why it matters:** no free-text input means **no prompt injection, no jailbreaks, and near-zero LLM cost** — the core experience runs with zero model calls. This is a security and cost story, not a limitation, and it removes the need for an expensive conversational-AI partnership to ship the demo.
-- **The optional LLM only rephrases approved facts** into plain language. It never chooses an action, changes an amount, or invents a fact. Templates are the baseline and the fallback; the demo works fully without an API key.
+- **An LLM understands the bio.** When the bio is saved, an LLM reads it *once* and turns it into structured preferences and goal tags (e.g. `reduce:coffee`, `place:leuven`, `goal:travel-japan`). This runs at edit time, not on every screen.
+- **Kate gives the prediction; the LLM helps form it.** Deterministic rules detect the candidate spending patterns and compute every *number* (cash freed, impact on the goal date, whether the emergency buffer stays safe). The LLM reads the understood bio + those detected patterns and **selects and explains the one suggestion that best matches what the customer asked for** — the "prediction" Kate surfaces.
+- **Rules still decide the money.** The LLM never alters an amount, an eligibility decision, or moves money; it understands intent and phrases the prediction. This preserves the team's contract line: *deterministic filtering runs before any optional AI call; the model may not invent facts, change amounts or eligibility.*
+- **No open chat.** The customer writes a bio and taps quick replies (Confirm / Not now / Why this?) — there is no free-form back-and-forth with Kate. Cost stays **low and bounded**: an LLM call when the bio changes and when a suggestion is composed, not per transaction and not a chatbot. Without an API key, the bio is matched by keyword and templates phrase the prediction, so the demo still runs.
 
-This matches the existing contract: *deterministic filtering and action coordination run before any optional explanation call.*
+**Security of the free-text bio:** the bio is the *only* customer text that reaches the model. It is treated as data; the model's output is constrained to preference tags and to choosing among rule-produced candidates; no model output can move money or change eligibility. So even a malicious bio cannot make Kate spend — at worst it yields an irrelevant suggestion the customer ignores. This is exactly the kind of boundary the required Aikido audit should verify.
 
 ## "Tell Once" is the customer's bio
 
-Like a profile an assistant already knows without re-asking, the customer's durable facts — goal, amount, deadline, risk profile, "I'm already insured elsewhere", "I have a car", dietary preference — are recorded once and **reused across Home and Kate** (the team's existing **Tell Once** / **What Kate knows** panel and `CustomerContext`). Kate reads these structured fields directly; they are **not** re-sent to an LLM each turn, which keeps cost near zero and keeps facts customer-correctable and auditable.
+Like a profile an assistant already knows without re-asking, the customer's durable facts — goal, amount, deadline, risk profile, "I'm already insured elsewhere", "I have a car", dietary preference — are recorded once and **reused across Home and Kate** (the team's existing **Tell Once** / **What Kate knows** panel and `CustomerContext`). Kate reads these structured fields directly; the free-text bio is understood by an LLM **once, when saved** (see below), not re-sent each turn — which keeps per-interaction cost low and keeps facts customer-correctable and auditable.
 
 ## You set the goals — Kate aligns to them
 
@@ -117,7 +118,8 @@ flowchart TD
     G --> H[Customer confirms, corrects, or dismisses]
     H --> B
     E --> I[Demo decision trace]
-    F -. approved facts only .-> J[Optional LLM rephrase]
+    P[Free-text bio] -. understood once .-> B
+    F -. approved facts + bio tags .-> J[LLM: understand bio + form prediction<br/>cannot change amounts or eligibility]
     J -.-> G
 ```
 
@@ -140,6 +142,7 @@ This is **additive** and does **not** break contract v1.0. `Action.domain` would
 | Goals-as-hero framing + Saving mission + consent-based buddy | Proposed (this document) |
 | Online/subscription leak signals | Proposed; fully mockable, no external data needed |
 | Opt-in lifestyle goals (e.g. "eat healthier") | Proposed; customer-set only, never inferred |
+| LLM bio understanding + aligned prediction | Proposed; bounded cost, money stays rule-decided, template fallback |
 | Moments Engine, Life Missions, Moving mission | Documented by team; unchanged |
 | Shared interfaces + six synthetic snapshots | Available in `lib/types.ts`, `data/demo-fixtures.ts` |
 | `saving` domain + leak-detection rule + fixtures | Proposed; contract extension not yet agreed |
@@ -151,7 +154,7 @@ This is **additive** and does **not** break contract v1.0. `Action.domain` would
 
 ## Security and submission
 
-Unchanged from the team's plan: synthetic data only, no committed secrets, deterministic logic separated from generated explanations, and a required **Aikido audit** (10% of assessment) with before/after screenshots. The push-only (no free-text) Kate design **reduces** the LLM attack surface, since the model never receives customer free text.
+Unchanged from the team's plan: synthetic data only, no committed secrets, deterministic logic separated from generated explanations, and a required **Aikido audit** (10% of assessment) with before/after screenshots. The **free-text bio is the only customer text that reaches the model**; it is treated as data, the model's output is constrained to preference tags and to selecting among rule-produced candidates, and **no model output can move money or change eligibility**. There is no open chat, so the attack surface is one bounded input, not a conversation — a boundary the Aikido audit should explicitly verify.
 
 ## Repository guide
 
