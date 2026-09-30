@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useProfile } from '@/components/session/ProfileProvider';
+import { subscriptionRelevance } from '@/lib/profile';
 import { useSaving } from '@/components/session/SavingProvider';
 import { projectGoal } from '@/lib/saving';
 import { formatCents, formatDate, formatMonth } from '@/components/format';
@@ -11,7 +13,8 @@ import { evidenceDates, savingView, subscriptionById } from './view';
 const monthName = (iso: string | null) => (iso ? formatMonth(iso).split(' ')[0] : '—');
 
 /** The one Kate advice card for Saving. Home and the Kate tab render the same service state. */
-export function SavingKateCard() {
+export function SavingKateCard({ onProfile }: { onProfile: () => void }) {
+  const profile = useProfile();
   const { snapshot, send, pending, error, transportError, clearError } = useSaving();
   const [sheet, setSheet] = useState<'evidence' | 'why' | null>(null);
   if (!snapshot) {
@@ -32,10 +35,17 @@ export function SavingKateCard() {
   let card;
   switch (view) {
     case 'review':
+      if (!profile.snapshot || subscriptionRelevance(profile.snapshot) !== 'matched') {
+        const mode = profile.snapshot ? subscriptionRelevance(profile.snapshot) : 'setup';
+        card = <KateCard title={mode === 'setup' ? 'Let’s make this yours' : mode === 'review' ? 'A quick check, before we begin' : 'Your preferences come first'} actions={<Button className="w-full" onClick={onProfile}>{mode === 'setup' ? 'Personalise with Kate' : mode === 'review' ? 'Review my preferences' : 'Update my preferences'}</Button>}>
+          {mode === 'setup' ? 'Tell me what matters to you. I’ll use your confirmed preferences to find a useful next step.' : mode === 'review' ? 'Check what I understood in your profile. Nothing changes until you confirm.' : 'There’s no matching spending suggestion in this demo. Your goal stays in view; you can choose subscription reviews in your profile.'}
+        </KateCard>;
+        break;
+      }
       card = (
         <KateCard title="A small review for your goal" actions={<>
           <Button className="w-full" disabled={busy} onClick={() => setSheet('evidence')}>Review the charges</Button>{secondary(true)}
-        </>}>{snapshot.primary!.message}</KateCard>
+        </>}><p className="mb-2 text-xs font-medium text-kbc-blue-ink">Matches your preference · review subscriptions</p>{snapshot.primary!.message}</KateCard>
       );
       break;
     case 'intention': {
@@ -107,15 +117,16 @@ export function SavingKateCard() {
 }
 
 function EvidenceSheet({ onClose }: { onClose: () => void }) {
-  const { snapshot, send, pending } = useSaving();
+  const { snapshot, send, pending, error, transportError } = useSaving();
   if (!snapshot) return null;
   const total = snapshot.subscriptions.reduce((sum, s) => sum + s.monthlyCents, 0);
   const answer = async (merchantId: string, decision: 'unused' | 'keep') => {
-    await send({ type: 'REVIEW_SUBSCRIPTION', merchantId, decision });
-    if (decision === 'unused') onClose();
+    const accepted = await send({ type: 'REVIEW_SUBSCRIPTION', merchantId, decision });
+    if (accepted && decision === 'unused') onClose();
   };
   return (
     <Sheet title="Recurring charges" onClose={onClose}>
+      {error || transportError ? <Notice tone="error" title="Not saved">{error?.message ?? transportError}</Notice> : null}
       <p className="text-sm text-ink-2">
         {snapshot.subscriptions.length} synthetic streaming charges, {formatCents(total)}/month in total. A recurring payment shows spending, not whether you still use the service. Only you know that.
       </p>

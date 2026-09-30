@@ -107,16 +107,16 @@ function LoadingCard() {
 }
 
 function useSubmit(onClose: () => void) {
-  const { send, pending } = useMoments();
+  const { send, pending, error, transportError } = useMoments();
   const submit = async (event: Parameters<typeof send>[0]) => {
-    await send(event);
-    onClose(); // on error the notice above the card asks the customer to review; no auto-retry
+    if (await send(event)) onClose();
   };
-  return { submit, pending };
+  const feedback = error || transportError ? <Notice tone="error" title="Not confirmed">{error?.message ?? transportError}</Notice> : null;
+  return { submit, pending, feedback };
 }
 
 function MovingSheet({ onClose }: { onClose: () => void }) {
-  const { submit, pending } = useSubmit(onClose);
+  const { submit, pending, feedback } = useSubmit(onClose);
   const [amount, setAmount] = useState('2500');
   const [date, setDate] = useState('2026-11-01');
   const [problem, setProblem] = useState<string | null>(null);
@@ -134,6 +134,7 @@ function MovingSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="Tell Kate about your move" onClose={onClose}>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        {feedback}
         <p className="text-sm text-ink-2">Only the costs still to pay. Payments you already made are in your balance and are not counted twice.</p>
         <div>
           <label htmlFor={ids.amount} className="block text-sm font-semibold text-ink-2">Remaining moving cost (€)</label>
@@ -156,7 +157,7 @@ function MovingSheet({ onClose }: { onClose: () => void }) {
 }
 
 function LongTermSheet({ onClose }: { onClose: () => void }) {
-  const { submit, pending } = useSubmit(onClose);
+  const { submit, pending, feedback } = useSubmit(onClose);
   const [years, setYears] = useState('7');
   const [noCommitments, setNoCommitments] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
@@ -174,6 +175,7 @@ function LongTermSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="A long-term goal" onClose={onClose}>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        {feedback}
         <div>
           <label htmlFor={ids.years} className="block text-sm font-semibold text-ink-2">How many years can this money stay put?</label>
           <input id={ids.years} inputMode="numeric" value={years} onChange={e => setYears(e.target.value.replace(/[^\d]/g, ''))}
@@ -210,9 +212,10 @@ function MoneyRows({ snapshot }: { snapshot: Snapshot }) {
 export { MoneyRows };
 
 function ReserveSheet({ action, snapshot, onClose }: { action: Action; snapshot: Snapshot; onClose: () => void }) {
-  const { submit, pending } = useSubmit(onClose);
+  const { submit, pending, feedback } = useSubmit(onClose);
   return (
     <Sheet title="Your moving reserve" onClose={onClose}>
+      {feedback}
       <MoneyRows snapshot={snapshot} />
       <ul className="mt-3 space-y-1.5 text-sm">
         <li className="flex gap-2"><Icon name="check" className="h-4 w-4 text-kbc-green-ink" /> {formatCents(action.amountCents ?? 0)} stays in your calculation for the move.</li>
@@ -232,7 +235,7 @@ const profiles = [
 ] as const;
 
 function SimulationSheet({ action, snapshot, onClose }: { action: Action; snapshot: Snapshot; onClose: () => void }) {
-  const { submit, pending } = useSubmit(onClose);
+  const { submit, pending, feedback } = useSubmit(onClose);
   const suggested = action.amountCents ?? 0;
   const max = snapshot.availableCashCents;
   const [amount, setAmount] = useState(suggested);
@@ -242,6 +245,7 @@ function SimulationSheet({ action, snapshot, onClose }: { action: Action; snapsh
 
   return (
     <Sheet title="Long-term simulation" onClose={onClose}>
+      {feedback}
       <Badge tone="warn">Simulation · no money moves</Badge>
       <div className="mt-3">
         <label htmlFor={sliderId} className="flex items-baseline justify-between text-sm font-medium">
@@ -284,7 +288,7 @@ function WhySheet({ action, snapshot, onClose }: { action: Action; snapshot: Sna
   const evidence = snapshot.context.signals.filter(s => action.evidenceIds.includes(s.id));
   return (
     <Sheet title="Why this suggestion?" onClose={onClose}>
-      <p className="text-sm text-ink-2">Kate used only these facts. You can correct them in <strong>What Kate knows</strong>.</p>
+      <p className="text-sm text-ink-2">Kate used only these facts. You can correct them in <strong>Profile → Data &amp; your answers</strong>.</p>
       <ul className="mt-3 space-y-2">
         {evidence.map(s => {
           const d = describeSignal(s);

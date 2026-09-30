@@ -6,7 +6,7 @@
 
 The **customer's editable Profile** is the core of personalisation: what they explicitly tell Kate, which goals they choose, and what they confirm or correct. Permitted spending patterns and optional location provide additional evidence. **Life Goals** are the outcomes the customer wants; **Saving** and **Moving** demonstrate how the same understanding can guide different next steps.
 
-This integrates [PR #1](https://github.com/ShayChen817/Pirates0fLeuven/pull/1), including the structured-profile and free-text-bio proposal at `0a4df0d`, with the delivered backend. Moving keeps its v1 contract; Saving and recognition have separate contracts. The profile flow below is the next implementation priority, with its status stated explicitly.
+This integrates [PR #1](https://github.com/ShayChen817/Pirates0fLeuven/pull/1), including the structured-profile and free-text-bio proposal at `0a4df0d`, with the delivered backend. Moving keeps its v1 contract; Saving and recognition have separate contracts. The Profile flow is connected through the separate `profile-1.0` service, with local keyword suggestions and explicit customer confirmation.
 
 > **Customers describe and confirm their intent. Rules decide amounts and eligibility. AI helps interpret and explain.**
 
@@ -26,8 +26,8 @@ A bio is not proof of income, insurance, risk suitability or available funds. A 
 
 ### How Kate understands the bio
 
-1. The customer saves a short bio and explicitly opts into any external model processing. Structured goal entry works without a bio or API key.
-2. An optional model proposes a small allowlisted set of preference tags from that bio. Treat the text as untrusted data, limit its length and validate the output. A keyword fallback may propose tags, but must also allow “not understood” rather than invent intent.
+1. The customer saves a short bio (up to 800 characters). The shipped demo processes it locally, without a model call. Structured goal and manual preference entry work without a bio or API key. Any future external model processing would require an explicit opt-in.
+2. The local parser proposes allowlisted tags for subscription reviews, coffee, moving and saving. Unrecognised text yields no tags. This is a keyword fallback, not language-model understanding; the customer can remove incorrect matches or choose preferences manually. A future model adapter must validate the same bounded schema.
 3. Show the interpretation for confirmation. Only confirmed tags influence personalisation. Editing or deleting the bio invalidates its pending interpretation; discard responses for an older profile revision.
 4. Rules compute eligible candidates and every financial amount. Confirmed preferences rank relevant candidates within those eligibility constraints; safety or missing-context questions retain priority. No aligned candidate can mean a clarification or silence.
 5. Kate presents one action with both **why it matches your stated preference** and **which evidence supports it**. The customer can keep a service, dismiss advice, pause or correct the Profile. Home and Kate use the same session state.
@@ -42,7 +42,7 @@ Shay enters a Japan goal and a bio asking to review subscriptions. Kate proposes
 
 Moving is a second demonstration of the same concept: an explicitly confirmed plan feeds the existing commitment/coverage journey. The separate long-term investment simulation does not fund the near-term Japan target.
 
-**Implementation boundary:** Profile persistence within the session, bio parsing, preference confirmation and cross-scenario ranking are the next P0 work; they are not delivered by this documentation PR. Existing Moving, Saving, recognition and explanation services are implemented. The frontend scaffold and local fixture/preview journeys have landed, but service integration and the Profile flow still need completion. No runtime contract is silently widened by this merge.
+**Implementation boundary:** Profile session state, bounded local bio parsing, preference confirmation/correction, structured saving-goal editing and subscription relevance filtering are connected. Moving and Saving use their real in-process services. Cross-scenario ranking, live model interpretation and purchase/location UI remain future work. Existing domain contracts and financial calculations are preserved.
 
 ### Tell Once and the model boundary
 
@@ -110,7 +110,7 @@ Saving follows the existing one-primary-action policy. Bills and a thin reserve 
 
 > **Rules decide. AI explains. Customers stay in control.**
 
-**Current status:** Moving and Saving decision services are implemented with runtime validation and synthetic fixtures. Strict TypeScript and 30 backend checks pass. Opus is developing the frontend in parallel; browser integration, voice and production capabilities are not yet verified. See [backend integration](docs/BACKEND.md).
+**Current status:** Moving, Saving and Profile are connected in the Next.js UI. Codex has taken over frontend integration and refinement after Opus stage 5. The earlier backend stage passed 30 checks; current frontend verification is recorded in [FRONTEND.md](docs/FRONTEND.md). Voice, production persistence and external channels are not implemented. See [backend integration](docs/BACKEND.md).
 
 ## Life Missions: one goal, one shared plan
 
@@ -436,7 +436,7 @@ The existing v1 implementation sequence remains:
 4. **Guide and explain:** optionally play a short voice explanation; show the decision trace and describe how another mission would reuse the template approach.
 5. **Optional alternate path:** reset the synthetic scenario and show the investment simulation for the confirmed long-term goal.
 
-Prioritise the Profile-to-Saving story and visible customer corrections. Until Profile is connected, label its preview honestly and use the existing Moving journey as a runnable fallback. Keep voice and adviser integration optional or future scope. Record a successful run as a demo backup.
+Prioritise the Profile-to-Saving story and visible customer corrections. Profile is connected with local keyword suggestions; use the existing Moving journey as a runnable second example. Keep voice and adviser integration optional or future scope. Record a successful run as a demo backup.
 
 ## Measuring value
 
@@ -465,15 +465,15 @@ No user-study results, time savings or financial benefits have been measured yet
 | Deliverable | Status |
 |---|---|
 | Profile-led product direction and repository instructions | Adopted from PR #1 |
-| Editable Profile, bio interpretation and confirmed preference ranking | Next P0; not implemented |
-| Life Missions vision and Moving mission presentation | Frontend fixture journey landed; real-service integration pending |
-| Goals-first home, Saving mission and structured Kate advice | Saving service implemented; UI integration in progress |
+| Editable Profile, local bio suggestions and preference confirmation | Connected through `profile-1.0`; confirmed subscription preference gates discovery; cross-scenario ranking deferred |
+| Life Missions vision and Moving mission presentation | Connected to `createMomentsService()` |
+| Goals-first home, Saving mission and structured Kate advice | Connected to `createSavingService()`; goal editing through `UPDATE_GOAL` |
 | Subscription review and reproducible Japan projection | Deterministic service and synthetic evidence implemented; no cancellation or transfer |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
 | Moving cash-context calculation and decision service | Implemented; backend checks pass |
 | Intent clarification and recommendation changes | Implemented in Moving service |
 | Candidate priority and suppression trace | Implemented in deterministic engine |
-| Shared action state across home and Kate | Service implemented; shared UI provider integration pending |
+| Shared action state across home and Kate | Connected; persistent tabs retain scroll position |
 | Investment simulation and confirmation | Implemented as a synthetic acknowledgement; no trade |
 | Template explanations and optional LLM integration | Builders, prompt, output validator and fallback implemented; no live provider configured |
 | Transaction-triggered mission suggestion | Synthetic recognition service implemented; separate fixtures and contract |
@@ -534,7 +534,7 @@ Implemented backend controls include synthetic data, runtime input validation, r
 - [docs/DESIGN.md](docs/DESIGN.md): KBC-inspired design research.
 - [Shared skills](https://github.com/ShayChen817/Pirates0fLeuven/tree/skills/skills): workflows on the `skills` branch.
 
-This README defines the product direction and current boundaries. Backend stages 1 and 2 are implemented; the Profile flow, frontend service integration, browser verification and submission evidence remain outstanding. See the status table and `docs/BACKEND.md` for the distinction.
+This README defines the product direction and current boundaries. Moving, Saving and the local Profile flow are connected. Live model interpretation, recognition UI, cross-scenario ranking, voice, production services and submission evidence remain outstanding. See the status table, `docs/FRONTEND.md` and `docs/BACKEND.md` for the distinction.
 
 ---
 

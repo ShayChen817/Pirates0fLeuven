@@ -11,8 +11,8 @@ function useFit(reserveW: number) {
   useEffect(() => {
     const update = () => {
       const bare = window.innerWidth < 640;
-      const scale = Math.min(1, (window.innerHeight - 32) / DEVICE_H, (window.innerWidth - reserveW) / DEVICE_W);
-      setState({ scale: Math.max(0.55, scale), bare });
+      const scale = Math.min(1, (window.innerHeight - 32) / DEVICE_H, (window.innerWidth - (window.innerWidth >= 1100 ? 484 : 48) - reserveW) / DEVICE_W);
+      setState({ scale: Math.max(0.2, scale), bare });
     };
     update();
     window.addEventListener('resize', update);
@@ -21,9 +21,9 @@ function useFit(reserveW: number) {
   return state;
 }
 
-function StatusBar() {
+function StatusBar({ dark }: { dark: boolean }) {
   return (
-    <div className="relative z-30 flex h-[54px] shrink-0 items-end justify-between bg-kbc-navy px-8 pb-2.5 text-white" aria-hidden="true">
+    <div className={`relative z-30 flex h-[54px] shrink-0 items-end justify-between px-8 pb-2.5 ${dark ? 'bg-kbc-navy text-white' : 'bg-canvas text-ink'}`} aria-hidden="true">
       <span className="w-14 text-center text-[16px] font-semibold tracking-tight">9:41</span>
       <span className="flex items-center gap-1.5">
         <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
@@ -38,14 +38,14 @@ function StatusBar() {
  * Realistic iPhone (Pro-style titanium frame, Dynamic Island, status bar, home indicator).
  * Screen content is supplied as `children` and fills between status bar and bottom.
  */
-export function IPhone({ children, reserveWidth = 0 }: { children: ReactNode; reserveWidth?: number }) {
+export function IPhone({ children, reserveWidth = 0, dark = false }: { children: ReactNode; reserveWidth?: number; dark?: boolean }) {
   const { scale, bare } = useFit(reserveWidth);
 
   if (bare) {
     // On a real phone the app is the screen.
     return (
       <div id="phone-screen" className="relative flex h-dvh w-full flex-col overflow-hidden bg-canvas">
-        <div className="h-[max(env(safe-area-inset-top),14px)] shrink-0 bg-kbc-navy" />
+        <div className={`h-[max(env(safe-area-inset-top),14px)] shrink-0 ${dark ? 'bg-kbc-navy' : 'bg-canvas'}`} />
         {children}
       </div>
     );
@@ -54,21 +54,21 @@ export function IPhone({ children, reserveWidth = 0 }: { children: ReactNode; re
   return (
     <div style={{ width: DEVICE_W * scale, height: DEVICE_H * scale }} className="shrink-0">
       <div style={{ width: DEVICE_W, height: DEVICE_H, transform: `scale(${scale})`, transformOrigin: 'top left' }}
-        className="relative animate-pop">
+        className="relative">
         {/* Side buttons */}
         <span className="absolute -left-[3px] top-[150px] h-[34px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#8f8d88] to-[#cfcdc8]" />
         <span className="absolute -left-[3px] top-[210px] h-[64px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#8f8d88] to-[#cfcdc8]" />
         <span className="absolute -left-[3px] top-[288px] h-[64px] w-[4px] rounded-l-sm bg-gradient-to-r from-[#8f8d88] to-[#cfcdc8]" />
         <span className="absolute -right-[3px] top-[236px] h-[100px] w-[4px] rounded-r-sm bg-gradient-to-l from-[#8f8d88] to-[#cfcdc8]" />
         {/* Titanium band */}
-        <div className="absolute inset-0 rounded-[68px] bg-[linear-gradient(145deg,#d9d7d2_0%,#9d9b96_30%,#e4e2dd_52%,#8e8c87_78%,#c9c7c2_100%)] p-[3px] shadow-[0_30px_60px_-12px_oklch(25%_0.05_255/0.45),0_18px_36px_-18px_oklch(25%_0.05_255/0.5)]">
+        <div className="absolute inset-0 rounded-[61px] bg-[linear-gradient(145deg,#d9d7d2_0%,#9d9b96_30%,#e4e2dd_52%,#8e8c87_78%,#c9c7c2_100%)] p-[3px] shadow-[0_32px_70px_-22px_#172f4140,0_8px_18px_-8px_#172f4130]">
           {/* Black bezel */}
-          <div className="h-full w-full rounded-[65px] bg-[#0b0b0c] p-[11px]">
+          <div className="h-full w-full rounded-[58px] bg-[#0b0b0c] p-[10px]">
             {/* Screen */}
-            <div id="phone-screen" className="relative flex h-full w-full flex-col overflow-hidden rounded-[54px] bg-canvas">
-              <StatusBar />
+            <div id="phone-screen" className="relative flex h-full w-full flex-col overflow-hidden rounded-[47px] bg-canvas">
+              <StatusBar dark={dark} />
               {/* Dynamic Island */}
-              <div className="absolute left-1/2 top-[11px] z-50 h-[36px] w-[124px] -translate-x-1/2 rounded-full bg-black" aria-hidden="true" />
+              <div className="absolute left-1/2 top-[10px] z-50 h-[31px] w-[112px] -translate-x-1/2 rounded-full bg-[#08090b] shadow-[inset_0_0_0_1px_#ffffff12]" aria-hidden="true"><span className="absolute right-[13px] top-[9px] h-[12px] w-[12px] rounded-full bg-[radial-gradient(circle_at_35%_35%,#17324a,#06090e_65%)] ring-1 ring-white/5" /></div>
               {children}
               {/* Home indicator */}
               <div className="pointer-events-none absolute bottom-2 left-1/2 z-50 h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-ink/85" aria-hidden="true" />

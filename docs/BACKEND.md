@@ -1,6 +1,6 @@
 # Backend integration — Moving and Saving
 
-Codex owns the decision services, runtime input validation, fixtures and explanation prompts. Opus owns the Next.js UI, shared React provider, framework configuration and package manifest. Backend modules have no runtime package dependencies, database or API-key requirement.
+Codex owns the decision services, runtime input validation, fixtures and explanation prompts. After Opus stage 5, the user transferred frontend integration and refinement to Codex. Backend modules have no runtime package dependencies, database or API-key requirement.
 
 ## Start here: two isolated services
 
@@ -96,3 +96,21 @@ The checks cover golden transitions, cents arithmetic, concurrency/revisions, cl
 ## Deployment boundary
 
 This is the agreed in-process synthetic service boundary, not a standalone HTTP banking server. The same logic can be wrapped in Next.js server routes when needed, but real deployments require authentication, session isolation, persistent transactional state and appropriate data access. Do not expose a process-global service as a multi-user API.
+
+
+## Profile service (`profile-1.0`)
+
+`createProfileService()` in `lib/profile.ts` is a separate in-process session. Its snapshot contains `revision`, `displayName`, `bio`, `proposed`, `confirmed`, `status` and `source`. ProfileProvider uses the same serialized dispatch hook as Moving/Saving. No HTTP or database is introduced.
+
+```ts
+const profile = createProfileService();
+const initial = await profile.getSnapshot();
+const review = await profile.dispatch({ expectedRevision: initial.revision,
+  event: { type: 'SAVE_BIO', bio: 'Help me review subscriptions for my Japan goal.' } });
+const confirmed = await profile.dispatch({ expectedRevision: review.snapshot.revision,
+  event: { type: 'CONFIRM_PREFERENCES', preferences: ['subscriptions', 'saving'] } });
+```
+
+The parser is local regex matching, not an LLM. Allowed tags: `subscriptions`, `coffee`, `moving`, `saving`. Saving a bio (max 800 characters) invalidates old confirmed tags. Manual confirmation can correct or remove any proposal, including confirming an empty list. `CLEAR_PROFILE` empties the bio and both tag lists. Accepted events advance the revision; invalid events and revision conflicts return the current snapshot without mutation. Unknown request/event fields and duplicate or unknown preference tags are rejected.
+
+`subscriptionRelevance(snapshot)` returns `setup`, `review`, `matched` or `unmatched`. The UI uses it to filter optional subscription discovery only. It neither changes financial eligibility nor removes existing saving intentions or Moving commitments. Coffee has no merchant-alternative dataset. Cross-scenario ranking and model prompting are deferred; no bio is sent to the explanation service.

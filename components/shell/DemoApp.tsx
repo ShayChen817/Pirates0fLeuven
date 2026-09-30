@@ -1,18 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { MomentsProvider, useMoments } from '@/components/session/MomentsProvider';
 import { SavingProvider, useSaving } from '@/components/session/SavingProvider';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { MovingHome } from '@/components/moving/MovingHome';
 import { MovingKate } from '@/components/moving/MovingKate';
-import { MovingKnows } from '@/components/moving/MovingKnows';
 import { EnginePanel } from '@/components/moving/EnginePanel';
 import { SavingHome } from '@/components/saving/SavingHome';
 import { SavingKate } from '@/components/saving/SavingKate';
-import { SavingKnows } from '@/components/saving/SavingKnows';
 import { SavingPreviewPanel } from '@/components/saving/SavingPreviewPanel';
 import { IPhone } from './IPhone';
+import { ProfileProvider, useProfile } from '@/components/session/ProfileProvider';
+import { ProfileScreen } from '@/components/profile/ProfileScreen';
 
 export type Scenario = 'saving' | 'moving';
 export type Tab = 'home' | 'kate' | 'knows';
@@ -32,23 +32,11 @@ export function DemoApp() {
   // Providers stay mounted, so each scenario keeps its own session while you switch.
   return (
     <MomentsProvider>
-      <SavingProvider>
+      <SavingProvider><ProfileProvider>
         <DemoShell />
-      </SavingProvider>
+      </ProfileProvider></SavingProvider>
     </MomentsProvider>
   );
-}
-
-function useWide() {
-  const [wide, setWide] = useState(true);
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1100px)');
-    const update = () => setWide(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
-  return wide;
 }
 
 function DemoShell() {
@@ -56,21 +44,22 @@ function DemoShell() {
   const [tab, setTab] = useState<Tab>('home');
   const moments = useMoments();
   const saving = useSaving();
-  const wide = useWide();
-  const resetting = scenario === 'saving' ? saving.pending === 'RESET_DEMO' : moments.pending === 'RESET_DEMO';
+  const profile = useProfile();
+  const resetting = !!profile.pending || !!(scenario === 'saving' ? saving.pending : moments.pending);
 
   const reset = () => {
     if (scenario === 'saving') void saving.send({ type: 'RESET_DEMO' });
     else void moments.send({ type: 'RESET_DEMO' });
+    void profile.send({ type: 'CLEAR_PROFILE' });
     setTab('home');
   };
 
   const controls = (
     <div className="space-y-5">
       <div>
-        <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-kbc-blue-ink">Pirates0fLeuven · KBC track</p>
-        <h1 className="mt-1 text-[32px] font-bold leading-[1.1] tracking-tight text-ink">Life Goals with Kate</h1>
-        <p className="mt-2 max-w-[34ch] text-[15px] leading-relaxed text-ink-2">Kate understands the goal first, then suggests one next step, and stays quiet when nothing is needed.</p>
+        <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-kbc-blue-ink">Life Goals / with Kate</p>
+        <h1 className="mt-1 text-[46px] font-semibold leading-[1.06] tracking-tight text-ink">A little closer.<br /><span className="text-ink-3">Every day.</span></h1>
+        <p className="mt-2 max-w-[34ch] text-[15px] leading-relaxed text-ink-2">Your goals, understood. Thoughtful help from Kate, shaped around what matters to you.</p>
       </div>
       <div role="radiogroup" aria-label="Demo scenario" className="grid grid-cols-2 gap-1 rounded-2xl bg-surface p-1 shadow-soft">
         {scenarios.map(s => (
@@ -91,19 +80,25 @@ function DemoShell() {
     </div>
   );
 
-  const panel = scenario === 'saving' ? <SavingPreviewPanel /> : <EnginePanel />;
+  const panelContent = scenario === 'saving' ? <SavingPreviewPanel /> : <EnginePanel />;
+
+  const panel = <details className="demo-details"><summary><span>Behind the experience</span><Icon name="chevron" className="h-4 w-4" /></summary><div className="pt-4">{panelContent}</div></details>;
 
   const screen = (
     <>
-      <div key={`${scenario}-${tab}`} className="no-scrollbar flex-1 animate-fade overflow-y-auto bg-canvas">
-        {scenario === 'saving'
-          ? (tab === 'home' ? <SavingHome /> : tab === 'kate' ? <SavingKate /> : <SavingKnows />)
-          : (tab === 'home' ? <MovingHome /> : tab === 'kate' ? <MovingKate /> : <MovingKnows />)}
+      <div className="phone-pages">
+        <div hidden={tab !== 'home'} className="phone-page no-scrollbar" aria-label="Home">
+          {scenario === 'saving' ? <SavingHome onProfile={() => setTab('knows')} /> : <MovingHome />}
+        </div>
+        <div hidden={tab !== 'kate'} className="phone-page no-scrollbar" aria-label="Kate">
+          {scenario === 'saving' ? <SavingKate onProfile={() => setTab('knows')} /> : <MovingKate />}
+        </div>
+        <div hidden={tab !== 'knows'} className="phone-page no-scrollbar" aria-label="Profile"><ProfileScreen scenario={scenario} /></div>
       </div>
-      <nav aria-label="App navigation" className="relative z-30 grid shrink-0 grid-cols-3 border-t border-line bg-surface/85 pb-[26px] pt-1.5 backdrop-blur-xl">
+      <nav aria-label="App navigation" className="relative z-30 grid shrink-0 grid-cols-3 border-t border-line bg-surface/85 pb-[max(env(safe-area-inset-bottom),26px)] pt-2 backdrop-blur-xl">
         {tabs.map(t => (
           <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-current={tab === t.id ? 'page' : undefined}
-            className={`press flex flex-col items-center gap-0.5 py-1 text-[11px] font-semibold ${tab === t.id ? 'text-kbc-blue' : 'text-ink-3 hover:text-ink'}`}>
+            className={`press relative flex min-h-11 flex-col items-center gap-1 py-1 text-[10px] font-semibold ${tab === t.id ? 'text-kbc-blue' : 'text-ink-3 hover:text-ink'}`}>
             <Icon name={t.icon} className="h-6 w-6" />
             {t.label}
           </button>
@@ -113,26 +108,13 @@ function DemoShell() {
   );
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-[1200px] flex-col items-center justify-center gap-10 px-0 pb-4 sm:px-8 sm:py-4 min-[1100px]:flex-row min-[1100px]:items-start min-[1100px]:py-0">
-
-      {wide ? (
-        <>
-          {/* Top-anchored column: height changes in the panel grow downward and never re-centre the layout. */}
-          <div className="flex w-[380px] shrink-0 flex-col gap-6 self-start pb-8 pt-[clamp(16px,9dvh,80px)]">
-            {controls}
-            {panel}
-          </div>
-          {/* Phone is pinned to the viewport (sticky, centred in one screen height), independent of column height. */}
-          <div className="sticky top-0 flex h-dvh shrink-0 items-center self-start">
-            <IPhone reserveWidth={380 + 40 + 64}>{screen}</IPhone>
-          </div>
-        </>
-      ) : (
-        <>
-          <IPhone>{screen}</IPhone>
-          <div className="w-full max-w-[420px] space-y-6 px-4 pb-6 sm:px-0">{controls}{panel}</div>
-        </>
-      )}
+    <main className="demo-layout">
+      <aside className="demo-sidebar">
+        {controls}
+        {panel}
+        <p className="text-[11px] leading-relaxed text-ink-3">Pirates0fLeuven · KBC track<br />Synthetic demonstration. Not affiliated with KBC.</p>
+      </aside>
+      <div className="device-stage"><IPhone dark={tab === 'home'}>{screen}</IPhone></div>
     </main>
   );
 }

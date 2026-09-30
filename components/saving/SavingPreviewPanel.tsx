@@ -4,6 +4,8 @@ import { useSaving } from '@/components/session/SavingProvider';
 import { formatCents, formatMonth } from '@/components/format';
 import { Badge } from '@/components/ui/primitives';
 import { savingView } from './view';
+import { useProfile } from '@/components/session/ProfileProvider';
+import { subscriptionRelevance } from '@/lib/profile';
 
 const viewLabel = {
   review: 'Ask: review subscriptions', intention: 'Offer: saving intention', planned: 'Quiet: plan recorded',
@@ -12,6 +14,12 @@ const viewLabel = {
 
 export function SavingPreviewPanel() {
   const { snapshot } = useSaving();
+  const { snapshot: profile } = useProfile();
+  const relevance = profile ? subscriptionRelevance(profile) : 'setup';
+  const view = snapshot ? savingView(snapshot) : null;
+  const next = view === 'review' && relevance !== 'matched'
+    ? { setup: 'Ask: set preferences', review: 'Ask: confirm preferences', unmatched: 'Quiet: no matching preference' }[relevance]
+    : view ? viewLabel[view] : 'Loading';
   return (
     <section aria-label="Saving decision details" className="rounded-[var(--radius-card)] bg-surface p-5 shadow-soft">
       <div className="flex items-baseline justify-between gap-3">
@@ -22,7 +30,7 @@ export function SavingPreviewPanel() {
         <>
           <div className="mt-3 flex items-center justify-between gap-2">
             <p className="text-sm text-ink-2">Kate&apos;s next step</p>
-            <Badge tone={snapshot.primary ? 'navy' : 'muted'}>{viewLabel[savingView(snapshot)]}</Badge>
+            <Badge tone={snapshot.primary && relevance === 'matched' ? 'navy' : 'muted'}>{next}</Badge>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
             {([['Baseline', snapshot.baseline], ['With plan', snapshot.projected]] as const).map(([label, p]) => (

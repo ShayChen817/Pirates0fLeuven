@@ -1,6 +1,6 @@
 # Shared frontend / engine contract — v1.0
 
-The canonical Moving types are in [`lib/types.ts`](../lib/types.ts) and examples in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). The implementation is `createMomentsService()` in [`lib/service.ts`](../lib/service.ts). UI integration is owned by Opus. See [BACKEND.md](BACKEND.md) for usage and checks.
+The canonical Moving types are in [`lib/types.ts`](../lib/types.ts) and examples in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). The implementation is `createMomentsService()` in [`lib/service.ts`](../lib/service.ts). UI integration is now owned by Codex following the user-authorised handover. See [BACKEND.md](BACKEND.md) for usage and checks.
 
 Saving is a separately versioned `saving-1.0` contract in [`lib/saving-types.ts`](../lib/saving-types.ts), implemented by `createSavingService()` in [`lib/saving.ts`](../lib/saving.ts), with [`data/saving-fixtures.ts`](../data/saving-fixtures.ts). The existing v1 unions are unchanged; frontends must use the correct service and snapshot type for each scenario.
 
@@ -131,3 +131,18 @@ Expected success snapshot: `getDemoSnapshot('moving')`. An old request with `exp
 Frontend can build every listed state directly from fixtures. Core logic must implement `MomentsService`, reproduce the five exported transitions and satisfy the edge cases in PLAN. Compare business state, counters, primary IDs, amounts, status and reason codes; wording can be refined together without changing semantics.
 
 Fixtures validate the agreement, not engine correctness. Pause, clear, dismissal, stale data and invalid-input scenarios still need implementation and verification before claiming the app works.
+
+
+## Separate Profile contract: `profile-1.0`
+
+Canonical types and implementation: `lib/profile.ts`. This addition does not widen Moving, Saving or recognition unions.
+
+| Event | Payload | Effect |
+|---|---|---|
+| `SAVE_BIO` | `bio: string` (max 800 characters) | Trim bio, propose allowlisted keyword tags, clear old confirmations; review required |
+| `CONFIRM_PREFERENCES` | `preferences: Preference[]` (0–4 unique allowed tags) | Store explicit selections/corrections; no financial mutation |
+| `CLEAR_PROFILE` | None | Clear bio, proposals and confirmations |
+
+Every dispatch requires `expectedRevision`. Success increments the revision and returns a copied snapshot. `INVALID_EVENT` and `REVISION_CONFLICT` return authoritative state without mutation. One shared Profile session is read by Home, Kate and Profile. Domain sessions keep independent revisions and balances. Reset of either scenario also clears the shared Profile; ordinary scenario switching preserves it.
+
+`source: local-keywords` identifies proposed interpretation; `source: customer` identifies manual confirmation. Unknown bio text can yield an empty proposal. Confirmation is required before a preference influences subscription discovery. This release does not implement cross-domain ranking, a live LLM, external data ingestion or persisted customer records.

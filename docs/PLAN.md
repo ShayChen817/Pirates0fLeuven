@@ -1,6 +1,6 @@
 # Plan — Smart Stock and the Moments Engine
 
-Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Opus owns frontend integration. README defines the product direction.
+Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Codex now owns frontend integration following the explicit handover after Opus stage 5. README defines the product direction.
 
 Principle: **Rules decide. AI explains. Customers stay in control.**
 
@@ -99,11 +99,11 @@ These are acceptance criteria, not completed test results. Record actual evidenc
 | Workstream | Owner | Files | Ordered work |
 |---|---|---|---|
 | Core engine | Codex | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
-| Frontend | Opus | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
+| Frontend | Codex (after Opus stage 5) | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
 | Design | TBD | `docs/DESIGN.md`, theme | reuse existing research; readable evidence and primary action |
 | Demo and submission | TBD | demo assets, README | rehearse continuous story → audit/remediation → screenshots → video and links |
 
-Frontend is running in parallel under Opus. Codex owns backend files and README/context documents; Opus owns app/components and frontend configuration. Use docs/BACKEND.md for current entry points. Do not change one another's files.
+Frontend ownership has transferred to Codex at the user's request. Codex owns the current integration, frontend refinement and backend/documentation changes. Earlier Opus stage 4/5 work is retained. Avoid concurrent edits; use docs/BACKEND.md for current entry points.
 
 - T+1h: continuous synthetic journey clickable, with real state transitions.
 - T+2h: service reproduces the five golden transitions; rules, corrections and shared state integrated; acceptance scenarios checked.
@@ -146,4 +146,15 @@ Frontend: connect delivered services, prepare the Profile edit/confirmation flow
 
 ## Shay identity and frontend handover
 
-The user has transferred frontend integration and design ownership to Codex after Opus stage 5. Rename the synthetic customer and stable demo action prefix from `lotte` to `shay` consistently in fixtures, existing checks, UI and documentation. Event shapes and financial values are unchanged. Old in-memory demo sessions should be reloaded. Next stages: Profile service and frontend connection, then responsive layout, visual hierarchy and interaction refinement.
+The user has transferred frontend integration and design ownership to Codex after Opus stage 5. Rename the synthetic customer and stable demo action prefix to `shay` consistently in fixtures, existing checks, UI and documentation. Event shapes and financial values are unchanged. Old in-memory demo sessions should be reloaded. Next stages: Profile service and frontend connection, then responsive layout, visual hierarchy and interaction refinement.
+
+
+## Profile contract and interaction refinement — current delivery
+
+Shared interface addition: `lib/profile.ts` exports `profile-1.0`, with independent revisions and `SAVE_BIO`, `CONFIRM_PREFERENCES`, `CLEAR_PROFILE`. Existing Moving and Saving event unions are unchanged. ProfileProvider owns one session alongside the two domain providers. Local keyword suggestions require confirmation; editing the bio clears previous confirmed preferences. There is no live interpreter or model call. Only optional Saving discovery is filtered by confirmed subscription preference; existing plans and Moving financial steps remain available.
+
+Frontend: Profile now has a short introduction and three grouped settings. Bio, preference, goal and evidence editing use sheets. Home calculation details and the judge trace are collapsed by default. Warm neutral surfaces, muted blue accents and a fitted CSS phone frame replace the previous dense layout.
+
+Interaction fix: retain tab scroll containers instead of keying/remounting them on navigation; remove title-keyed Kate card entrances; keep device scale separate from animation transforms. A service response updates the existing content. Sheet focus is trapped and restored with `preventScroll`; rejected confirmations keep the editor open. Only local amount, progress, control and sheet feedback animates.
+
+Reset clears the active domain session and the shared Profile. Refreshing the document resets all in-memory services. Cross-scenario ranking, a live bio model, persistent storage, recognition UI and voice remain deferred. Verification is recorded in FRONTEND.md; no automated test suite is added in this stage.

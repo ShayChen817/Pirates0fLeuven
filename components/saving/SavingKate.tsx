@@ -25,11 +25,11 @@ function history(s: SavingSnapshot): Bubble[] {
   return out;
 }
 
-export function SavingKate() {
+export function SavingKate({ onProfile }: { onProfile: () => void }) {
   const { snapshot } = useSaving();
   return (
     <KateScreen history={snapshot ? history(snapshot) : []}>
-      <SavingKateCard />
+      <SavingKateCard onProfile={onProfile} />
     </KateScreen>
   );
 }

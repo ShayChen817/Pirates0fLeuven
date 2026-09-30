@@ -1,18 +1,18 @@
-# Copy this prompt into Claude Code
+# Frontend handoff context — updated after Opus stage 5
 
-You own the **frontend** of Pirates0fLeuven. Opus and Codex are now authorised to develop in parallel. Codex owns the **backend decision engine, shared services, signal recognition, tests and AI explanation prompts**. Backend stages 1 and 2 have landed: use [BACKEND.md](BACKEND.md) to connect `createMomentsService()` and `createSavingService()`. Moving v1 is unchanged; Saving has its own implemented `saving-1.0` types. Recognition is available through `createRecognitionService()` and approved explanations through `lib/explain.ts`. Do not duplicate calculation logic in the UI.
+Codex now owns frontend integration and refinement, as explicitly requested by the user after Opus stage 5. This file preserves the implementation brief for future handoffs; it is not an instruction to start concurrent edits. Read FRONTEND.md for current delivered behaviour.
 
-Current integration priority: import the two real services, replace their respective adapters, keep one instance of each per session, adopt returned snapshots on success and errors, and verify both journeys. Run `node scripts/backend-check.mjs` for backend checks; own the Next.js build and browser flow.
+Moving and Saving are connected to their in-process services. Profile is connected through `createProfileService()` (`lib/profile.ts`, `profile-1.0`), with a local keyword fallback and explicit customer confirmation. Preserve the separate revisions and service-owned financial calculations. Do not duplicate decision logic in components.
 
 Repository: https://github.com/ShayChen817/Pirates0fLeuven
 
-Direction source: PR #1, including `0a4df0d`, is integrated into the current README. **Profile is the core of personalisation; Saving and Moving demonstrate it.** Read the Profile-first section as the current brief. The Profile service and bio interpretation are not implemented yet; do not import invented exports or mutate financial facts from bio text.
+Direction source: PR #1, including `0a4df0d`, is integrated into the current README. **Profile is the core of personalisation; Saving and Moving demonstrate it.** Read the Profile-first section as the current brief. Profile supports local keyword suggestions; do not claim live model interpretation or mutate financial facts from bio text.
 
 ## Current Profile priority
 
 Design the first customer journey around an editable structured goal, optional bio, and a review of interpreted preferences. Display what is explicitly stated, inferred, or confirmed. Include correction, deletion, loading, failure, no-match and paused states. Keep raw bio text out of the existing explanation provider. No open-ended chat is needed.
 
-Codex owns the upcoming Profile contract, revision handling, interpretation prompt and ranking. Until that contract lands, any Profile UI must be clearly labelled as a local preview under `components/demo/`; do not present it as backend-connected. Existing goal edits should use Saving's `UPDATE_GOAL`. Connect the shipped domain services now and retain separate snapshots/revisions.
+The Profile contract and revision handling are delivered. Goal edits use Saving's `UPDATE_GOAL`. A confirmed subscription preference filters optional Saving discovery. Cross-scenario ranking and live model interpretation remain future work. Retain separate snapshots/revisions.
 
 The acceptance story is: bio asks for subscription help → review and confirm the preference → show matching recurring-charge evidence → customer selects the unused service → add intention → projected date changes while actual savings stay €650. A coffee-only preference must not be labelled as matching streaming advice. Editing the bio discards old pending interpretations. Home and Kate must reflect the same correction.
 
@@ -37,9 +37,8 @@ For the Saving journey, use the exact Japan example below. Do not copy the propo
 
 ## Ownership: prevent concurrent edits
 
-- You own `app/`, `components/`, `public/`, frontend configuration, `package.json`, lockfile, Next.js/TypeScript/Tailwind setup, `.gitignore` additions needed for frontend builds, and `docs/FRONTEND.md`.
-- Codex owns `lib/`, `data/`, `prompts/`, `tests/backend/`, `scripts/backend-*`, backend documentation, `docs/PLAN.md`, `docs/CONTRACT.md` and README updates.
-- Do not edit Codex-owned files, duplicate the engine in the frontend, or change the shared contract. Put temporary fixture UI adapters under `components/demo/`, mark them `// DEMO:`, and remove/replace them at integration.
+- Codex currently owns frontend, backend and context documents after the user-authorised handover. Coordinate any future transfer before editing the same files.
+- Preserve the connected providers and domain contracts. Temporary mock adapters were removed during Opus stage 4.
 - Prefer your own checkout/branch if another agent uses the same folder. Do not reset, overwrite or stash another person's edits. Before pushing, fetch and rebase your commits on `origin/main`; preserve teammates' code. The user wants completed work committed and pushed to GitHub, not left locally.
 
 ## Product and scope
@@ -48,7 +47,7 @@ Build an English, KBC-inspired **Profile-driven Life Goals** experience. The cus
 
 Kate uses **advice cards, structured forms and quick replies**. A Kate tab may show the guided history of those cards, but do not build an open-ended model-chat input. Structured input fields for goal amount/date are allowed. All core screens must work without model calls. Do not advertise the design as immune to prompt injection or security problems.
 
-Implementation is authorised. The shell and fixture/preview journeys have landed. Next: connect the shipped services, prepare the Profile input/confirmation flow, then integrate the Profile contract when delivered. Prioritise the Profile-to-Saving demonstration; Moving remains the reuse example and fallback.
+The Profile-to-Saving journey is connected. Prioritise its clarity and interaction continuity; Moving remains the reuse example and fallback. Preserve persistent tab containers, avoid title-keyed card remounts, and keep financial changes explicitly confirmed.
 
 Prioritise a working continuous demo over extra screens. Optional voice and speculative mission recognition must never block the core journey. A purchase/location display must clearly identify synthetic data; no browser geolocation permission request is needed for this demo.
 

@@ -6,7 +6,7 @@ import { AnimatedAmount, Body, Card, Hero, Notice, ProgressBar } from '@/compone
 import { Icon } from '@/components/ui/Icon';
 import { SavingKateCard } from './SavingCard';
 
-export function SavingHome() {
+export function SavingHome({ onProfile }: { onProfile: () => void }) {
   const { snapshot, transportError, reload } = useSaving();
   if (!snapshot) {
     return (
@@ -36,7 +36,7 @@ export function SavingHome() {
         </p>
       </Hero>
       <Body>
-        <SavingKateCard />
+        <SavingKateCard onProfile={onProfile} />
         <Card aria-label="Projection">
           <p className="text-[13px] font-semibold text-ink-3">Projected finish <span className="font-normal">· a projection, not savings</span></p>
           <p className="mt-1 flex items-baseline gap-2">
@@ -48,12 +48,15 @@ export function SavingHome() {
           <p className={`mt-1 text-sm font-semibold ${projected.onTrack ? 'text-kbc-green-ink' : 'text-warn'}`}>
             {projected.onTrack ? 'On time for your deadline' : 'After your deadline at this pace'}
           </p>
-          <dl className="mt-3 border-t border-line pt-2 text-[15px]">
-            <div className="flex justify-between py-1.5 text-ink-2"><dt>Planned per month</dt>
-              <dd className="tabular-nums">{improved ? <s className="mr-1.5 text-ink-3">{formatCents(baseline.monthlyCents)}</s> : null}<strong className="text-ink">{formatCents(projected.monthlyCents)}</strong></dd></div>
-            <div className="flex justify-between py-1.5 text-ink-2"><dt>Contributions to go</dt><dd className="tabular-nums">{projected.contributionsNeeded ?? '—'}, from {formatDate(goal.firstContributionDate)}</dd></div>
-          </dl>
-          <p className="mt-1 text-xs text-ink-3">No interest assumed. Only real contributions change what you have saved.</p>
+          <details className="mt-3 border-t border-line pt-3 text-sm text-ink-2">
+            <summary>How this is calculated</summary>
+            <dl className="mt-2 space-y-2">
+              <div className="flex justify-between gap-3"><dt>Planned per month</dt><dd className="tabular-nums font-semibold">{formatCents(projected.monthlyCents)}</dd></div>
+              <div className="flex justify-between gap-3"><dt>Payments to go</dt><dd>{projected.contributionsNeeded ?? '—'}</dd></div>
+              <div className="flex justify-between gap-3"><dt>Starting</dt><dd className="text-right">{formatDate(goal.firstContributionDate)}</dd></div>
+            </dl>
+            <p className="mt-3 text-xs leading-relaxed text-ink-3">No interest assumed. Only real contributions change what you have saved.</p>
+          </details>
         </Card>
       </Body>
     </>
