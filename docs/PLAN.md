@@ -1,16 +1,16 @@
 # Plan — Smart Stock and the Moments Engine
 
-Status: shared TypeScript contracts and six synthetic snapshots are available. UI, decision engine and service implementation remain planned. README defines the product direction.
+Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Opus owns frontend integration. README defines the product direction.
 
 Principle: **Rules decide. AI explains. Customers stay in control.**
 
 ## MVP priorities
 
-P0: one synthetic customer, context correction, deterministic recalculation, priority and suppression, shared home/Kate action state, editable customer-provided context, pause control and engine trace.
+P0: Profile-led personalisation (editable bio, confirmed preferences and deterministic relevance ranking), then integrate existing domain services for one synthetic customer, context correction, deterministic recalculation, priority and suppression, shared home/Kate action state, editable customer-provided context, pause control and engine trace.
 
 P1: alternate eligible investment simulation and incomplete-data scenarios. P2: optional LLM, additional product cards and a synthetic benchmark. Build in this order.
 
-## Demo sequence (target 2 minutes 45 seconds)
+## Existing Moving fallback sequence (target 2 minutes 45 seconds)
 
 | Time | Action | Evidence |
 |---|---|---|
@@ -98,12 +98,12 @@ These are acceptance criteria, not completed test results. Record actual evidenc
 
 | Workstream | Owner | Files | Ordered work |
 |---|---|---|---|
-| Core engine | TBD | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
-| Frontend | TBD | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
+| Core engine | Codex | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
+| Frontend | Opus | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
 | Design | TBD | `docs/DESIGN.md`, theme | reuse existing research; readable evidence and primary action |
 | Demo and submission | TBD | demo assets, README | rehearse continuous story → audit/remediation → screenshots → video and links |
 
-Frontend starts against the contract; owners must be assigned before parallel feature work. No agent delegation is required by this plan.
+Frontend is running in parallel under Opus. Codex owns backend files and README/context documents; Opus owns app/components and frontend configuration. Use docs/BACKEND.md for current entry points. Do not change one another's files.
 
 - T+1h: continuous synthetic journey clickable, with real state transitions.
 - T+2h: service reproduces the five golden transitions; rules, corrections and shared state integrated; acceptance scenarios checked.
@@ -117,3 +117,29 @@ Exact deadline remains unknown. Adjust checkpoints once confirmed.
 Use Next.js, TypeScript and Tailwind. Templates are sufficient. Optional `ANTHROPIC_API_KEY` stays server-side, with its name documented in `.env.example` when created. Generated explanations cannot change rule outputs or add claims.
 
 Do not add auth, a database, real transactions, real KBC APIs, persistent memory, external notification delivery or ML infrastructure. Actual multi-channel operation, large-scale performance and improved customer trust require later validation. Update README run commands only after the app exists and they have been checked.
+
+## Backend stage 1 — delivered
+
+Moving uses `createMomentsService()` from `lib/service.ts` without changing the existing v1 unions. Saving uses a separate `saving-1.0` snapshot/event contract (`lib/saving-types.ts`) and `createSavingService()` from `lib/saving.ts`; this coordinated extension replaces the isolated frontend Saving preview. `data/saving-fixtures.ts` defines the Japan seed and expected values. Read `docs/BACKEND.md` for both service boundaries.
+
+Verification: `node scripts/backend-check.mjs` runs strict TypeScript and 18 checks covering both flows, stale revisions, runtime validation, state isolation, projection maths and subscription evidence. Frontend build and browser verification await integration; no HTTP server, database or external transaction was added. Next stage: signal recognition and constrained explanation prompts.
+
+## Backend stage 2 — delivered
+
+Recognition is a separate `recognition-1.0` contract/service and seed. It checks two relevant purchase categories, 14-day evidence windows, optional city context freshness and explicit feedback; it never writes financial commitments. UI confirms the remaining details via the unchanged Moving event. Saving remains independent.
+
+Kate explanation builders and the canonical prompt accept only approved sentence selection from an optional provider. Templates, required caveats, output validation and timeout fallback work without keys. No real model integration is claimed. Strict typecheck and 30 backend checks pass; browser and Next.js build checks remain with frontend integration.
+
+## Backend stage 3 — integration handoff
+
+README and the Claude frontend prompt now reference the delivered Moving, Saving, recognition and explanation services. Removed obsolete instructions to build a local Saving preview or wait for service exports. Contract shapes remain unchanged in this stage. The later direction-branch profile/bio proposal (`0a4df0d`) is explicitly separated from implemented goal editing.
+
+This documentation-only stage adds no runtime changes. Stage 2 strict TypeScript and 30 passing backend checks remain the latest runtime evidence. No additional tests were run for these prose changes. Frontend start/build/browser checks await the Opus scaffold and integration; no full-stack verification is claimed. Each completed backend stage is committed and pushed to `main` as requested.
+
+## PR #1 integration — Profile priority
+
+Accepted direction: the editable Profile is the shared personalisation context; Saving and Moving are demonstrations. Bio interpretation is now next P0, superseding stage 3's treatment as deferred future work. It is still unimplemented: this PR changes documentation and ignore rules only.
+
+Next backend slice: a separate versioned Profile contract, session service, bounded bio interpretation prompt with no-key fallback, customer confirmation/correction of proposed tags, invalidation on bio edits/deletion, and deterministic matching against eligible domain candidates. Publish types and fixtures with CONTRACT before frontend consumes them. Preserve existing Moving, Saving and recognition unions and financial calculations. No bio-derived risk suitability or automatic money actions.
+
+Frontend: connect delivered services, prepare the Profile edit/confirmation flow, and label any temporary profile-only mock honestly. Opus retains app/component ownership. Completed stages must be pushed. The new frontend scaffold and fixture/preview journeys on main are preserved by merging main into the PR branch; this documentation change does not claim app build or browser verification.
