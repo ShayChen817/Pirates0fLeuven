@@ -1,51 +1,37 @@
 'use client';
 
 import { useMoments } from '@/components/session/MomentsProvider';
-import { formatCents } from '@/components/format';
-import { Badge, Card } from '@/components/ui/primitives';
-import { Icon } from '@/components/ui/Icon';
+import { AnimatedAmount, Badge } from '@/components/ui/primitives';
 import { outcomeLabel, reasonText, ruleLabel } from './copy';
 
 const outcomeTone = { selected: 'navy', deferred: 'warn', suppressed: 'muted' } as const;
 
 export function EnginePanel() {
-  const { snapshot, serviceLabel } = useMoments();
+  const { snapshot } = useMoments();
   return (
-    <Card aria-label="Decision trace" className="!p-0 overflow-hidden">
-      <div className="flex items-center gap-2 bg-kbc-navy px-4 py-3 text-white">
-        <Icon name="engine" />
-        <div>
-          <h2 className="text-base font-semibold">Behind the scenes</h2>
-          <p className="text-xs text-white/80">Demo-only view of the shared decision trace</p>
-        </div>
+    <section aria-label="Decision trace" className="rounded-[var(--radius-card)] bg-surface p-5 shadow-soft">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="text-[15px] font-semibold text-ink">Behind the scenes</h2>
+        <span className="text-xs text-ink-3">Moments engine · rev {snapshot?.revision ?? '–'}</span>
       </div>
-      <div className="space-y-3 p-4">
-        <Badge tone="warn">{serviceLabel}</Badge>
-        {!snapshot ? <p role="status" className="text-sm text-kbc-muted">Loading…</p> : (
-          <>
-            <dl className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-lg bg-kbc-bg p-2"><dt className="text-xs text-kbc-muted">Available</dt><dd className="font-bold tabular-nums">{formatCents(snapshot.availableCashCents)}</dd></div>
-              <div className="rounded-lg bg-kbc-bg p-2"><dt className="text-xs text-kbc-muted">Revision</dt><dd className="font-bold tabular-nums">{snapshot.revision}</dd></div>
-              <div className="rounded-lg bg-kbc-bg p-2"><dt className="text-xs text-kbc-muted">Context v.</dt><dd className="font-bold tabular-nums">{snapshot.context.version}</dd></div>
-            </dl>
-            <ol className="space-y-2" aria-label="Rules evaluated">
-              {snapshot.decision.trace.map(row => (
-                <li key={row.ruleId} className={`rounded-lg border p-3 ${row.outcome === 'selected' ? 'border-kbc-navy bg-kbc-kate' : 'border-kbc-line bg-white'}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold">{ruleLabel[row.ruleId]}</p>
-                    <Badge tone={outcomeTone[row.outcome]}>{outcomeLabel[row.outcome]}</Badge>
-                  </div>
-                  <p className="mt-1 text-sm text-kbc-navy/90">{reasonText[row.reasonCode]}</p>
-                  {row.evidenceIds.length ? (
-                    <p className="mt-1 text-xs text-kbc-muted">Evidence: {row.evidenceIds.join(', ')}</p>
-                  ) : null}
-                </li>
-              ))}
-            </ol>
-            <p className="text-xs text-kbc-muted">Rules decide, Kate explains, Lotte confirms. At most one step is selected; the others show why they wait or stay quiet.</p>
-          </>
-        )}
-      </div>
-    </Card>
+      {!snapshot ? <p role="status" className="mt-3 text-sm text-ink-3">Loading…</p> : (
+        <>
+          <p className="mt-3 text-[13px] text-ink-3">Potentially available</p>
+          <AnimatedAmount cents={snapshot.availableCashCents} className="text-2xl font-bold text-ink" />
+          <ol className="mt-4 divide-y divide-line" aria-label="Rules evaluated">
+            {snapshot.decision.trace.map(row => (
+              <li key={row.ruleId} className="py-3 first:pt-0 last:pb-0">
+                <div className="flex items-center justify-between gap-2">
+                  <p className={`text-sm font-semibold ${row.outcome === 'selected' ? 'text-ink' : 'text-ink-2'}`}>{ruleLabel[row.ruleId]}</p>
+                  <Badge tone={outcomeTone[row.outcome]}>{outcomeLabel[row.outcome]}</Badge>
+                </div>
+                <p key={row.reasonCode} className="mt-0.5 animate-fade text-[13px] leading-snug text-ink-3">{reasonText[row.reasonCode]}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-xs text-ink-3">Rules decide, Kate explains, Shay confirms. One step at a time.</p>
+        </>
+      )}
+    </section>
   );
 }

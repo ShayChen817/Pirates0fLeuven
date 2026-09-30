@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+// Self-hosted via npm so builds never depend on reaching Google Fonts.
+import '@fontsource-variable/albert-sans';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Life Goals with Kate — Pirates0fLeuven',
@@ -12,13 +11,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#003768',
+  themeColor: '#0d2a50',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+    <html lang="en">
+      <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );
 }

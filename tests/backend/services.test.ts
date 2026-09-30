@@ -57,9 +57,9 @@ test('stale requests, repeated confirmations and conflicting simultaneous revisi
   assert(a.ok); assert(!b.ok); assert.equal(b.error.code, 'REVISION_CONFLICT');
   assert.equal((await service.getSnapshot()).availableCashCents, 35000);
   const initial = createMomentsService(); await send(initial, long);
-  const invested = await send(initial, { type: 'CONFIRM_SIMULATION', actionId: 'lotte:explore-investment', amountCents: 140000 });
+  const invested = await send(initial, { type: 'CONFIRM_SIMULATION', actionId: 'shay:explore-investment', amountCents: 140000 });
   assert.equal(invested.context.accessibleCashCents, 785000);
-  const retry = await initial.dispatch({ expectedRevision: invested.revision, event: { type: 'CONFIRM_SIMULATION', actionId: 'lotte:explore-investment', amountCents: 140000 } });
+  const retry = await initial.dispatch({ expectedRevision: invested.revision, event: { type: 'CONFIRM_SIMULATION', actionId: 'shay:explore-investment', amountCents: 140000 } });
   assert(!retry.ok); assert.equal(retry.error.code, 'ACTION_NOT_AVAILABLE');
 });
 test('invalid inputs cannot mutate balances, action status or revision', async () => {
@@ -76,29 +76,29 @@ test('invalid inputs cannot mutate balances, action status or revision', async (
 });
 test('reserve acknowledgement retains cash commitment; coverage clear, pause and reset stay coherent', async () => {
   const service = createMomentsService(); await send(service, move);
-  let state = await send(service, { type: 'ACKNOWLEDGE_RESERVE', actionId: 'lotte:moving-reserve' });
+  let state = await send(service, { type: 'ACKNOWLEDGE_RESERVE', actionId: 'shay:moving-reserve' });
   assert.equal(state.availableCashCents, 35000);
   state = await send(service, { type: 'REPORT_COVERAGE', coverage: 'confirmed-covered' }); assert.equal(state.decision.primaryActionId, null);
-  state = await send(service, { type: 'CLEAR_CONTEXT', field: 'coverage' }); assert.equal(state.decision.primaryActionId, 'lotte:coverage-check');
+  state = await send(service, { type: 'CLEAR_CONTEXT', field: 'coverage' }); assert.equal(state.decision.primaryActionId, 'shay:coverage-check');
   state = await send(service, { type: 'SET_PROACTIVE', enabled: false }); assert.equal(state.decision.primaryActionId, null);
-  state = await send(service, { type: 'SET_PROACTIVE', enabled: true }); assert.equal(state.decision.primaryActionId, 'lotte:coverage-check');
+  state = await send(service, { type: 'SET_PROACTIVE', enabled: true }); assert.equal(state.decision.primaryActionId, 'shay:coverage-check');
   const version = state.context.version, revision = state.revision;
   state = await send(service, { type: 'RESET_DEMO' });
   assert.equal(state.revision, revision + 1); assert.equal(state.context.version, version + 1); assert.equal(state.availableCashCents, 285000);
 });
 test('dismissal survives rerender and pause; material plan edit reopens reserve', async () => {
   const service = createMomentsService(); await send(service, move);
-  let state = await send(service, { type: 'DISMISS_ACTION', actionId: 'lotte:moving-reserve' });
+  let state = await send(service, { type: 'DISMISS_ACTION', actionId: 'shay:moving-reserve' });
   assert.equal(state.decision.primaryActionId, null);
   assert.equal(evaluateSnapshot(state).decision.primaryActionId, null);
   await send(service, { type: 'SET_PROACTIVE', enabled: false });
   state = await send(service, { type: 'SET_PROACTIVE', enabled: true }); assert.equal(state.decision.primaryActionId, null);
   state = await send(service, { type: 'CONFIRM_MOVING', commitment: { id: 'moving-2026-10', amountCents: 240000, dueDate: '2026-11-01', purpose: 'moving' } });
-  assert.equal(state.decision.primaryActionId, 'lotte:moving-reserve'); assert.equal(state.availableCashCents, 45000);
+  assert.equal(state.decision.primaryActionId, 'shay:moving-reserve'); assert.equal(state.availableCashCents, 45000);
 });
 test('stale cash, short horizon and incomplete profile block investment; duplicate commitments are not double counted', async () => {
   const stale = getDemoSnapshot('investing'); stale.context.signals.find(s => s.id === 'cash')!.validUntil = stale.context.asOf;
-  assert.notEqual(evaluateSnapshot(stale).decision.primaryActionId, 'lotte:explore-investment');
+  assert.notEqual(evaluateSnapshot(stale).decision.primaryActionId, 'shay:explore-investment');
   const incomplete = getDemoSnapshot('investing'); incomplete.context.profileComplete = false;
   assert.equal(evaluateSnapshot(incomplete).decision.primaryActionId, null);
   const short = createMomentsService(); const state = await send(short, { ...long, horizonYears: 2 } as CustomerEvent);
@@ -110,7 +110,7 @@ test('stale cash, short horizon and incomplete profile block investment; duplica
 test('larger than available investment and conflicting moving/long-term plans do not mutate state', async () => {
   const service = createMomentsService(); await send(service, long);
   const before = await service.getSnapshot();
-  const result = await service.dispatch({ expectedRevision: before.revision, event: { type: 'CONFIRM_SIMULATION', actionId: 'lotte:explore-investment', amountCents: 300000 } });
+  const result = await service.dispatch({ expectedRevision: before.revision, event: { type: 'CONFIRM_SIMULATION', actionId: 'shay:explore-investment', amountCents: 300000 } });
   assert(!result.ok); assert.equal(result.error.code, 'NOT_ELIGIBLE'); assert.deepEqual(await service.getSnapshot(), before);
   await send(service, move); const moved = await service.getSnapshot();
   const rejected = await service.dispatch({ expectedRevision: moved.revision, event: long });

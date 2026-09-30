@@ -42,9 +42,9 @@ Fallback if time is tight: fixed synthetic fixtures, template explanations, one 
 
 ## Demo outcome
 
-A judge sees Lotte's €7,850 balance minus €4,000 reserve and €1,000 upcoming expenses, leaving €2,850 potentially available. The initial primary action asks about missing context. An investment candidate is deferred until intent and eligibility are known.
+A judge sees Shay's €7,850 balance minus €4,000 reserve and €1,000 upcoming expenses, leaving €2,850 potentially available. The initial primary action asks about missing context. An investment candidate is deferred until intent and eligibility are known.
 
-Lotte confirms a separate €2,500 moving commitment: €350 remains, the investment candidate is suppressed, and the interface prioritises the moving reserve. After acknowledging the reserve, she can check existing coverage. “Already insured elsewhere” resolves that prompt in both home and Kate. The engine trace explains each change.
+Shay confirms a separate €2,500 moving commitment: €350 remains, the investment candidate is suppressed, and the interface prioritises the moving reserve. After acknowledging the reserve, she can check existing coverage. “Already insured elsewhere” resolves that prompt in both home and Kate. The engine trace explains each change.
 
 An alternate reset path confirms a long-term goal and permits a €1,500 investment simulation under explicit demo assumptions. No money moves.
 
@@ -58,7 +58,7 @@ Required: deterministic rules, synthetic behaviour signal, editable context, one
 
 Excluded: real data, payments, trading, real authentication, a production suitability assessment, persistent memory, external channel delivery, complex ML and infrastructure. No sensitive life-event inference from merchant names or private communications.
 
-Status: Moving, Saving, recognition and constrained explanation services are implemented; a frontend scaffold and fixture/preview journeys have landed. Profile interpretation and ranking are the next P0. Full service integration and end-to-end verification remain pending. README is the canonical product description; PLAN contains the implementation contract.
+Status: Moving, Saving and local Profile services are connected in the UI. Profile supports keyword suggestions, explicit confirmation, correction and subscription relevance filtering. Recognition and constrained explanations exist separately; their UI integration, live bio interpretation and cross-scenario ranking remain deferred. README is the canonical product description; PLAN contains the implementation contract.
 
 ## Purchase and location recognition: approach selection
 
@@ -83,4 +83,4 @@ Desired proof: show why the question appeared, confirm the move and continue int
 
 Source boundary: KBC Mobile's developer-reported [privacy disclosure](https://apps.apple.com/be/app/kbc-mobile/id458066754) lists purchase history and location for app functionality; the [Kate FAQ](https://www.kbc.be/retail/en/products/payments/self-banking/on-your-smartphone/mobile/kbc-mobile-faqs/communicatie-contact-acties.html) describes optional proactive services. These do not establish a live integration or permission for this proposed purpose. API access, field availability and production use conditions remain unknown.
 
-Implementation status: recognition is delivered separately in `lib/recognition-types.ts` and `lib/recognition.ts`, preserving Moving v1. Profile-driven interpretation and ranking still need their own coordinated contract. README and PLAN record the current priority.
+Implementation status: recognition is delivered separately in `lib/recognition-types.ts` and `lib/recognition.ts`, preserving Moving v1. Profile uses the separate `profile-1.0` contract with a local keyword fallback and confirmed subscription relevance filtering; cross-scenario ranking remains deferred. README and PLAN record the current priority.

@@ -153,11 +153,15 @@ export function createSavingService(seed: SavingSeed = getSavingDemoSeed()): Sav
           if (!next.intentions.some(item => item.merchantId === event.merchantId)) return error('ACTION_NOT_AVAILABLE', 'No matching saving intention.');
           next.intentions = next.intentions.filter(item => item.merchantId !== event.merchantId); nextQuiet = true; break;
         case 'UPDATE_GOAL':
+          // A goal edit cannot mark itself complete: saved progress changes only through contributions.
+          if (event.targetCents <= next.goal.savedCents) return error('INVALID_EVENT', 'The target must be above the amount already saved.');
           next.goal = { ...next.goal, title: event.title.trim(), targetCents: event.targetCents, deadline: event.deadline,
             monthlyContributionCents: event.monthlyContributionCents, firstContributionDate: event.firstContributionDate };
           break;
         case 'RECORD_CONTRIBUTION':
           if (next.contributions.some(item => item.id === event.contributionId)) return error('INVALID_EVENT', 'This contribution was already recorded.');
+          // Self-recorded demo ledger entry: never more than the remaining gap, so progress cannot be inflated past the goal.
+          if (event.amountCents > Math.max(0, next.goal.targetCents - next.goal.savedCents)) return error('INVALID_EVENT', 'A contribution cannot exceed the remaining gap.');
           if (!Number.isSafeInteger(next.goal.savedCents + event.amountCents)) return error('INVALID_EVENT', 'Contribution exceeds supported precision.');
           next.contributions.push({ id: event.contributionId, amountCents: event.amountCents, recordedAt: next.asOf });
           next.goal.savedCents += event.amountCents;

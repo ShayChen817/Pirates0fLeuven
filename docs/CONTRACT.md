@@ -1,6 +1,6 @@
 # Shared frontend / engine contract — v1.0
 
-The canonical Moving types are in [`lib/types.ts`](../lib/types.ts) and examples in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). The implementation is `createMomentsService()` in [`lib/service.ts`](../lib/service.ts). UI integration is owned by Opus. See [BACKEND.md](BACKEND.md) for usage and checks.
+The canonical Moving types are in [`lib/types.ts`](../lib/types.ts) and examples in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). The implementation is `createMomentsService()` in [`lib/service.ts`](../lib/service.ts). UI integration is now owned by Codex following the user-authorised handover. See [BACKEND.md](BACKEND.md) for usage and checks.
 
 Saving is a separately versioned `saving-1.0` contract in [`lib/saving-types.ts`](../lib/saving-types.ts), implemented by `createSavingService()` in [`lib/saving.ts`](../lib/saving.ts), with [`data/saving-fixtures.ts`](../data/saving-fixtures.ts). The existing v1 unions are unchanged; frontends must use the correct service and snapshot type for each scenario.
 
@@ -51,7 +51,7 @@ Treat returned snapshots as immutable. Replace the provider state with the retur
 - Fixed clock: `2026-10-01T12:00:00.000Z`. The moving fixture is due `2026-11-01`. Evaluation uses the fixture clock, not the machine's date.
 - `revision` is the session mutation counter: every successful event increments it once, including reset. Failed events change nothing. `context.version` increments only when facts or proactive preferences change; acknowledging or dismissing an action changes only revision.
 - `RESET_DEMO` restores initial data but advances revision and context version from their current values; it must not recreate an old revision. A full page reload creates a new demo session. Golden fixture revisions describe independent fresh-session paths.
-- IDs are stable: customer `lotte`; actions `lotte:<ruleId>`. A pending action must reference the current context version. Historical resolved actions may retain the version at which they were resolved.
+- IDs are stable: customer `shay`; actions `shay:<ruleId>`. A pending action must reference the current context version. Historical resolved actions may retain the version at which they were resolved.
 - `primaryActionId` references a pending member of `actions`, or is `null`. Render an ordinary home screen when it is null. Never show an error simply because Kate stays quiet.
 - Trace has one row for each of the four rule IDs. Every referenced evidence ID must exist in `context.signals`. Do not calculate eligibility from display text.
 - `commitments` represent additional expenses, not amounts already in `expensesCents`. Upsert by ID. Identical repeats do not duplicate money; conflicting duplicate IDs in one input are invalid.
@@ -97,11 +97,11 @@ Import `demoFixtures`, `getDemoSnapshot` and `demoTransitions`. Never mutate exp
 
 | Fixture ID | Revision / context version | Available cash | Primary action | Expected view |
 |---|---|---:|---|---|
-| `initial` | 1 / 1 | €2,850 | `lotte:clarify-intent` | Ask about upcoming plans; investment deferred. |
-| `moving` | 2 / 2 | €350 | `lotte:moving-reserve` | Review €2,500 moving reserve; investment suppressed. |
-| `coverage-check` | 3 / 2 | €350 | `lotte:coverage-check` | Reserve acknowledged; ask about existing cover. |
+| `initial` | 1 / 1 | €2,850 | `shay:clarify-intent` | Ask about upcoming plans; investment deferred. |
+| `moving` | 2 / 2 | €350 | `shay:moving-reserve` | Review €2,500 moving reserve; investment suppressed. |
+| `coverage-check` | 3 / 2 | €350 | `shay:coverage-check` | Reserve acknowledged; ask about existing cover. |
 | `covered` | 4 / 3 | €350 | none | External coverage answer retained; prompt closed on both views. |
-| `investing` | 2 / 2 | €2,850 | `lotte:explore-investment` | Alternate seven-year goal; €1,500 adjustable simulation. |
+| `investing` | 2 / 2 | €2,850 | `shay:explore-investment` | Alternate seven-year goal; €1,500 adjustable simulation. |
 | `invested` | 3 / 2 | €2,850 | none | Simulation complete; cash unchanged. Fixture ID is not evidence of a real investment. |
 
 Main path: `initial → moving → coverage-check → covered`.
@@ -131,3 +131,33 @@ Expected success snapshot: `getDemoSnapshot('moving')`. An old request with `exp
 Frontend can build every listed state directly from fixtures. Core logic must implement `MomentsService`, reproduce the five exported transitions and satisfy the edge cases in PLAN. Compare business state, counters, primary IDs, amounts, status and reason codes; wording can be refined together without changing semantics.
 
 Fixtures validate the agreement, not engine correctness. Pause, clear, dismissal, stale data and invalid-input scenarios still need implementation and verification before claiming the app works.
+
+
+## Separate Profile contract: `profile-1.0`
+
+Canonical types and implementation: `lib/profile.ts`. This addition does not widen Moving, Saving or recognition unions.
+
+| Event | Payload | Effect |
+|---|---|---|
+| `SAVE_BIO` | `bio: string` (max 800 characters) | Trim bio, propose allowlisted keyword tags, clear old confirmations; review required |
+| `CONFIRM_PREFERENCES` | `preferences: Preference[]` (0–4 unique allowed tags) | Store explicit selections/corrections; no financial mutation |
+| `CLEAR_PROFILE` | None | Clear bio, proposals and confirmations |
+
+Every dispatch requires `expectedRevision`. Success increments the revision and returns a copied snapshot. `INVALID_EVENT` and `REVISION_CONFLICT` return authoritative state without mutation. One shared Profile session is read by Home, Kate and Profile. Domain sessions keep independent revisions and balances. Reset of either scenario also clears the shared Profile; ordinary scenario switching preserves it.
+
+`source: local-keywords` identifies proposed interpretation; `source: customer` identifies manual confirmation. Unknown bio text can yield an empty proposal. Confirmation is required before a preference influences subscription discovery. This release does not implement cross-domain ranking, a live LLM, external data ingestion or persisted customer records.
+
+
+## Separate Saving insights contract: `saving-insights-1.0`
+
+Canonical types: `lib/saving-insights-types.ts`. Implementation: `createSavingInsightsService()` in `lib/saving-insights.ts`. Seed: `data/saving-insights-fixtures.ts`. This educational context is not a cash ledger or an investment allocation. Existing Moving/Saving/Profile unions and revisions are unchanged.
+
+The snapshot includes independent `revision`, spending period/categories/total, emergency amount/target/gap/status, `longTermRequested`, and a nullable `illustration`. The illustration is returned only after the fixture buffer reaches its target and the customer requests it. Values use EUR integer cents.
+
+| Event | Effect |
+|---|---|
+| `SET_DEMO_FUNDED { funded: boolean }` | Presenter-only fixture switch between seeded buffer and target; invalidates previous example request |
+| `REQUEST_LONG_TERM_EXAMPLE` | Rejected below target; otherwise records explicit request and returns the hypothetical calculation |
+| `RESET_DEMO` | Restores original buffer and spending; clears the request |
+
+Dispatch requires `expectedRevision`. Accepted events increment revisions. Unknown fields/events return `INVALID_EVENT`, stale revisions return `REVISION_CONFLICT`, and a gated request returns `ACTION_NOT_AVAILABLE`; all errors include a copied current snapshot without mutation. The service is not connected to any bank API. The shell resets this session alongside Saving. Saving pause/snooze suppresses the optional UI entry without changing historical observations.

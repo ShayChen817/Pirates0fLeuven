@@ -66,7 +66,10 @@ function selectApproved(envelope: ExplanationEnvelope, response: unknown): strin
     envelope.sentences.some(sentence => sentence.required && !ids.includes(sentence.id))) return null;
   return ids.map(id => envelope.sentences.find(sentence => sentence.id === id)!.text).join(' ');
 }
-/** No provider = no network. Optional provider is injected by a server-side integration. */
+/**
+ * No provider = no network and template text. None is configured in this repository. A provider may only
+ * return approved sentence IDs; its output is validated here and never rendered directly.
+ */
 export async function explain(envelope: ExplanationEnvelope, provider?: ExplanationProvider, timeoutMs = 800): Promise<ExplanationResult> {
   const approved = structuredClone(envelope);
   const fallback = { text: approved.sentences.map(sentence => sentence.text).join(' '), source: 'template' as const,

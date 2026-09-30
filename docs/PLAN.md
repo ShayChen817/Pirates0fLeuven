@@ -1,6 +1,6 @@
 # Plan — Smart Stock and the Moments Engine
 
-Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Opus owns frontend integration. README defines the product direction.
+Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Codex now owns frontend integration following the explicit handover after Opus stage 5. README defines the product direction.
 
 Principle: **Rules decide. AI explains. Customers stay in control.**
 
@@ -14,7 +14,7 @@ P1: alternate eligible investment simulation and incomplete-data scenarios. P2: 
 
 | Time | Action | Evidence |
 |---|---|---|
-| 0:00–0:20 | Introduce Lotte and show the initial card. | €7,850 cash − €4,000 reserve − €1,000 expenses = €2,850. |
+| 0:00–0:20 | Introduce Shay and show the initial card. | €7,850 cash − €4,000 reserve − €1,000 expenses = €2,850. |
 | 0:20–0:45 | Open the evidence view. | Observed amounts, three months of illustrative behaviour and unknown intent are distinct. |
 | 0:45–1:20 | Confirm a €2,500 moving commitment due next month. | €350 remains; investment is suppressed and a reserve review replaces the question. |
 | 1:20–1:50 | Acknowledge the simulated reserve, then answer the coverage check. | “Already insured elsewhere” closes the shared prompt. No real transfer or insurance action occurs. |
@@ -99,11 +99,11 @@ These are acceptance criteria, not completed test results. Record actual evidenc
 | Workstream | Owner | Files | Ordered work |
 |---|---|---|---|
 | Core engine | Codex | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
-| Frontend | Opus | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
+| Frontend | Codex (after Opus stage 5) | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
 | Design | TBD | `docs/DESIGN.md`, theme | reuse existing research; readable evidence and primary action |
 | Demo and submission | TBD | demo assets, README | rehearse continuous story → audit/remediation → screenshots → video and links |
 
-Frontend is running in parallel under Opus. Codex owns backend files and README/context documents; Opus owns app/components and frontend configuration. Use docs/BACKEND.md for current entry points. Do not change one another's files.
+Frontend ownership has transferred to Codex at the user's request. Codex owns the current integration, frontend refinement and backend/documentation changes. Earlier Opus stage 4/5 work is retained. Avoid concurrent edits; use docs/BACKEND.md for current entry points.
 
 - T+1h: continuous synthetic journey clickable, with real state transitions.
 - T+2h: service reproduces the five golden transitions; rules, corrections and shared state integrated; acceptance scenarios checked.
@@ -143,3 +143,34 @@ Accepted direction: the editable Profile is the shared personalisation context; 
 Next backend slice: a separate versioned Profile contract, session service, bounded bio interpretation prompt with no-key fallback, customer confirmation/correction of proposed tags, invalidation on bio edits/deletion, and deterministic matching against eligible domain candidates. Publish types and fixtures with CONTRACT before frontend consumes them. Preserve existing Moving, Saving and recognition unions and financial calculations. No bio-derived risk suitability or automatic money actions.
 
 Frontend: connect delivered services, prepare the Profile edit/confirmation flow, and label any temporary profile-only mock honestly. Opus retains app/component ownership. Completed stages must be pushed. The new frontend scaffold and fixture/preview journeys on main are preserved by merging main into the PR branch; this documentation change does not claim app build or browser verification.
+
+## Shay identity and frontend handover
+
+The user has transferred frontend integration and design ownership to Codex after Opus stage 5. Rename the synthetic customer and stable demo action prefix to `shay` consistently in fixtures, existing checks, UI and documentation. Event shapes and financial values are unchanged. Old in-memory demo sessions should be reloaded. Next stages: Profile service and frontend connection, then responsive layout, visual hierarchy and interaction refinement.
+
+
+## Profile contract and interaction refinement — current delivery
+
+Shared interface addition: `lib/profile.ts` exports `profile-1.0`, with independent revisions and `SAVE_BIO`, `CONFIRM_PREFERENCES`, `CLEAR_PROFILE`. Existing Moving and Saving event unions are unchanged. ProfileProvider owns one session alongside the two domain providers. Local keyword suggestions require confirmation; editing the bio clears previous confirmed preferences. There is no live interpreter or model call. Only optional Saving discovery is filtered by confirmed subscription preference; existing plans and Moving financial steps remain available.
+
+Frontend: Profile now has a short introduction and three grouped settings. Bio, preference, goal and evidence editing use sheets. Home calculation details and the judge trace are collapsed by default. Warm neutral surfaces, muted blue accents and a fitted CSS phone frame replace the previous dense layout.
+
+Interaction fix: retain tab scroll containers instead of keying/remounting them on navigation; remove title-keyed Kate card entrances; keep device scale separate from animation transforms. A service response updates the existing content. Sheet focus is trapped and restored with `preventScroll`; rejected confirmations keep the editor open. Only local amount, progress, control and sheet feedback animates.
+
+Reset clears the active domain session and the shared Profile. Refreshing the document resets all in-memory services. Cross-scenario ranking, a live bio model, persistent storage, recognition UI and voice remain deferred. Verification is recorded in FRONTEND.md; no automated test suite is added in this stage.
+
+
+## Kate header and brighter palette
+
+User feedback: the Kate header had an abrupt dark band under the light status bar and too much empty space; the overall palette looked grey. Updated Kate to a continuous light header, removed the empty Today row and replaced the mechanical input hint with customer-facing copy. Brightened shared canvas, blue accents, primary buttons, avatars and navigation highlights. No contracts, state transitions or screen-mount behaviour changed.
+
+
+## PR #2 — coordinated front/back integration
+
+PR head `810c711` was based on frontend stage 4 and conflicted with the current Home/Card implementation. Integrate its spending donut, buffer overview, merchant labels and two-step saving confirmation into the current phone, Profile gate, light Kate header and stable tab containers. Keep the Every day motion and new blue/white tokens.
+
+Shared interface addition: independent `saving-insights-1.0` (`lib/saving-insights-types.ts`, `lib/saving-insights.ts`), plus `data/saving-insights-fixtures.ts`. A dedicated provider shares this session between Home and the presenter panel. Existing Moving and Saving contracts are not widened. The service owns totals, hypothetical end-of-month contribution calculations, buffer gating and explicit example requests; components render returned values.
+
+Financial boundaries: €5,000 is a demo target, not a recommended universal buffer or proof of suitability. Replace unsourced named-index averages with explicit −4%/0%/+4% assumptions. The educational €100/month budget is independent of Japan and subscription intentions. Remove the unsupported KBC liability claim. Fictional subscription prices use familiar merchant labels, while stable evidence IDs remain stream-a/b/c. Historical spending does not shrink when a saving intention is added.
+
+Presenter control lives outside the phone under Behind the experience. Buffer changes and Reset invalidate previous long-term requests. Below target, no projection is returned. Saving pause/snooze also hides the optional example entry. Build and browser observations are recorded in FRONTEND.md; no automated tests added or run in this integration stage.

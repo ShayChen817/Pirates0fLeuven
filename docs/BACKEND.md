@@ -1,6 +1,6 @@
 # Backend integration — Moving and Saving
 
-Codex owns the decision services, runtime input validation, fixtures and explanation prompts. Opus owns the Next.js UI, shared React provider, framework configuration and package manifest. Backend modules have no runtime package dependencies, database or API-key requirement.
+Codex owns the decision services, runtime input validation, fixtures and explanation prompts. After Opus stage 5, the user transferred frontend integration and refinement to Codex. Backend modules have no runtime package dependencies, database or API-key requirement.
 
 ## Start here: two isolated services
 
@@ -32,7 +32,7 @@ const result = await moving.dispatch({
 });
 ```
 
-Cash changes from €2,850 potentially available to €350. Reserve acknowledgement preserves the commitment. External coverage is explicitly customer-reported. Simulation confirmation never changes balances. Invalid payloads, stale revisions, missing/wrong actions and ineligible amounts are rejected without mutation. Reset advances the revision rather than reusing old versions.
+Cash changes from €2,850 potentially available to €350. Reserve acknowledgement preserves the commitment. External coverage is explicitly customer-reported and can only be reported after a confirmed move whose reserve review is complete (it stays editable afterwards). Simulation confirmation requires at least €100 and never changes balances. Invalid payloads, stale revisions, missing/wrong actions and ineligible amounts are rejected without mutation. Reset advances the revision rather than reusing old versions.
 
 ## Saving events
 
@@ -43,8 +43,8 @@ The default seed is the Japan example from README: €650 saved towards €2,000
 | `REVIEW_SUBSCRIPTION` | `merchantId`, `decision: 'unused' \| 'keep'` | Records customer intent; evidence alone never marks a subscription unused. Keeping removes any associated intention. |
 | `ADD_SAVING_INTENTION` | `merchantId` | Requires the current saving-intention action and an unused answer. Changes planned contributions only. |
 | `REMOVE_SAVING_INTENTION` | `merchantId` | Removes the future intention without changing saved funds. |
-| `UPDATE_GOAL` | `title`, `targetCents`, `deadline`, `monthlyContributionCents`, `firstContributionDate` | Recalculates the projection; saved amount is not editable through this event. |
-| `RECORD_CONTRIBUTION` | `contributionId`, `amountCents` | Records a separate synthetic contribution. Duplicate IDs are rejected. This is a demo ledger entry, not a bank transfer. |
+| `UPDATE_GOAL` | `title`, `targetCents`, `deadline`, `monthlyContributionCents`, `firstContributionDate` | Recalculates the projection; saved amount is not editable through this event. The target must stay above the saved amount. |
+| `RECORD_CONTRIBUTION` | `contributionId`, `amountCents` | Records a separate synthetic contribution. Duplicate IDs are rejected and the amount cannot exceed the remaining gap. This is a demo ledger entry, not a bank transfer. |
 | `SNOOZE_ADVICE` | none | Suppresses advice for 30 days relative to the fixed demo clock. |
 | `SET_PROACTIVE` | `enabled` | Pauses/resumes advice while preserving customer facts and resolved choices. |
 | `RESET_DEMO` | none | Restores the seed and increments revision. |
@@ -89,10 +89,37 @@ See `prompts/kate-explanation.ts` and `prompts/README.md`. Raw merchant labels, 
 node scripts/backend-check.mjs
 ```
 
-Requires Node.js 20+ and npm/npx. It uses pinned TypeScript and tsx development tools via the npm cache, so the first run needs network access. It does not change the frontend package manifest. Runtime services work without those tools once bundled by Next.js.
+Requires Node.js 20+ and `npm install` first. It runs the pinned `typescript` and `tsx` devDependencies from `node_modules` directly with Node (no shell, no runtime downloads). Runtime services need neither tool once bundled by Next.js. See [SECURITY.md](../SECURITY.md) for the threat model and business-logic rules.
 
 The checks cover golden transitions, cents arithmetic, concurrency/revisions, cloning, stale data, runtime payload validation, pause/reset/clear, meaningful goal projections and subscription evidence. Browser and Next.js build verification remain the frontend integration stage.
 
 ## Deployment boundary
 
 This is the agreed in-process synthetic service boundary, not a standalone HTTP banking server. The same logic can be wrapped in Next.js server routes when needed, but real deployments require authentication, session isolation, persistent transactional state and appropriate data access. Do not expose a process-global service as a multi-user API.
+
+
+## Profile service (`profile-1.0`)
+
+`createProfileService()` in `lib/profile.ts` is a separate in-process session. Its snapshot contains `revision`, `displayName`, `bio`, `proposed`, `confirmed`, `status` and `source`. ProfileProvider uses the same serialized dispatch hook as Moving/Saving. No HTTP or database is introduced.
+
+```ts
+const profile = createProfileService();
+const initial = await profile.getSnapshot();
+const review = await profile.dispatch({ expectedRevision: initial.revision,
+  event: { type: 'SAVE_BIO', bio: 'Help me review subscriptions for my Japan goal.' } });
+const confirmed = await profile.dispatch({ expectedRevision: review.snapshot.revision,
+  event: { type: 'CONFIRM_PREFERENCES', preferences: ['subscriptions', 'saving'] } });
+```
+
+The parser is local regex matching, not an LLM. Allowed tags: `subscriptions`, `coffee`, `moving`, `saving`. Saving a bio (max 800 characters) invalidates old confirmed tags. Manual confirmation can correct or remove any proposal, including confirming an empty list. `CLEAR_PROFILE` empties the bio and both tag lists. Accepted events advance the revision; invalid events and revision conflicts return the current snapshot without mutation. Unknown request/event fields and duplicate or unknown preference tags are rejected.
+
+`subscriptionRelevance(snapshot)` returns `setup`, `review`, `matched` or `unmatched`. The UI uses it to filter optional subscription discovery only. It neither changes financial eligibility nor removes existing saving intentions or Moving commitments. Coffee has no merchant-alternative dataset. Cross-scenario ranking and model prompting are deferred; no bio is sent to the explanation service.
+
+
+## Saving insights and educational projection
+
+Use `createSavingInsightsService()` separately from `createSavingService()`. It owns the seeded spending total and buffer fixture, and returns its projection only after the buffer gate and explicit request. See CONTRACT for `saving-insights-1.0`. Snapshot copies, revision conflicts and exact-field event validation follow the other services.
+
+`projectMonthlyIllustration(monthlyCents, annualRatePercent, years)` converts an annual effective rate to a monthly rate and computes end-of-month contributions. It accepts nonnegative safe cents, integer horizons from 1–100 years and finite rates above −100% through 100%; unsupported or overflowing results throw. The UI never calculates returns. The shipped example uses €100/month over 10 years at −4%, 0% and +4%, with no fees, tax, inflation or volatility. These are assumptions, not historical returns. Nothing is allocated from Japan, the emergency buffer or Moving.
+
+Subscription IDs remain `stream-a/b/c`, but presentation labels are Netflix, Amazon Prime and Disney+. Their charges remain synthetic. The overview's €38 subscription category is derived from September purchases in the same Saving seed, while other categories are explicit presentation fixtures. The resulting €635 covers selected categories only.
