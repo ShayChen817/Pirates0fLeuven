@@ -34,7 +34,7 @@ Sponsor objective: demonstrate a reusable approach across products, services and
 
 Chosen: a Moments Engine with customer-correctable context and coordinated actions. It directly demonstrates understanding and adaptation while remaining buildable in one app.
 
-Retain investment exploration as the entry use case and an alternate demo path. Incorporate reminder suppression into the shared engine.
+Use the Moving Life Mission as the primary story, with Tell Once and reminder suppression inside the shared journey. Retain investment exploration as an alternate path when a long-term goal is confirmed.
 
 Deferred: a complete moving concierge, additional product integrations and production channel delivery. They expand scope without being needed to prove the mechanism.
 
@@ -59,3 +59,28 @@ Required: deterministic rules, synthetic behaviour signal, editable context, one
 Excluded: real data, payments, trading, real authentication, a production suitability assessment, persistent memory, external channel delivery, complex ML and infrastructure. No sensitive life-event inference from merchant names or private communications.
 
 Status: concept, plan, shared TypeScript interfaces and six synthetic snapshots are available. The application, decision service and end-to-end verification remain pending. README is the canonical product description; PLAN contains the implementation contract.
+
+## Purchase and location recognition: approach selection
+
+Using the repository's challenge-analysis and brainstorming workflows, the proposed extension targets the moment before a customer explicitly opens a mission. Pain: the customer has started preparing for a life change but still has to discover and coordinate the relevant services themselves.
+
+We compared four candidate journeys. Scores are team design estimates, not research results: 1–5, with 5 best. Dependency score 5 means few dependencies. All demos assume synthetic inputs.
+
+| Approach and three-step demo | Fit | Value | Differentiation | Buildability | Clarity | Dependencies |
+|---|---:|---:|---:|---:|---:|---:|
+| Moving: related purchase events → confirm possible move → shared reserve/coverage plan | 5 | 4 | 4 | 5 | 5 | 5 |
+| Travel: travel purchase → confirm trip → review budget and existing cover | 4 | 4 | 3 | 4 | 5 | 4 |
+| Mobility: changing transport spending + optional place context → confirm commute → compare next steps | 4 | 3 | 4 | 3 | 3 | 3 |
+| Cash planning: recurring income/spending → confirm financial goal → reserve or investment simulation | 4 | 4 | 2 | 5 | 4 | 5 |
+
+Chosen: Moving, because it extends the existing fixtures and makes a customer correction visibly change the experience. Demonstrate an explainable purchase timeline; optional coarse location can help formulate a question but is not required. A merchant location and device location are distinct evidence sources.
+
+Fallback: the existing explicit moving confirmation and cash/coverage journey. Defer other mission implementations and live purchase/location ingestion. Reject automatic mission activation from location alone, item-level purchase claims from ordinary payment records, and sensitive life-event inference.
+
+Illustrative recognition policy: two distinct relevant purchase events within 14 days produce a possible mission, then ask the customer. A rejection or snooze suppresses that evidence bundle for 30 days. Optional device city context expires after 24 hours. These are proposed demo assumptions, not KBC policies or proven prediction thresholds.
+
+Desired proof: show why the question appeared, confirm the move and continue into the existing €2,500 commitment flow; show that “Just shopping” creates no mission; show that disabling location still permits direct confirmation. Historical purchases are already reflected in the balance and are not deducted again.
+
+Source boundary: KBC Mobile's developer-reported [privacy disclosure](https://apps.apple.com/be/app/kbc-mobile/id458066754) lists purchase history and location for app functionality; the [Kate FAQ](https://www.kbc.be/retail/en/products/payments/self-banking/on-your-smartphone/mobile/kbc-mobile-faqs/communicatie-contact-acties.html) describes optional proactive services. These do not establish a live integration or permission for this proposed purpose. API access, field availability and production use conditions remain unknown.
+
+Implementation status: README proposal only. The v1.0 shared types and six fixtures do not yet represent purchase timelines, source preferences or mission-hypothesis rejection/snooze. Update CONTRACT and PLAN together before implementing this extension.

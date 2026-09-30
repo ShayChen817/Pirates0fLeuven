@@ -6,6 +6,8 @@ Smart Stock helps customers organise their banking around what they are trying t
 
 The **Moments Engine** supplies the context, rules and next actions behind each mission. Smart Stock's original investment exploration becomes one possible action when it fits the customer's goal. **Tell Once** becomes a reusable step within the Moving mission: confirm relevant information once and reuse it throughout the journey.
 
+The next step in that vision is **understanding patterns across purchases, places and plans**. With appropriate data access and customer controls, Kate could connect recent spending with relevant location context to suggest a useful mission before the customer searches for help. The customer can see the evidence and correct the interpretation.
+
 **Our vision:** KBC, Kate and the customer's adviser work from the same evolving mission plan, helping the customer complete life goals with less repeated explanation and administration. The prototype focuses on the app and Kate; adviser integration is a future extension.
 
 **Our customer promise:** explain your situation once, correct it easily, and receive help that changes with your life. A decision to keep money available is a successful outcome too.
@@ -62,6 +64,8 @@ We propose combining financial facts, behavioural patterns and information the c
 
 - **Financial situation:** accessible balances, known upcoming expenses, emergency reserves and existing commitments.
 - **Behaviour over time:** recurring income and essential-spending patterns, using three months of synthetic summaries in the MVP.
+- **Purchase history:** transaction amount, date, merchant/category and recurring payments where available, to identify a change from the customer's usual activity. A payment record does not necessarily reveal individual purchased items.
+- **Location context:** a customer-provided destination, available merchant location or optional city-level device context, with their origins kept distinct. A merchant's address is not proof of the customer's physical location.
 - **Possible mission signals:** an explicit moving plan, address-change event or a clearly labelled synthetic moving-related transaction can prompt “Are you moving?” before activating a mission. Transaction-triggered mission detection is a planned extension; the current fixtures begin with a direct clarification.
 - **Intent and life context:** a stated goal, its amount and deadline, or a confirmed plan such as moving home.
 - **Feedback:** corrected assumptions, reported external coverage, dismissed actions and paused suggestions.
@@ -70,17 +74,52 @@ Each signal has a source, observation time and validity period. Observed facts, 
 
 **Planned proof:** an evidence panel shows the inputs behind Lotte's €2,850 potentially available cash and identifies the missing information about her plans. The fixtures already include these inputs; evaluation and the panel remain to be built.
 
+### Purchase history and location: turning signals into a useful question
+
+**What is grounded in existing information:** KBC Mobile's developer-reported [App Store privacy disclosure](https://apps.apple.com/be/app/kbc-mobile/id458066754) lists purchase history and precise/coarse location under app functionality. This describes possible app data handling, not a public API or confirmation that Kate currently combines those fields to detect life events. KBC's [Kate FAQ](https://www.kbc.be/retail/en/products/payments/self-banking/on-your-smartphone/mobile/kbc-mobile-faqs/communicatie-contact-acties.html) describes optional proactive services and directs customers to its data protection statement.
+
+**Our proposal:** use permitted, relevant inputs to build a small evidence timeline, suggest a possible mission and ask one useful confirmation question. This project has no access to real KBC purchase histories or device locations; all proposed examples below are synthetic.
+
+| Signal source | What could help Kate understand | Example next step | Important interpretation limit |
+|---|---|---|---|
+| Recent transaction categories and merchant descriptions | Several related purchases may indicate preparation for a change. | Furniture and moving-service payments prompt a possible Moving mission. | A single furniture purchase could be a gift or routine replacement. |
+| Recurring payments and changes over time | A new recurring obligation may affect future cash needs. | Ask whether a new rent or utility payment belongs in the moving budget. | A new payee alone does not prove a move or identify a household situation. |
+| Available merchant city | Geographic context for a payment. | Use a known city as supporting context for a confirmed destination. | Online merchants and payment processors may be registered elsewhere. |
+| Optional coarse device location | A recent, purpose-limited city context when the customer enables it. | Refine the destination question or, after confirmation, show relevant local support. | Being in Ghent does not mean living there; it could be a visit or commute. |
+| In-app goal selection and explicit answers | A clear indication of what the customer wants. | Activate the Moving mission after confirmation; stop suggesting it after a correction. | Browsing a page is weaker evidence than explicitly selecting a goal. |
+
+#### Concrete demo extension: “Are you preparing a move?”
+
+1. **Show the timeline:** synthetic furniture and moving-service payments appear within a 14-day window. Optional city context indicates Ghent. Each item is labelled with its source and date.
+2. **Form a hypothesis:** two distinct relevant transaction events qualify for a possible Moving mission under an explicit demo rule. Optional location can enrich the question but cannot trigger the mission by itself. This is a heuristic, not a trained prediction model.
+3. **Ask with a reason:** “You have recent furniture and moving-service payments. Are you preparing a move? I can help you plan the remaining costs.” Replies: **Yes, I'm moving** · **Just shopping** · **Not now**. A **Why this suggestion?** panel shows only the inputs actually used.
+4. **Confirm the missing facts:** if Lotte confirms, ask for the destination, date and remaining expected costs that are not already known. She confirms an additional €2,500. Then use the existing Moving journey: €2,850 potentially available becomes €350, and the home screen becomes **Your move**.
+5. **Respect corrections:** **Just shopping** rejects the moving hypothesis without changing cash or creating a mission. **Not now** defers it. The proposed demo suppresses the same evidence bundle for 30 days; customer-initiated missions remain available.
+
+The illustrative historical payments are already reflected in the €7,850 balance. They provide context and must not be deducted a second time. Only the confirmed additional €2,500 enters the future commitment calculation.
+
+#### Personalisation controls that support this experience
+
+The proposed signal layer checks allowed purpose, customer preferences and freshness before using an input. Optional device location is off by default for this use case, reduced to city level and expires after 24 hours in the demo policy. Those are design choices, not claims about KBC's current settings or retention rules. The mission still works through purchase signals or direct customer input when location is unavailable.
+
+Customers can inspect **What Kate used**, disable optional location use, correct the suggested mission and pause proactive suggestions. Disabling a source removes derived hypotheses that depend on it; a separately confirmed customer goal can remain. Do not infer pregnancy, health, religion or other sensitive characteristics from shopping or location history. The baby mission remains customer-initiated.
+
+**Build boundary:** this is a proposed extension before the current `initial` fixture. New purchase events, source preferences, mission hypotheses and rejection/snooze state need an agreed contract update. The six current snapshots do not contain those features, and this README does not claim they are implemented.
+
 ### 2. How can customers be recognized based on their situation, behavior, and intent?
 
-We represent each customer's current context through three complementary views:
+We represent each customer's current context through complementary views:
 
 | View | What we understand | Example |
 |---|---|---|
 | **Situation** | Current resources, constraints and known commitments. | Lotte has €7,850, a €4,000 reserve and €1,000 of upcoming expenses. |
 | **Behaviour** | Patterns that help identify when a question may be useful. | Three recurring income payments provide background, without guaranteeing future income. |
+| **Possible mission** | A tentative interpretation of permitted purchase and place signals. | Related moving-service and furniture payments suggest a question; a visit to Ghent alone does not establish a move. |
 | **Intent** | What the customer says they want to achieve, and when. | Lotte confirms that she needs €2,500 for a move next month. |
 
 The context changes as the customer's life changes. A current explicit correction overrides a conflicting inference. If a relevant answer is already current, the experience uses it rather than asking the customer to repeat it. “Recognized” here means understood in context; identity verification is outside the prototype.
+
+For the proposed recognition extension, a mission progresses from **possible → customer-confirmed → active → completed**, or becomes **rejected / deferred**. Hypotheses never silently become confirmed facts. Signal expiry removes unsupported hypotheses; an explicit answer supplies its own provenance.
 
 **Planned proof:** the same Lotte fixture supports a near-term Moving mission or a confirmed long-term goal. Those different intentions produce different next steps despite the same starting balance. Mission membership follows a confirmed goal and can change; it is not a permanent customer label.
 
@@ -105,6 +144,8 @@ Each action has a stable identity and a shared status. The home screen and Kate 
 Our scale vision combines reusable mission templates with measurable customer value. Each template defines required context, ordered steps, completion conditions and applicable services. The engine instantiates that template using the customer's confirmed circumstances, allowing many customers to follow the same mission structure with different amounts, deadlines and next steps.
 
 Customer events would update the relevant context and trigger applicable rules. Deterministic filtering and action coordination would run before any optional AI explanation, allowing the core experience to operate without a model call for every customer or event. New missions would reuse that pipeline while supplying their own data, rules and completion journeys. Reusable templates make expansion practical; production capacity still needs validation.
+
+For purchase-based recognition, maintain a bounded recent-event summary per customer, deduplicate events by ID and evaluate only affected mission templates when new information arrives. Recheck source permissions before use and expire optional location context. This avoids rescanning complete histories for every screen render. Event ingestion, storage and throughput remain production design work.
 
 Meaningful impact means less decision effort, fewer repeated questions and fewer irrelevant interruptions. We would measure completion time, steps, customer corrections, duplicate prompts and consistency across surfaces. Keeping money available or respecting a dismissal counts as a useful outcome. A limited pilot would establish a baseline and review errors and customer feedback before wider rollout, including customers with incomplete data or changing income.
 
@@ -237,6 +278,8 @@ flowchart TD
     G -. optional read-aloud .-> V[ElevenLabs voice guide]
 ```
 
+The proposed recognition extension precedes the shared context: **permitted purchase/location signals → source and freshness checks → recent-event summary → mission hypothesis → customer confirmation**. Raw transaction histories or location traces are not needed by the optional explanation model; it receives only the approved facts necessary for the selected action.
+
 ### Context and cash calculation
 
 ```text
@@ -299,6 +342,8 @@ If time is tight, prioritise the Moving mission's visible plan, context correcti
 | Channel consistency | Whether completion and dismissal appear on both surfaces. |
 | Repeated explanation | Whether a customer must supply the same still-current fact again in the same journey. |
 | Customer control | Whether correction, clearing context and pausing suggestions produce the expected state changes. |
+| Mission recognition quality | On labelled synthetic cases, check whether a suggested mission matches the intended scenario; separately record customer rejection and missed relevant scenarios in a future pilot. |
+| Optional-source fallback | Verify that disabling location still allows direct mission confirmation and removes unsupported location-derived hypotheses. |
 
 No user-study results, time savings or financial benefits have been measured yet. Any later comparison should state its baseline, sample and method.
 
@@ -323,6 +368,7 @@ No user-study results, time savings or financial benefits have been measured yet
 | Investment simulation and confirmation | Planned |
 | Template explanations and optional LLM integration | Planned |
 | Transaction-triggered mission suggestion | Optional extension; not in current fixtures |
+| Purchase timeline, optional location and mission confirmation controls | Proposed extension; synthetic examples documented, contract not yet extended |
 | ElevenLabs voice guidance | Optional; not integrated |
 | Shared adviser mission view and external task execution | Future vision; outside current MVP |
 | Aikido audit and before/after screenshots | Not completed |
