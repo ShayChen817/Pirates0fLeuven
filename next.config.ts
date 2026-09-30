@@ -19,6 +19,9 @@ const csp = [
 ].join('; ');
 
 const nextConfig: NextConfig = {
+  // STATIC_EXPORT=1 writes a plain static site to out/ (used for quick Vercel deploys from Windows).
+  // Headers then come from out/vercel.json instead of headers() below.
+  ...(process.env.STATIC_EXPORT === '1' ? { output: 'export' as const } : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   // Do not let `next dev` append its own block to the team's AGENTS.md.
