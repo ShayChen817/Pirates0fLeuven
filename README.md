@@ -6,6 +6,10 @@
 
 **Live demo: [life-goals-with-kate.vercel.app](https://life-goals-with-kate.vercel.app/)** · synthetic data only · fixed demo date 1 October 2026 · works on desktop (iPhone frame) and on a phone (full screen)
 
+<a href="https://life-goals-with-kate.vercel.app/"><img src="docs/assets/live-demo-qr.png" alt="QR code linking to https://life-goals-with-kate.vercel.app/" width="160"></a>
+
+*Scan to open the demo on your phone.*
+
 The **customer's editable Profile** is the core of personalisation: what they explicitly tell Kate, which goals they choose, and what they confirm or correct. Permitted spending patterns and optional location provide additional evidence. **Life Goals** are the outcomes the customer wants; **Saving** and **Moving** demonstrate how the same understanding can guide different next steps.
 
 This integrates [PR #1](https://github.com/ShayChen817/Pirates0fLeuven/pull/1), including the structured-profile and free-text-bio proposal at `0a4df0d`, with the delivered backend. Moving keeps its v1 contract; Saving and recognition have separate contracts. The Profile flow is connected through the separate `profile-1.0` service, with local keyword suggestions and explicit customer confirmation.
