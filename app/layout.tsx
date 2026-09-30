@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Albert_Sans } from 'next/font/google';
+// Self-hosted via npm so builds never depend on reaching Google Fonts.
+import '@fontsource-variable/albert-sans';
 import './globals.css';
-
-const albert = Albert_Sans({ subsets: ['latin'], variable: '--font-albert', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Life Goals with Kate — Pirates0fLeuven',
@@ -17,7 +16,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={albert.variable}>
+    <html lang="en">
       <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );

@@ -26,7 +26,7 @@
   --color-error-soft: oklch(96% 0.025 25);
   --color-ok-soft: oklch(96% 0.04 135);
 
-  --font-sans: var(--font-albert), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Albert Sans Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --radius-field: 10px;
   --radius-card: 16px;

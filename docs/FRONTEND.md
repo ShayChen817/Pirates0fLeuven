@@ -68,7 +68,7 @@ The script lives outside the repo, so it is not a project test.
 
 ## Design
 
-- **Tokens:** navy `#0d2a50` and blue `#0097db` from kbc.be; sky `#00aeef` and green `#80c342` from KBC's stylesheet. Neutrals are tinted towards the brand blue. Font: Albert Sans via `next/font` (system fallback).
+- **Tokens:** navy `#0d2a50` and blue `#0097db` from kbc.be; sky `#00aeef` and green `#80c342` from KBC's stylesheet. Neutrals are tinted towards the brand blue. Font: Albert Sans, self-hosted via `@fontsource-variable/albert-sans` so builds never need Google Fonts (a `next/font/google` build failed on a flaky network), with a system-font fallback.
 - **Principles** (from the `kbc-design` / `frontend-design` skills and impeccable.style): one primary action per screen; no nested cards or side-stripe borders; few badges.
 - **Motion:** 150 ms hover lift and 160 ms press scale; 380 ms staggered entrances; iOS-style sheets; amounts that count to their new value. All of it respects `prefers-reduced-motion`.
 
