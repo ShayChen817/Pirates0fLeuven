@@ -65,13 +65,19 @@ This matches the existing contract: *deterministic filtering and action coordina
 
 Like a profile an assistant already knows without re-asking, the customer's durable facts — goal, amount, deadline, risk profile, "I'm already insured elsewhere", "I have a car", dietary preference — are recorded once and **reused across Home and Kate** (the team's existing **Tell Once** / **What Kate knows** panel and `CustomerContext`). Kate reads these structured fields directly; they are **not** re-sent to an LLM each turn, which keeps cost near zero and keeps facts customer-correctable and auditable.
 
+## You set the goals — Kate aligns to them
+
+Suggestions are not chosen at random or pushed by the bank. The customer **explicitly sets their goals in the app** (a short onboarding, the way a banking app asks you to set one up), and can **tell Kate what they want** in their own words — e.g. *"cut my coffee spending in Leuven"* or *"I want cheaper coffee."* Those stated preferences become part of the Tell-Once bio.
+
+Kate then only surfaces a leak or swap when it **aligns with a stated goal or preference.** If the customer said they want to cut coffee spending, Kate surfaces the *coffee* pattern and a cheaper option — not an unrelated one. The customer is in the driver's seat: they name the target, and Kate guides them toward it. Every card can show *why this* — which goal/preference it matches and which transactions triggered it. This keeps the experience a **buddy helping with the customer's own aims**, never surveillance.
+
 ---
 
 ## The Saving mission (new)
 
 A customer sets a goal. Kate maintains a plan toward it and, when helpful, suggests **one** optional next step.
 
-1. **Set the goal.** "€2,000 for a trip to Japan by August." Recorded once as intent + amount + deadline.
+1. **Set the goal (explicitly, in the app).** A short onboarding asks the customer what they want: a money goal ("€2,000 for Japan by August") and, in their own words, what to help with ("cut my coffee spending in Leuven"). Recorded once as intent + amount + deadline + stated preferences, and reused everywhere.
 2. **Detect a leak (deterministic).** Over 90 days of synthetic transactions — **physical, online and subscriptions** — a rule flags a recurring charge, a duplicate/overlapping subscription, or an above-category-average spend. E.g. *"3 streaming subscriptions = €38/month"* or *"coffee at MadMum, €4.20 × ~22/month = ~€92/month."* Each flag carries its evidence (which transactions, which rule).
 3. **Suggest one swap.** Kate proposes a single, optional, respectful alternative — **cheaper, or (for an opt-in lifestyle goal) better/healthier** — with the projected impact: *"Dropping one overlapping subscription frees €13/month — your goal ~5 weeks sooner"* or *"a healthier own-brand swap here is also ~€2 cheaper."*
 4. **Customer decides.** Confirm (track it as a saving intention), Not now, or Why this? Nothing is automated; no money moves.
