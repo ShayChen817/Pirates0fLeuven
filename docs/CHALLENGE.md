@@ -1,29 +1,61 @@
 # Challenge summary — KBC track
 
-**Brief (quoted):** "Imagine that KBC could understand and know what a customer wants and needs before they even ask it."
-Three dimensions: **Understand** (situation, intent, context) · **Adapt** (how the experience changes, at which moment) · **Scale** (all products, services, channels — 2.5M customers, "not just moving homes").
-Ask: "a proof of concept with a vision. Show us the signals for the customer, show us how the experience feels like, and show us how it can scale." Theme: **Save Time and Money**. "Don't think like a bank."
+## Vision and customer promise
 
-User: a KBC Mobile customer in their late 20s–30s with a steady salary, whose savings sit on a current/savings account because investing feels complicated and scary.
-Pain: "I know I should do something with that money, but I don't know how much is safe to move, what to pick, or where to start." Money loses value to inflation and nobody tells them — an accepted, invisible frustration.
-Sponsor wants: proactive, personalised next-best-action (like the "you moved — need home insurance?" example), delivered through Kate, that clearly generalises beyond one product.
-Judging (official): 1) Creativity 2) Technical Ability 3) Fit 4) Security.
-Hard constraints: Aikido security audit required · no passwords / API keys / confidential data in uploads · submission = short project description + demo video < 3 min + public GitHub repo + Aikido screenshots · README must explain how to run and list unfinished functionality. Deadline: UNKNOWN.
-Data/APIs: none provided → JSON mock customer data (tested: n/a).
+A shared understanding of the customer turns changing life context into timely, coordinated support across KBC. Smart Stock is the first demonstration of this Moments Engine.
 
-Demo outcome: "A judge sees Kate notice that Lotte has €6,200 more than she needs, explain *why* in one sentence, offer 3 options that fit her risk profile, and let her confirm in 2 taps. Then the judge sees the same engine skip a customer with upcoming bills, and fire a different nudge (home insurance) for a customer who just moved."
+Customer promise: explain your situation once, correct it easily, and receive help that changes with your life. Keeping money available can be a successful outcome.
 
-MVP: mock customer → context engine (balance, bills, buffer, goals) → rule fires "idle cash" → Kate nudge → 3 options (Safe / Balanced / Growth) → explanation → simulated confirm.
+**Brief:** understand what customers need and respond at the right moment through a scalable personalisation approach that strengthens the customer relationship. The live briefing frames this as **Understand · Adapt · Scale** and **Save Time and Money**.
 
-Out of scope: real KBC APIs, auth, real trading/order execution, real MiFID suitability questionnaire, ML models, multi-language, native mobile app, backend database.
+User: a customer with some savings who needs to coordinate daily liquidity, upcoming life plans and longer-term goals.
+Pain: the customer must connect fragmented information, repeat their situation and judge whether a product suggestion fits their current life.
+Sponsor objective: demonstrate a reusable approach across products, services and channels, with a working example and a credible scale vision.
 
-## Assumptions we are challenging
-- "The bank waits for you to ask" → KBC comes to you at the right moment, and **stays silent** when it's the wrong moment (bills due, low buffer). Not nudging is part of the value.
-- "Investing = picking products" → the customer only answers "how much can I spare, and how much risk?" — the engine does the rest.
-- "Personalisation = AI black box" → **rules decide, AI explains, human confirms.** Every nudge shows the signals that triggered it.
+## Source facts and constraints
 
-## Risks to address in the pitch
-- Regulation: investment suggestions need a risk profile / suitability check (MiFID II). We use the customer's existing risk profile and frame options as KBC-style fund profiles, not stock tips.
-- "Smart Stock" can sound like pushing products → lead with *time saved* and *money not losing value*, and show the no-nudge case.
+- Participant guide, pages 3–4: scalable personalisation for more than 2.3 million customers; the live briefing refers to 2.5 million. Use “millions” without claiming measured production capacity.
+- Guide, pages 6–7: Aikido audit contributes 10% of assessment; submit screenshots before and after remediation.
+- Guide, pages 11–12: creativity, technical ability, fit and security; Builderbase submission with description, video under three minutes, public repository and audit screenshots. Include run instructions and unfinished functionality; build during the official time slot and preserve the final submitted version.
+- Data: synthetic fixtures only. No live KBC integration has been established.
+- Unknown: exact deadline, weights of the other criteria and any branding restrictions.
 
-Open questions: judging weights? deadline? can we use KBC brand look?
+## Answering the five questions
+
+| Question | MVP evidence |
+|---|---|
+| Signals | Accessible cash, commitments, three monthly income/spending summaries, explicit goals and customer corrections, all with provenance and freshness. |
+| Situation, behaviour, intent | Keep liquidity facts, recurring patterns and confirmed plans distinct. Behaviour may trigger clarification; it does not establish investment intent. |
+| Adaptation | A moving commitment changes the calculation, removes an investment candidate and changes the next step. |
+| Products and channels | Cash planning and coverage checks reuse context; home and Kate share the same action state. |
+| Impact at scale | Reusable evaluation and suppression logic, observable reasons, and a future pilot measuring relevance and effort. No production-scale claim. |
+
+## Chosen approach and alternatives
+
+Chosen: a Moments Engine with customer-correctable context and coordinated actions. It directly demonstrates understanding and adaptation while remaining buildable in one app.
+
+Retain investment exploration as the entry use case and an alternate demo path. Incorporate reminder suppression into the shared engine.
+
+Deferred: a complete moving concierge, additional product integrations and production channel delivery. They expand scope without being needed to prove the mechanism.
+
+Fallback if time is tight: fixed synthetic fixtures, template explanations, one continuous moving journey and a decision trace. Preserve real state transitions and shared action state; omit optional LLM, benchmark and extra investment cards.
+
+## Demo outcome
+
+A judge sees Lotte's €7,850 balance minus €4,000 reserve and €1,000 upcoming expenses, leaving €2,850 potentially available. The initial primary action asks about missing context. An investment candidate is deferred until intent and eligibility are known.
+
+Lotte confirms a separate €2,500 moving commitment: €350 remains, the investment candidate is suppressed, and the interface prioritises the moving reserve. After acknowledging the reserve, she can check existing coverage. “Already insured elsewhere” resolves that prompt in both home and Kate. The engine trace explains each change.
+
+An alternate reset path confirms a long-term goal and permits a €1,500 investment simulation under explicit demo assumptions. No money moves.
+
+## Relationship hypothesis
+
+Visible assumptions, respected corrections and fewer repeated questions should improve trust and reduce effort. These are hypotheses to measure, not results already achieved. Product conversion is not the sole success metric.
+
+## Scope
+
+Required: deterministic rules, synthetic behaviour signal, editable context, one primary action, suppression reasons, shared session state, templates and simulated confirmation.
+
+Excluded: real data, payments, trading, real authentication, a production suitability assessment, persistent memory, external channel delivery, complex ML and infrastructure. No sensitive life-event inference from merchant names or private communications.
+
+Status: concept, plan, shared TypeScript interfaces and six synthetic snapshots are available. The application, decision service and end-to-end verification remain pending. README is the canonical product description; PLAN contains the implementation contract.
