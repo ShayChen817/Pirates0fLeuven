@@ -1,16 +1,16 @@
 # Plan — Smart Stock and the Moments Engine
 
-Status: Moving v1 and separate Saving v1 services are implemented. Backend typecheck and 18 meaningful checks pass. Opus owns frontend integration. README defines the product direction.
+Status: Moving v1 and separate Saving v1 services are implemented. Latest delivered backend evidence: strict typecheck and 30 checks passed before this documentation update. Opus owns frontend integration. README defines the product direction.
 
 Principle: **Rules decide. AI explains. Customers stay in control.**
 
 ## MVP priorities
 
-P0: one synthetic customer, context correction, deterministic recalculation, priority and suppression, shared home/Kate action state, editable customer-provided context, pause control and engine trace.
+P0: Profile-led personalisation (editable bio, confirmed preferences and deterministic relevance ranking), then integrate existing domain services for one synthetic customer, context correction, deterministic recalculation, priority and suppression, shared home/Kate action state, editable customer-provided context, pause control and engine trace.
 
 P1: alternate eligible investment simulation and incomplete-data scenarios. P2: optional LLM, additional product cards and a synthetic benchmark. Build in this order.
 
-## Demo sequence (target 2 minutes 45 seconds)
+## Existing Moving fallback sequence (target 2 minutes 45 seconds)
 
 | Time | Action | Evidence |
 |---|---|---|
@@ -135,3 +135,11 @@ Kate explanation builders and the canonical prompt accept only approved sentence
 README and the Claude frontend prompt now reference the delivered Moving, Saving, recognition and explanation services. Removed obsolete instructions to build a local Saving preview or wait for service exports. Contract shapes remain unchanged in this stage. The later direction-branch profile/bio proposal (`0a4df0d`) is explicitly separated from implemented goal editing.
 
 This documentation-only stage adds no runtime changes. Stage 2 strict TypeScript and 30 passing backend checks remain the latest runtime evidence. No additional tests were run for these prose changes. Frontend start/build/browser checks await the Opus scaffold and integration; no full-stack verification is claimed. Each completed backend stage is committed and pushed to `main` as requested.
+
+## PR #1 integration — Profile priority
+
+Accepted direction: the editable Profile is the shared personalisation context; Saving and Moving are demonstrations. Bio interpretation is now next P0, superseding stage 3's treatment as deferred future work. It is still unimplemented: this PR changes documentation and ignore rules only.
+
+Next backend slice: a separate versioned Profile contract, session service, bounded bio interpretation prompt with no-key fallback, customer confirmation/correction of proposed tags, invalidation on bio edits/deletion, and deterministic matching against eligible domain candidates. Publish types and fixtures with CONTRACT before frontend consumes them. Preserve existing Moving, Saving and recognition unions and financial calculations. No bio-derived risk suitability or automatic money actions.
+
+Frontend: connect delivered services, prepare the Profile edit/confirmation flow, and label any temporary profile-only mock honestly. Opus retains app/component ownership. Completed stages must be pushed. The new frontend scaffold and fixture/preview journeys on main are preserved by merging main into the PR branch; this documentation change does not claim app build or browser verification.

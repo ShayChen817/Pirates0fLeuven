@@ -34,7 +34,7 @@ Sponsor objective: demonstrate a reusable approach across products, services and
 
 Chosen: a Moments Engine with customer-correctable context and coordinated actions. It directly demonstrates understanding and adaptation while remaining buildable in one app.
 
-Use the Moving Life Mission as the primary story, with Tell Once and reminder suppression inside the shared journey. Retain investment exploration as an alternate path when a long-term goal is confirmed.
+Use Profile → confirmed preference → relevant Saving advice as the primary target story. Moving demonstrates reuse through Tell Once and reminder suppression. Retain investment exploration as an alternate path when a long-term goal is confirmed.
 
 Deferred: a complete moving concierge, additional product integrations and production channel delivery. They expand scope without being needed to prove the mechanism.
 
@@ -58,7 +58,7 @@ Required: deterministic rules, synthetic behaviour signal, editable context, one
 
 Excluded: real data, payments, trading, real authentication, a production suitability assessment, persistent memory, external channel delivery, complex ML and infrastructure. No sensitive life-event inference from merchant names or private communications.
 
-Status: concept, plan, shared TypeScript interfaces and six synthetic snapshots are available. The application, decision service and end-to-end verification remain pending. README is the canonical product description; PLAN contains the implementation contract.
+Status: Moving, Saving, recognition and constrained explanation services are implemented; a frontend scaffold and fixture/preview journeys have landed. Profile interpretation and ranking are the next P0. Full service integration and end-to-end verification remain pending. README is the canonical product description; PLAN contains the implementation contract.
 
 ## Purchase and location recognition: approach selection
 
@@ -83,4 +83,4 @@ Desired proof: show why the question appeared, confirm the move and continue int
 
 Source boundary: KBC Mobile's developer-reported [privacy disclosure](https://apps.apple.com/be/app/kbc-mobile/id458066754) lists purchase history and location for app functionality; the [Kate FAQ](https://www.kbc.be/retail/en/products/payments/self-banking/on-your-smartphone/mobile/kbc-mobile-faqs/communicatie-contact-acties.html) describes optional proactive services. These do not establish a live integration or permission for this proposed purpose. API access, field availability and production use conditions remain unknown.
 
-Implementation status: README proposal only. The v1.0 shared types and six fixtures do not yet represent purchase timelines, source preferences or mission-hypothesis rejection/snooze. Update CONTRACT and PLAN together before implementing this extension.
+Implementation status: recognition is delivered separately in `lib/recognition-types.ts` and `lib/recognition.ts`, preserving Moving v1. Profile-driven interpretation and ranking still need their own coordinated contract. README and PLAN record the current priority.

@@ -6,7 +6,15 @@ Current integration priority: import the two real services, replace their respec
 
 Repository: https://github.com/ShayChen817/Pirates0fLeuven
 
-Direction source: the `goals-saving-direction` proposal at `bc3cf2f`, now integrated and clarified in the `main` README. Read current `main` as the product brief; do not overwrite it with the proposal branch. Goal projections, security claims and contract boundaries have been corrected during integration. Later proposal commit `0a4df0d` adds a free-text profile/bio concept. No profile service or bio extraction endpoint is shipped; treat that as a future extension, not an available integration. Saving goal title, target and schedule are editable through `UPDATE_GOAL`.
+Direction source: PR #1, including `0a4df0d`, is integrated into the current README. **Profile is the core of personalisation; Saving and Moving demonstrate it.** Read the Profile-first section as the current brief. The Profile service and bio interpretation are not implemented yet; do not import invented exports or mutate financial facts from bio text.
+
+## Current Profile priority
+
+Design the first customer journey around an editable structured goal, optional bio, and a review of interpreted preferences. Display what is explicitly stated, inferred, or confirmed. Include correction, deletion, loading, failure, no-match and paused states. Keep raw bio text out of the existing explanation provider. No open-ended chat is needed.
+
+Codex owns the upcoming Profile contract, revision handling, interpretation prompt and ranking. Until that contract lands, any Profile UI must be clearly labelled as a local preview under `components/demo/`; do not present it as backend-connected. Existing goal edits should use Saving's `UPDATE_GOAL`. Connect the shipped domain services now and retain separate snapshots/revisions.
+
+The acceptance story is: bio asks for subscription help → review and confirm the preference → show matching recurring-charge evidence → customer selects the unused service → add intention → projected date changes while actual savings stay €650. A coffee-only preference must not be labelled as matching streaming advice. Editing the bio discards old pending interpretations. Home and Kate must reflect the same correction.
 
 ## Read first and use our skills branch
 
@@ -36,11 +44,11 @@ For the Saving journey, use the exact Japan example below. Do not copy the propo
 
 ## Product and scope
 
-Build an English, KBC-inspired **Life Goals** experience. The customer's explicit goal is the hero: target, actual progress, deadline and one useful next action. **Saving** is the new goal-centred journey; **Moving** remains the existing contract-backed mission, with a shared plan and Tell Once. Products are supporting actions. Use Next.js, TypeScript and Tailwind. No real KBC logo, authentication, database, payments, subscription cancellation, external policy purchase or provider notifications.
+Build an English, KBC-inspired **Profile-driven Life Goals** experience. The customer's explicit goal is the hero: target, actual progress, deadline and one useful next action. **Saving** is the new goal-centred journey; **Moving** remains the existing contract-backed mission, with a shared plan and Tell Once. Products are supporting actions. Use Next.js, TypeScript and Tailwind. No real KBC logo, authentication, database, payments, subscription cancellation, external policy purchase or provider notifications.
 
 Kate uses **advice cards, structured forms and quick replies**. A Kate tab may show the guided history of those cards, but do not build an open-ended model-chat input. Structured input fields for goal amount/date are allowed. All core screens must work without model calls. Do not advertise the design as immune to prompt injection or security problems.
 
-Implementation is authorised. Build order: (1) app shell and goals-first home, (2) Moving against the shipped service, (3) Saving against its separate shipped service, (4) recognition and optional polish.
+Implementation is authorised. The shell and fixture/preview journeys have landed. Next: connect the shipped services, prepare the Profile input/confirmation flow, then integrate the Profile contract when delivered. Prioritise the Profile-to-Saving demonstration; Moving remains the reuse example and fallback.
 
 Prioritise a working continuous demo over extra screens. Optional voice and speculative mission recognition must never block the core journey. A purchase/location display must clearly identify synthetic data; no browser geolocation permission request is needed for this demo.
 

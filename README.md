@@ -1,16 +1,54 @@
 # Smart Stock — Life Goals, powered by the Moments Engine
 
-**A proactive financial guidance concept for the Tectonic Hackathon, KBC track.**
+**Profile-driven financial guidance for the Tectonic Hackathon, KBC track.**
 
 > **Set a goal. Kate helps you plan the next useful step, spend more intentionally and keep your progress in view.**
 
-The customer's own goal is the centre of the experience: save for a trip, prepare a move, buy a first home or start a business. **Life Missions** turn that goal into a shared, step-by-step plan. **Saving** adds spending reviews and goal projections; **Moving** connects cash planning, existing insurance coverage and information the customer should only need to provide once.
+The **customer's editable Profile** is the core of personalisation: what they explicitly tell Kate, which goals they choose, and what they confirm or correct. Permitted spending patterns and optional location provide additional evidence. **Life Goals** are the outcomes the customer wants; **Saving** and **Moving** demonstrate how the same understanding can guide different next steps.
 
-This direction integrates the team's [goals-saving-direction proposal at bc3cf2f](https://github.com/ShayChen817/Pirates0fLeuven/blob/bc3cf2f/README.md) with the existing mission, signal and shared-state design. Moving retains its six v1 fixtures; Saving now has a separate `saving-1.0` service contract, preserving the existing Moving interface.
+This integrates [PR #1](https://github.com/ShayChen817/Pirates0fLeuven/pull/1), including the structured-profile and free-text-bio proposal at `0a4df0d`, with the delivered backend. Moving keeps its v1 contract; Saving and recognition have separate contracts. The profile flow below is the next implementation priority, with its status stated explicitly.
 
-The **Moments Engine** supplies the context, rules and next actions behind each mission. Smart Stock's original investment exploration becomes one possible action when it fits the customer's goal. **Tell Once** becomes a reusable step within the Moving mission: confirm relevant information once and reuse it throughout the journey.
+> **Customers describe and confirm their intent. Rules decide amounts and eligibility. AI helps interpret and explain.**
 
-The next step in that vision is **understanding patterns across purchases, places and plans**. With appropriate data access and customer controls, Kate could connect recent spending with relevant location context to suggest a useful mission before the customer searches for help. The customer can see the evidence and correct the interpretation.
+## Profile first: understand once, adapt continuously
+
+### What belongs in the Profile?
+
+| Information | Source and meaning | Customer control |
+|---|---|---|
+| Financial goal, target, deadline and contribution schedule | Explicit structured input; used by deterministic goal calculations. | Edit or clear; review recalculated projections. |
+| Short optional bio | Customer-written context, e.g. “I'm a student in Leuven. I want to save for Japan and review my subscriptions.” | Save, replace or delete; understanding runs only after save. |
+| Spending preferences | Explicit selection or customer-confirmed interpretation of the bio, e.g. review streaming costs. | Confirm, correct or reject extracted suggestions. |
+| Coverage and upcoming commitments | Separately confirmed facts, with source and observation time. | Correct through the corresponding domain service. |
+| Relevant purchase patterns and optional city context | Observed evidence or tentative inference, clearly separated from declared facts. | Inspect evidence, disable supported sources or reject the interpretation. |
+
+A bio is not proof of income, insurance, risk suitability or available funds. A declared city is different from a merchant address or device location. Do not infer health, pregnancy, religion or other sensitive characteristics. Lifestyle goals require explicit opt-in and remain outside the first implementation slice.
+
+### How Kate understands the bio
+
+1. The customer saves a short bio and explicitly opts into any external model processing. Structured goal entry works without a bio or API key.
+2. An optional model proposes a small allowlisted set of preference tags from that bio. Treat the text as untrusted data, limit its length and validate the output. A keyword fallback may propose tags, but must also allow “not understood” rather than invent intent.
+3. Show the interpretation for confirmation. Only confirmed tags influence personalisation. Editing or deleting the bio invalidates its pending interpretation; discard responses for an older profile revision.
+4. Rules compute eligible candidates and every financial amount. Confirmed preferences rank relevant candidates within those eligibility constraints; safety or missing-context questions retain priority. No aligned candidate can mean a clarification or silence.
+5. Kate presents one action with both **why it matches your stated preference** and **which evidence supports it**. The customer can keep a service, dismiss advice, pause or correct the Profile. Home and Kate use the same session state.
+
+The PR proposes model-assisted candidate selection. For the first slice, use deterministic ranking over confirmed preferences and keep the delivered constrained explanation service. Any later model selector must choose only an existing eligible candidate ID; validate membership and profile/context revisions before display. It cannot create actions, change money values or bypass required steps.
+
+### Concrete Profile-led demo
+
+**Profile → understand and confirm → relevant evidence → one suggestion → feedback updates the shared context.**
+
+Lotte enters a Japan goal and a bio asking to review subscriptions. Kate proposes the subscription-review preference; Lotte confirms it. Synthetic recurring charges support a review, and Lotte identifies Stream A as unused. Accepting a €13/month intention changes the projected completion from September to August; actual savings remain €650. If Lotte instead asks only about coffee, do not present the streaming card as a matching recommendation: the shipped data has no coffee alternative, so explain the limitation or ask whether she wants a subscription review. Do not invent merchant prices.
+
+Moving is a second demonstration of the same concept: an explicitly confirmed plan feeds the existing commitment/coverage journey. The separate long-term investment simulation does not fund the near-term Japan target.
+
+**Implementation boundary:** Profile persistence within the session, bio parsing, preference confirmation and cross-scenario ranking are the next P0 work; they are not delivered by this documentation PR. Existing Moving, Saving, recognition and explanation services are implemented. The frontend scaffold and local fixture/preview journeys have landed, but service integration and the Profile flow still need completion. No runtime contract is silently widened by this merge.
+
+### Tell Once and the model boundary
+
+Tell Once means reusing customer-confirmed facts across Home and Kate during a demo session. Persisting profiles across reloads, devices or adviser channels is future work. Deleting a bio clears its derived preferences; separately confirmed financial facts are managed through their own controls.
+
+The proposed bio interpreter has a separate input boundary from the existing explanation service. The interpreter receives only the opted-in bio and allowed tag schema; it does not need raw transaction histories or location traces. The delivered explanation service receives approved sentences, not the bio. No live model adapter is currently configured. A bounded input and output schema reduce risk, but do not establish immunity to prompt injection, privacy failures or irrelevant advice. Aikido audit evidence remains outstanding.
 
 ## Goals first: the Saving mission
 
@@ -398,7 +436,7 @@ The existing v1 implementation sequence remains:
 4. **Guide and explain:** optionally play a short voice explanation; show the decision trace and describe how another mission would reuse the template approach.
 5. **Optional alternate path:** reset the synthetic scenario and show the investment simulation for the confirmed long-term goal.
 
-If time is tight, prioritise the Moving mission's visible plan, context correction and shared step completion. Keep transaction-triggered detection, voice and adviser integration optional or future scope. Record a successful run as a demo backup.
+Prioritise the Profile-to-Saving story and visible customer corrections. Until Profile is connected, label its preview honestly and use the existing Moving journey as a runnable fallback. Keep voice and adviser integration optional or future scope. Record a successful run as a demo backup.
 
 ## Measuring value
 
@@ -426,8 +464,9 @@ No user-study results, time savings or financial benefits have been measured yet
 
 | Deliverable | Status |
 |---|---|
-| Product concept and repository instructions | Documented |
-| Life Missions vision and Moving mission presentation | Documented; mission UI not implemented |
+| Profile-led product direction and repository instructions | Adopted from PR #1 |
+| Editable Profile, bio interpretation and confirmed preference ranking | Next P0; not implemented |
+| Life Missions vision and Moving mission presentation | Frontend fixture journey landed; real-service integration pending |
 | Goals-first home, Saving mission and structured Kate advice | Saving service implemented; UI integration in progress |
 | Subscription review and reproducible Japan projection | Deterministic service and synthetic evidence implemented; no cancellation or transfer |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
@@ -457,11 +496,9 @@ The fixtures are synthetic expected results. The implemented services reproduce 
 
 **Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. Replace the temporary frontend Saving preview with this service; use returned projections instead of UI-owned financial calculations. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
 
-**Profile/bio proposal:** the direction branch's later commit `0a4df0d` proposes customer-written bios and model-extracted preferences. This is future work: no profile contract, extraction endpoint or live model adapter exists in the delivered backend. Explicit Saving goal edits already use `UPDATE_GOAL`; profile text must not be treated as verified financial facts or alter deterministic amounts. A future extension needs its own validated schema, customer correction flow and documented interface before frontend integration.
-
 ## Running the project
 
-Run backend verification with `node scripts/backend-check.mjs` (Node.js 20+ and npm/npx; first run downloads pinned development tools). Import `createMomentsService` from `lib/service.ts` and `createSavingService` from `lib/saving.ts`. Both work without API keys. Frontend start/build instructions will be supplied with the Next.js scaffold by Opus.
+Run backend verification with `node scripts/backend-check.mjs` (Node.js 20+ and npm/npx; first run downloads pinned development tools). Import `createMomentsService` from `lib/service.ts` and `createSavingService` from `lib/saving.ts`. Both work without API keys. The Next.js scaffold and fixture/preview journeys have landed. See `package.json` for frontend scripts; current frontend build/browser behaviour has not been verified by this documentation update.
 
 The planned optional environment variable is `ANTHROPIC_API_KEY`, for explanation text only. If implemented, keep it server-side in a gitignored `.env` file and document its name in `.env.example`. Template explanations must work without it.
 
@@ -497,7 +534,7 @@ Implemented backend controls include synthetic data, runtime input validation, r
 - [docs/DESIGN.md](docs/DESIGN.md): KBC-inspired design research.
 - [Shared skills](https://github.com/ShayChen817/Pirates0fLeuven/tree/skills/skills): workflows on the `skills` branch.
 
-This README defines the product direction and current boundaries. Backend stages 1 and 2 are implemented; frontend integration, browser verification and submission evidence remain outstanding. See the status table and `docs/BACKEND.md` for the distinction.
+This README defines the product direction and current boundaries. Backend stages 1 and 2 are implemented; the Profile flow, frontend service integration, browser verification and submission evidence remain outstanding. See the status table and `docs/BACKEND.md` for the distinction.
 
 ---
 
