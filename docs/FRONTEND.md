@@ -39,6 +39,7 @@ Moving starts at €2,850 potentially available. Confirming a €2,500 move leav
 - The CSS phone fits available height, with a titanium rim, camera detail and status bar. Below 640 px the app fills the screen; demo controls remain below it.
 - Tab scroll containers remain mounted. Action titles do not key/remount cards. Device scaling has no competing entrance animation. Service responses update the existing view instead of replaying screen transitions.
 - Motion is local: button feedback, switch travel, amount/progress changes and sheet entrance. Reduced-motion settings are respected.
+- The decorative “Every day.” headline floats by 4 px on a 4.8-second loop, with a blue highlight on hover. It uses only transforms, so neighbouring content stays in place; reduced-motion disables the loop entirely.
 - Sheets trap focus, make the phone background inert and restore focus without scrolling. Domain errors retain the editor and input; no automatic retry.
 
 ## Integration status
