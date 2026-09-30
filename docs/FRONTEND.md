@@ -2,6 +2,8 @@
 
 Codex owns the current frontend integration and refinement after the user-authorised handover from Opus stage 5. Moving, Saving and Profile use in-process services; components do not reimplement financial decisions.
 
+**Live demo:** https://life-goals-with-kate.vercel.app/
+
 ## Run it
 
 Requires Node.js 20+ (development uses Node 24).

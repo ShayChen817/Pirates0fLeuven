@@ -4,6 +4,8 @@
 
 > **Set a goal. Kate helps you plan the next useful step, spend more intentionally and keep your progress in view.**
 
+**Live demo: [life-goals-with-kate.vercel.app](https://life-goals-with-kate.vercel.app/)** · synthetic data only · fixed demo date 1 October 2026 · works on desktop (iPhone frame) and on a phone (full screen)
+
 The **customer's editable Profile** is the core of personalisation: what they explicitly tell Kate, which goals they choose, and what they confirm or correct. Permitted spending patterns and optional location provide additional evidence. **Life Goals** are the outcomes the customer wants; **Saving** and **Moving** demonstrate how the same understanding can guide different next steps.
 
 This integrates [PR #1](https://github.com/ShayChen817/Pirates0fLeuven/pull/1), including the structured-profile and free-text-bio proposal at `0a4df0d`, with the delivered backend. Moving keeps its v1 contract; Saving and recognition have separate contracts. The Profile flow is connected through the separate `profile-1.0` service, with local keyword suggestions and explicit customer confirmation.
@@ -506,7 +508,18 @@ The fixtures are synthetic expected results. The implemented services reproduce 
 
 ## Running the project
 
-Run backend verification with `node scripts/backend-check.mjs` (Node.js 20+ and npm/npx; first run downloads pinned development tools). Import `createMomentsService` from `lib/service.ts` and `createSavingService` from `lib/saving.ts`. Both work without API keys. The Next.js scaffold and fixture/preview journeys have landed. See `package.json` for frontend scripts; current frontend build/browser behaviour has not been verified by this documentation update.
+**Live demo:** https://life-goals-with-kate.vercel.app/ (Vercel, static build, security headers enabled).
+
+Run locally with Node.js 20+:
+
+```bash
+npm install
+npm run dev                    # http://localhost:3000
+npm run build                  # production build + type check
+node scripts/backend-check.mjs # backend type check and tests (pinned local tools, no downloads)
+```
+
+No API keys or environment variables are needed. `STATIC_EXPORT=1 npm run build` writes a fully static site to `out/` for static hosting. Frontend details and integration status: [docs/FRONTEND.md](docs/FRONTEND.md). Backend services: [docs/BACKEND.md](docs/BACKEND.md). Threat model: [SECURITY.md](SECURITY.md).
 
 The planned optional environment variable is `ANTHROPIC_API_KEY`, for explanation text only. If implemented, keep it server-side in a gitignored `.env` file and document its name in `.env.example`. Template explanations must work without it.
 
