@@ -1,7 +1,7 @@
 # Shared agent skills (hackathon)
 
-8 SKILL.md skills for Claude Code, Codex and other agents that read the Agent Skills format.
-Typical flow: challenge-analysis → brainstorming → rapid-planning → build (frontend-design, systematic-debugging, verification, code-review) → demo-verification.
+9 SKILL.md skills for Claude Code, Codex and other agents that read the Agent Skills format.
+Typical flow: challenge-analysis → brainstorming → rapid-planning → build (frontend-design + kbc-design, systematic-debugging, verification, code-review) → demo-verification.
 
 Install (user-level, works in any project):
 - macOS/Linux: `cp -r skills/*/ ~/.claude/skills/ && cp -r skills/*/ ~/.agents/skills/`
