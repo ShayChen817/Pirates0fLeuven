@@ -42,9 +42,9 @@ Fallback if time is tight: fixed synthetic fixtures, template explanations, one 
 
 ## Demo outcome
 
-A judge sees Lotte's €7,850 balance minus €4,000 reserve and €1,000 upcoming expenses, leaving €2,850 potentially available. The initial primary action asks about missing context. An investment candidate is deferred until intent and eligibility are known.
+A judge sees Shay's €7,850 balance minus €4,000 reserve and €1,000 upcoming expenses, leaving €2,850 potentially available. The initial primary action asks about missing context. An investment candidate is deferred until intent and eligibility are known.
 
-Lotte confirms a separate €2,500 moving commitment: €350 remains, the investment candidate is suppressed, and the interface prioritises the moving reserve. After acknowledging the reserve, she can check existing coverage. “Already insured elsewhere” resolves that prompt in both home and Kate. The engine trace explains each change.
+Shay confirms a separate €2,500 moving commitment: €350 remains, the investment candidate is suppressed, and the interface prioritises the moving reserve. After acknowledging the reserve, she can check existing coverage. “Already insured elsewhere” resolves that prompt in both home and Kate. The engine trace explains each change.
 
 An alternate reset path confirms a long-term goal and permits a €1,500 investment simulation under explicit demo assumptions. No money moves.
 

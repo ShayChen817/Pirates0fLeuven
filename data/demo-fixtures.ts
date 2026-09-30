@@ -3,14 +3,14 @@ import type { Action, CustomerContext, Decision, DemoFixture, DemoTransition, Ru
 
 export const DEMO_AS_OF = '2026-10-01T12:00:00.000Z';
 const VALID_UNTIL = '2026-11-01T00:00:00.000Z';
-const actionId = (rule: RuleId) => `lotte:${rule}`;
+const actionId = (rule: RuleId) => `shay:${rule}`;
 const signal = (id: string, value: Signal['value'], kind: Signal['kind'] = 'observed'): Signal => ({
   id, key: id, value, kind,
   source: kind === 'customer-confirmed' ? 'Synthetic customer response' : 'Synthetic account fixture',
   observedAt: DEMO_AS_OF, validUntil: VALID_UNTIL,
 });
 const base: CustomerContext = {
-  customerId: 'lotte', displayName: 'Lotte', version: 1, asOf: DEMO_AS_OF, currency: 'EUR',
+  customerId: 'shay', displayName: 'Shay', version: 1, asOf: DEMO_AS_OF, currency: 'EUR',
   accessibleCashCents: 785000, reserveCents: 400000, expensesCents: 100000,
   commitments: [], commitmentsConfirmed: false,
   monthlyHistory: [
@@ -40,7 +40,7 @@ const investing: CustomerContext = {
     signal('horizon', 7, 'customer-confirmed'), signal('commitments-confirmed', true, 'customer-confirmed')],
 };
 const action = (ruleId: RuleId, context: CustomerContext, status: Action['status'] = 'pending'): Action => {
-  const common = { id: actionId(ruleId), customerId: 'lotte', ruleId, contextVersion: context.version, status };
+  const common = { id: actionId(ruleId), customerId: 'shay', ruleId, contextVersion: context.version, status };
   switch (ruleId) {
     case 'clarify-intent': return { ...common, domain: 'planning', title: 'What is this money for?',
       message: 'Based on known expenses and reserves, €2,850 may be available. Any other large expenses coming up?',

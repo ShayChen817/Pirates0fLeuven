@@ -13,7 +13,7 @@ export function MovingHome() {
   if (!snapshot) {
     return (
       <>
-        <Hero eyebrow="Hi Lotte"><div className="mt-3 h-10 w-40 animate-pulse rounded-lg bg-white/15" /></Hero>
+        <Hero eyebrow="Hi Shay"><div className="mt-3 h-10 w-40 animate-pulse rounded-lg bg-white/15" /></Hero>
         <Body>
           {transportError
             ? <Notice tone="error" title="Could not load">{transportError} <button type="button" className="font-semibold underline" onClick={reload}>Try again</button></Notice>
@@ -41,7 +41,7 @@ export function MovingHome() {
           <p className="mt-2 text-[13px] text-white/75">{done} of {steps.length} steps · {formatCents(move.amountCents)} kept for the move</p>
         </Hero>
       ) : (
-        <Hero eyebrow={context.intent === 'long-term' ? `Long-term goal · ${context.horizonYears} years` : 'Hi Lotte'}>
+        <Hero eyebrow={context.intent === 'long-term' ? `Long-term goal · ${context.horizonYears} years` : 'Hi Shay'}>
           <p className="mt-3 flex items-baseline gap-2">
             <AnimatedAmount cents={snapshot.availableCashCents} className="text-[40px] font-bold leading-none tracking-tight" />
           </p>

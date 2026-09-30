@@ -11,7 +11,7 @@ export function SavingHome() {
   if (!snapshot) {
     return (
       <>
-        <Hero eyebrow="Hi Lotte"><div className="mt-3 h-10 w-40 animate-pulse rounded-lg bg-white/15" /></Hero>
+        <Hero eyebrow="Hi Shay"><div className="mt-3 h-10 w-40 animate-pulse rounded-lg bg-white/15" /></Hero>
         <Body>
           {transportError
             ? <Notice tone="error" title="Could not load">{transportError} <button type="button" className="font-semibold underline" onClick={reload}>Try again</button></Notice>

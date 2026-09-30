@@ -38,7 +38,7 @@ The PR proposes model-assisted candidate selection. For the first slice, use det
 
 **Profile → understand and confirm → relevant evidence → one suggestion → feedback updates the shared context.**
 
-Lotte enters a Japan goal and a bio asking to review subscriptions. Kate proposes the subscription-review preference; Lotte confirms it. Synthetic recurring charges support a review, and Lotte identifies Stream A as unused. Accepting a €13/month intention changes the projected completion from September to August; actual savings remain €650. If Lotte instead asks only about coffee, do not present the streaming card as a matching recommendation: the shipped data has no coffee alternative, so explain the limitation or ask whether she wants a subscription review. Do not invent merchant prices.
+Shay enters a Japan goal and a bio asking to review subscriptions. Kate proposes the subscription-review preference; Shay confirms it. Synthetic recurring charges support a review, and Shay identifies Stream A as unused. Accepting a €13/month intention changes the projected completion from September to August; actual savings remain €650. If Shay instead asks only about coffee, do not present the streaming card as a matching recommendation: the shipped data has no coffee alternative, so explain the limitation or ask whether she wants a subscription review. Do not invent merchant prices.
 
 Moving is a second demonstration of the same concept: an explicitly confirmed plan feeds the existing commitment/coverage journey. The separate long-term investment simulation does not fund the near-term Japan target.
 
@@ -60,7 +60,7 @@ Home leads with **your goal, saved amount, remaining gap, deadline and one usefu
 | **Plan and reserve** | Allocate future contributions towards a trip or preserve liquidity for a move. | Keep existing obligations and the emergency reserve visible; do not double-allocate the same funds. |
 | **Explore long-term investing** | Review the existing adjustable investment simulation for a separately confirmed long-term goal. | Do not fund a near-term travel target using assumed investment returns. |
 
-### Example: Lotte's Japan goal
+### Example: Shay's Japan goal
 
 All values are synthetic. Use the fixed demo date **1 October 2026**, a deadline of **1 August 2027**, and contributions on the first of each month starting **1 November 2026**.
 
@@ -78,7 +78,7 @@ All values are synthetic. Use the fixed demo date **1 October 2026**, a deadline
 
 The projection uses `ceil((target − saved) / monthly contribution)`, with zero interest and uninterrupted contributions. It is **one monthly contribution earlier under these assumptions**, not a guaranteed result. By the deadline, the baseline plan would total €1,900; the revised plan would total €2,030.
 
-Kate first asks: **“You have three recurring streaming charges totalling €38/month. Is there one you no longer use?”** After Lotte identifies the synthetic €13 service, Kate can show: **“If you stop this charge and put that €13/month towards Japan, your projected finish changes from September to August.”**
+Kate first asks: **“You have three recurring streaming charges totalling €38/month. Is there one you no longer use?”** After Shay identifies the synthetic €13 service, Kate can show: **“If you stop this charge and put that €13/month towards Japan, your projected finish changes from September to August.”**
 
 The customer can **Add to my plan**, **Keep this service**, **Not now**, or inspect **Why this?** Accepting records a saving intention; it does not cancel a subscription, transfer money or increase the saved balance. The progress bar remains at **€650 / €2,000 (32.5%)**. Only separately recorded actual contributions change saved progress. A projected completion date can change immediately, clearly labelled as a projection.
 
@@ -170,7 +170,7 @@ We propose combining financial facts, behavioural patterns and information the c
 
 Each signal has a source, observation time and validity period. Observed facts, inferences and customer-confirmed information remain distinguishable. A large balance can justify asking about plans; it cannot establish a desire to invest. Missing information triggers clarification or deferral.
 
-**Planned proof:** an evidence panel shows the inputs behind Lotte's €2,850 potentially available cash and identifies the missing information about her plans. The fixtures already include these inputs; evaluation and the panel remain to be built.
+**Planned proof:** an evidence panel shows the inputs behind Shay's €2,850 potentially available cash and identifies the missing information about her plans. The fixtures already include these inputs; evaluation and the panel remain to be built.
 
 ### Purchase history and location: turning signals into a useful question
 
@@ -191,7 +191,7 @@ Each signal has a source, observation time and validity period. Observed facts, 
 1. **Show the timeline:** synthetic furniture and moving-service payments appear within a 14-day window. Optional city context indicates Ghent. Each item is labelled with its source and date.
 2. **Form a hypothesis:** two distinct relevant transaction events qualify for a possible Moving mission under an explicit demo rule. Optional location can enrich the question but cannot trigger the mission by itself. This is a heuristic, not a trained prediction model.
 3. **Ask with a reason:** “You have recent furniture and moving-service payments. Are you preparing a move? I can help you plan the remaining costs.” Replies: **Yes, I'm moving** · **Just shopping** · **Not now**. A **Why this suggestion?** panel shows only the inputs actually used.
-4. **Confirm the missing facts:** if Lotte confirms, ask for the destination, date and remaining expected costs that are not already known. She confirms an additional €2,500. Then use the existing Moving journey: €2,850 potentially available becomes €350, and the home screen becomes **Your move**.
+4. **Confirm the missing facts:** if Shay confirms, ask for the destination, date and remaining expected costs that are not already known. She confirms an additional €2,500. Then use the existing Moving journey: €2,850 potentially available becomes €350, and the home screen becomes **Your move**.
 5. **Respect corrections:** **Just shopping** rejects the moving hypothesis without changing cash or creating a mission. **Not now** defers it. The proposed demo suppresses the same evidence bundle for 30 days; customer-initiated missions remain available.
 
 The illustrative historical payments are already reflected in the €7,850 balance. They provide context and must not be deducted a second time. Only the confirmed additional €2,500 enters the future commitment calculation.
@@ -210,23 +210,23 @@ We represent each customer's current context through complementary views:
 
 | View | What we understand | Example |
 |---|---|---|
-| **Situation** | Current resources, constraints and known commitments. | Lotte has €7,850, a €4,000 reserve and €1,000 of upcoming expenses. |
+| **Situation** | Current resources, constraints and known commitments. | Shay has €7,850, a €4,000 reserve and €1,000 of upcoming expenses. |
 | **Behaviour** | Patterns that help identify when a question may be useful. | Three recurring income payments provide background, without guaranteeing future income. |
 | **Possible mission** | A tentative interpretation of permitted purchase and place signals. | Related moving-service and furniture payments suggest a question; a visit to Ghent alone does not establish a move. |
-| **Intent** | What the customer says they want to achieve, and when. | Lotte confirms that she needs €2,500 for a move next month. |
+| **Intent** | What the customer says they want to achieve, and when. | Shay confirms that she needs €2,500 for a move next month. |
 | **Goal progress** | A target, deadline, actual saved amount and planned future contributions. | The Japan scenario has €650 saved towards €2,000; accepting a saving intention changes the projection, not the saved balance. |
 
 The context changes as the customer's life changes. A current explicit correction overrides a conflicting inference. If a relevant answer is already current, the experience uses it rather than asking the customer to repeat it. “Recognized” here means understood in context; identity verification is outside the prototype.
 
 For the proposed recognition extension, a mission progresses from **possible → customer-confirmed → active → completed**, or becomes **rejected / deferred**. Hypotheses never silently become confirmed facts. Signal expiry removes unsupported hypotheses; an explicit answer supplies its own provenance.
 
-**Planned proof:** the same Lotte fixture supports a near-term Moving mission or a confirmed long-term goal. Those different intentions produce different next steps despite the same starting balance. Mission membership follows a confirmed goal and can change; it is not a permanent customer label.
+**Planned proof:** the same Shay fixture supports a near-term Moving mission or a confirmed long-term goal. Those different intentions produce different next steps despite the same starting balance. Mission membership follows a confirmed goal and can change; it is not a permanent customer label.
 
 ### 3. How can personalized experiences automatically adapt to each customer?
 
 After an accepted context update, the engine recalculates available cash, checks candidate actions, and selects at most one primary next step. The mission view updates its plan and progress, and the home screen highlights the relevant task. Adaptation changes the action, amount, explanation and timing. It can also remove a suggestion entirely.
 
-For Lotte, adding a €2,500 moving commitment reduces potentially available cash from €2,850 to €350. The investment candidate becomes ineligible, and the interface prioritises reviewing the moving reserve. After she acknowledges that plan, a relevant coverage question can appear. Reporting existing insurance closes that question; pausing suggestions leaves ordinary navigation available without proactive prompts.
+For Shay, adding a €2,500 moving commitment reduces potentially available cash from €2,850 to €350. The investment candidate becomes ineligible, and the interface prioritises reviewing the moving reserve. After she acknowledges that plan, a relevant coverage question can appear. Reporting existing insurance closes that question; pausing suggestions leaves ordinary navigation available without proactive prompts.
 
 **Planned proof:** the UI updates from the returned shared snapshot after each event. Automatic adaptation does not execute a transaction: investment confirmation is an explicit simulation, and no money moves.
 
@@ -292,11 +292,11 @@ Our proposed contribution is a decision layer that:
 - Remembers completion, dismissal and corrections across the home screen and Kate conversation.
 - Can remain quiet, with the reason visible in the demo's engine view.
 
-## Main demo: Lotte's Moving mission
+## Main demo: Shay's Moving mission
 
-The intended mission-led opening is: **synthetic signals arrive → Kate asks whether Lotte is moving → Lotte confirms → a Moving mission appears → the home screen shows her plan → Kate guides the next step, optionally by voice**. The existing fixtures support the customer-confirmation route below; the separate recognition service now supplies the synthetic transaction-triggered opening; its UI integration remains to be verified.
+The intended mission-led opening is: **synthetic signals arrive → Kate asks whether Shay is moving → Shay confirms → a Moving mission appears → the home screen shows her plan → Kate guides the next step, optionally by voice**. The existing fixtures support the customer-confirmation route below; the separate recognition service now supplies the synthetic transaction-triggered opening; its UI integration remains to be verified.
 
-Lotte has a synthetic balance of **€7,850**. Initially, the engine knows about a **€4,000 emergency reserve** and **€1,000 of upcoming expenses**.
+Shay has a synthetic balance of **€7,850**. Initially, the engine knows about a **€4,000 emergency reserve** and **€1,000 of upcoming expenses**.
 
 | Calculation | Amount |
 |---|---:|
@@ -315,32 +315,32 @@ If an explicit, current customer goal already answers the question, the engine s
 
 ### Path A: explore a long-term opportunity
 
-Lotte confirms that she has no additional near-term commitments and wants to explore a long-term goal. If the demo eligibility checks pass, Kate offers an adjustable **€1,500 investment simulation**, explaining the calculation and assumptions.
+Shay confirms that she has no additional near-term commitments and wants to explore a long-term goal. If the demo eligibility checks pass, Kate offers an adjustable **€1,500 investment simulation**, explaining the calculation and assumptions.
 
 The amount follows an illustrative demo policy: take 50% of €2,850, round to the nearest €500, and cap at the available amount. This heuristic does not establish suitability or guarantee safety.
 
-Lotte reviews the scenario and chooses **Confirm simulation**. No money moves.
+Shay reviews the scenario and chooses **Confirm simulation**. No money moves.
 
 ### Path B: her plans change
 
-Using the same initial customer, Lotte selects **I'm moving** and confirms that she needs **€2,500 next month**. This is an additional commitment, not already included in the upcoming expenses.
+Using the same initial customer, Shay selects **I'm moving** and confirms that she needs **€2,500 next month**. This is an additional commitment, not already included in the upcoming expenses.
 
 ```text
 €7,850 − €4,000 reserve − €1,000 expenses − €2,500 moving commitment
 = €350 potentially available
 ```
 
-The investment candidate is suppressed. The home screen changes to **Your move**, showing the confirmed plan and highlighting **Review your moving reserve**. Kate explains why the next step changed. Mission progress advances when Lotte acknowledges the simulated reserve plan; the commitment remains in the calculation.
+The investment candidate is suppressed. The home screen changes to **Your move**, showing the confirmed plan and highlighting **Review your moving reserve**. Kate explains why the next step changed. Mission progress advances when Shay acknowledges the simulated reserve plan; the commitment remains in the calculation.
 
-If Lotte's insurance situation is unknown, the next relevant action can be **Check my existing cover**. A missing KBC policy does not mean she is uninsured. Coverage has three states: **confirmed covered**, **confirmed need**, and **unknown**.
+If Shay's insurance situation is unknown, the next relevant action can be **Check my existing cover**. A missing KBC policy does not mean she is uninsured. Coverage has three states: **confirmed covered**, **confirmed need**, and **unknown**.
 
-Lotte answers **I'm already insured elsewhere**. The prompt closes on both the home screen and the Kate conversation. Her correction is retained for the demo session and labelled as customer-provided information, not independently verified policy coverage.
+Shay answers **I'm already insured elsewhere**. The prompt closes on both the home screen and the Kate conversation. Her correction is retained for the demo session and labelled as customer-provided information, not independently verified policy coverage.
 
 **The key demo moment:** the customer adds one fact, and the experience immediately changes.
 
 ### Why this strengthens the relationship
 
-Lotte can see what KBC believes, correct it and see the correction respected elsewhere. Withdrawing the investment suggestion demonstrates that retaining liquidity can take priority over selling a product. Remembering her answer avoids making her repeat herself.
+Shay can see what KBC believes, correct it and see the correction respected elsewhere. Withdrawing the investment suggestion demonstrates that retaining liquidity can take priority over selling a product. Remembering her answer avoids making her repeat herself.
 
 The planned **What Kate knows** panel shows the current goal, its source and date, and lets the customer edit or clear customer-provided context. Clearing context returns it to unknown; pausing suggestions suppresses proactive actions while leaving ordinary navigation available. MVP memory lasts only for the current app session. Persistent, permission-aware memory is part of the production vision.
 
@@ -430,7 +430,7 @@ The intended combined pitch opens with the customer's goal. The implemented Savi
 
 The existing v1 implementation sequence remains:
 
-1. **Recognise the mission:** show the available signals and ask about Lotte's plans. If the optional synthetic transaction trigger exists, use it to introduce the question; otherwise use the existing clarification fixture.
+1. **Recognise the mission:** show the available signals and ask about Shay's plans. If the optional synthetic transaction trigger exists, use it to introduce the question; otherwise use the existing clarification fixture.
 2. **Adapt the home screen:** confirm the move and €2,500 commitment. Show **Your move**, the €350 remaining amount and the reserve-review step.
 3. **Tell Once:** acknowledge the simulated reserve, then record “already insured elsewhere.” Show that step completing on both home and Kate without repeating the answer.
 4. **Guide and explain:** optionally play a short voice explanation; show the decision trace and describe how another mission would reuse the template approach.

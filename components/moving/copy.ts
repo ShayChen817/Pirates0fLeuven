@@ -11,23 +11,23 @@ export const ruleLabel: Record<RuleId, string> = {
 /** Human-language reason for each trace row. Display only; the engine owns the decision. */
 export const reasonText: Record<ReasonCode, string> = {
   INTENT_UNKNOWN: 'Kate does not know what this money is for yet, so she asks first.',
-  INTENT_CONFIRMED: 'Lotte already told Kate her plans, so there is no need to ask again.',
+  INTENT_CONFIRMED: 'Shay already told Kate her plans, so there is no need to ask again.',
   NO_MOVE_CONFIRMED: 'No move has been confirmed, so moving steps do not apply.',
   NEAR_TERM_COMMITMENT: 'A near-term commitment comes first; investing is not suggested now.',
   RESERVE_REVIEW_REQUIRED: 'A new commitment changed the money picture; the reserve needs a review.',
   RESERVE_REVIEW_PENDING: 'Waiting until the moving reserve has been reviewed.',
   ACTION_COMPLETED: 'This step is done and stays done.',
-  ACTION_DISMISSED: 'Lotte dismissed this step; Kate does not push it again.',
+  ACTION_DISMISSED: 'Shay dismissed this step; Kate does not push it again.',
   COVERAGE_UNKNOWN: 'Kate does not know whether the new home is already covered.',
-  COVERAGE_CONFIRMED: 'Lotte reported cover elsewhere (customer-reported, not verified).',
-  COVERAGE_HELP_REQUESTED: 'Lotte said she needs cover; noted for information only.',
+  COVERAGE_CONFIRMED: 'Shay reported cover elsewhere (customer-reported, not verified).',
+  COVERAGE_HELP_REQUESTED: 'Shay said she needs cover; noted for information only.',
   LONG_TERM_ELIGIBLE: 'Long-term goal confirmed and demo checks passed, so a simulation can be shown.',
   INSUFFICIENT_AVAILABLE_CASH: 'Not enough potentially available cash.',
   PROFILE_INCOMPLETE: 'The synthetic investment profile is incomplete.',
   HORIZON_TOO_SHORT: 'The time horizon is too short for this scenario.',
   STALE_OR_MISSING_DATA: 'Some data is missing or out of date, so Kate holds back.',
   CONFLICTING_DATA: 'Some facts conflict; Kate needs a clarification first.',
-  PROACTIVE_PAUSED: 'Lotte paused suggestions.',
+  PROACTIVE_PAUSED: 'Shay paused suggestions.',
   LOWER_PRIORITY: 'Another step is more important right now.',
 };
 

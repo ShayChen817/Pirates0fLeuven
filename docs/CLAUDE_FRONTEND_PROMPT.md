@@ -86,7 +86,7 @@ The Japan deadline is near-term. Do not show the €1,500 investment suggestion 
 
 ## Existing v1 Moving journey
 
-1. Home shows Lotte's account and one relevant Kate action. The initial candidate asks about plans; it is not an approved investment recommendation.
+1. Home shows Shay's account and one relevant Kate action. The initial candidate asks about plans; it is not an approved investment recommendation.
 2. “I'm moving” opens a form prefilled with synthetic remaining cost €2,500 and date 2026-11-01. Confirmation sends the typed `CONFIRM_MOVING` event.
 3. Home becomes **Your move**, with a step-by-step plan and €350 potentially available. Acknowledge the reserve through `ACKNOWLEDGE_RESERVE`; no money moves.
 4. Show the existing-cover question. “Already insured elsewhere” sends `REPORT_COVERAGE`. The step closes in both home and Kate without asking twice.

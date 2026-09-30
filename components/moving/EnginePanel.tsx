@@ -29,7 +29,7 @@ export function EnginePanel() {
               </li>
             ))}
           </ol>
-          <p className="mt-4 text-xs text-ink-3">Rules decide, Kate explains, Lotte confirms. One step at a time.</p>
+          <p className="mt-4 text-xs text-ink-3">Rules decide, Kate explains, Shay confirms. One step at a time.</p>
         </>
       )}
     </section>

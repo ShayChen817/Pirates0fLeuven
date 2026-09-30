@@ -14,7 +14,7 @@ P1: alternate eligible investment simulation and incomplete-data scenarios. P2: 
 
 | Time | Action | Evidence |
 |---|---|---|
-| 0:00–0:20 | Introduce Lotte and show the initial card. | €7,850 cash − €4,000 reserve − €1,000 expenses = €2,850. |
+| 0:00–0:20 | Introduce Shay and show the initial card. | €7,850 cash − €4,000 reserve − €1,000 expenses = €2,850. |
 | 0:20–0:45 | Open the evidence view. | Observed amounts, three months of illustrative behaviour and unknown intent are distinct. |
 | 0:45–1:20 | Confirm a €2,500 moving commitment due next month. | €350 remains; investment is suppressed and a reserve review replaces the question. |
 | 1:20–1:50 | Acknowledge the simulated reserve, then answer the coverage check. | “Already insured elsewhere” closes the shared prompt. No real transfer or insurance action occurs. |
@@ -143,3 +143,7 @@ Accepted direction: the editable Profile is the shared personalisation context; 
 Next backend slice: a separate versioned Profile contract, session service, bounded bio interpretation prompt with no-key fallback, customer confirmation/correction of proposed tags, invalidation on bio edits/deletion, and deterministic matching against eligible domain candidates. Publish types and fixtures with CONTRACT before frontend consumes them. Preserve existing Moving, Saving and recognition unions and financial calculations. No bio-derived risk suitability or automatic money actions.
 
 Frontend: connect delivered services, prepare the Profile edit/confirmation flow, and label any temporary profile-only mock honestly. Opus retains app/component ownership. Completed stages must be pushed. The new frontend scaffold and fixture/preview journeys on main are preserved by merging main into the PR branch; this documentation change does not claim app build or browser verification.
+
+## Shay identity and frontend handover
+
+The user has transferred frontend integration and design ownership to Codex after Opus stage 5. Rename the synthetic customer and stable demo action prefix from `lotte` to `shay` consistently in fixtures, existing checks, UI and documentation. Event shapes and financial values are unchanged. Old in-memory demo sessions should be reloaded. Next stages: Profile service and frontend connection, then responsive layout, visual hierarchy and interaction refinement.
