@@ -1,13 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useSaving } from '@/components/session/SavingProvider';
 import { formatCents, formatDate, formatMonth } from '@/components/format';
-import { Card, Notice, ProgressBar } from '@/components/ui/primitives';
+import { Badge, Card, Notice, ProgressBar } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
+import { Donut } from '@/components/ui/Donut';
+import { savingDemoExtras } from '@/data/saving-fixtures';
 import { SavingKateCard } from './SavingCard';
+import { InvestTip } from './InvestTip';
 
 export function SavingHome({ onOpenKate }: { onOpenKate: () => void }) {
   const { snapshot, transportError, reload } = useSaving();
+  // DEMO: emergency-fund amount is a synthetic UI value (not engine state) so the invest
+  // gate can be shown live during the recording. Defaults below the threshold on purpose.
+  const [emergencyFundCents, setEmergencyFundCents] = useState<number>(savingDemoExtras.emergencyFundCents);
+  const threshold = savingDemoExtras.investUnlockThresholdCents;
+  const funded = emergencyFundCents >= threshold;
+  const toggleFund = () => setEmergencyFundCents(funded ? savingDemoExtras.emergencyFundCents : threshold);
+
   if (!snapshot) {
     return transportError
       ? <Notice tone="error" title="Could not load">{transportError} <button type="button" className="font-semibold underline" onClick={reload}>Try again</button></Notice>
@@ -15,6 +26,7 @@ export function SavingHome({ onOpenKate }: { onOpenKate: () => void }) {
   }
   const { goal, baseline, projected } = snapshot;
   const changed = projected.completionDate !== baseline.completionDate || projected.monthlyCents !== baseline.monthlyCents;
+  const spendTotal = savingDemoExtras.monthlySpend.reduce((sum, s) => sum + s.cents, 0);
 
   return (
     <div className="space-y-4">
@@ -60,7 +72,49 @@ export function SavingHome({ onOpenKate }: { onOpenKate: () => void }) {
         </div>
       </Card>
 
+      <Card aria-label="Emergency fund">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-kbc-sky-dark">
+            <Icon name="shield" /><span className="text-xs font-semibold uppercase tracking-wide">Emergency fund</span>
+          </div>
+          <Badge tone={funded ? 'ok' : 'sky'}>{funded ? 'Ready' : 'Building'}</Badge>
+        </div>
+        <div className="mt-1 flex items-baseline justify-between">
+          <span className="text-2xl font-bold tabular-nums">{formatCents(emergencyFundCents)}</span>
+          <span className="text-sm text-kbc-muted">safety-net target {formatCents(threshold)}</span>
+        </div>
+        <p className="mt-1 text-sm text-kbc-navy/90">
+          {funded
+            ? 'Your safety net covers the essentials. Investing ideas are unlocked below.'
+            : 'Kate focuses on your safety net first — investing ideas stay hidden until it is ready.'}
+        </p>
+        <button type="button" onClick={toggleFund}
+          className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-dashed border-kbc-line px-3 py-1 text-xs font-medium text-kbc-muted hover:bg-kbc-bg">
+          <Icon name="reset" className="h-3.5 w-3.5" /> Demo: {funded ? 'reset fund' : 'simulate funded'}
+        </button>
+      </Card>
+
+      <Card aria-label="Where your money goes">
+        <div className="flex items-center gap-2 text-kbc-sky-dark"><Icon name="chart" /><span className="text-xs font-semibold uppercase tracking-wide">Where your money goes</span></div>
+        <p className="mt-1 text-sm text-kbc-muted">This month · synthetic · subscriptions highlighted</p>
+        <div className="mt-3">
+          <Donut
+            data={savingDemoExtras.monthlySpend.map(s => ({ label: s.label, value: s.cents, highlight: 'highlight' in s && s.highlight }))}
+            centerTop="Spending"
+            centerMain={formatCents(spendTotal)}
+          />
+        </div>
+      </Card>
+
       <SavingKateCard />
+
+      <InvestTip
+        emergencyFundCents={emergencyFundCents}
+        thresholdCents={threshold}
+        monthlyCents={savingDemoExtras.investDemoMonthlyCents}
+        horizonYears={savingDemoExtras.investHorizonYears}
+        indexes={savingDemoExtras.investIndexes}
+      />
 
       <button type="button" onClick={onOpenKate} className="flex w-full items-center justify-between rounded-lg bg-white p-3 text-sm font-medium shadow-card hover:bg-kbc-kate">
         <span className="flex items-center gap-2"><Icon name="chat" /> Open your conversation with Kate</span>

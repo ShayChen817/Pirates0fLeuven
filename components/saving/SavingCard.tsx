@@ -28,7 +28,10 @@ export function SavingKateCard() {
       card = (
         <KateCard title="A small review for your goal" footer={<>
           <Button disabled={busy} onClick={() => setSheet('evidence')}>Review the charges</Button>{notNow}{why}
-        </>}>{snapshot.primary!.message}</KateCard>
+        </>}>
+          {snapshot.primary!.message}
+          <p className="mt-2 text-xs text-kbc-muted">Two quick steps: tell Kate which one you no longer use, then add the saving to your plan. Nothing is cancelled.</p>
+        </KateCard>
       );
       break;
     case 'intention': {
@@ -49,6 +52,11 @@ export function SavingKateCard() {
             <Row label="Planned per month" value={<>{formatCents(baseline.monthlyCents)} → <strong>{formatCents(revised.monthlyCents)}</strong></>} />
             <Row label="Projected finish" value={<>{baseline.completionDate ? formatMonth(baseline.completionDate) : '—'} → <strong>{revised.completionDate ? formatMonth(revised.completionDate) : '—'}</strong></>} />
           </dl>
+          {revised.completionDate && baseline.completionDate && revised.completionDate < baseline.completionDate ? (
+            <p className="mt-2 flex items-center gap-1.5 rounded-lg bg-kbc-ok-soft px-3 py-2 text-sm font-semibold text-kbc-ok">
+              <Icon name="check" className="h-4 w-4 shrink-0" /> Reaches your goal sooner — {formatMonth(revised.completionDate)} instead of {formatMonth(baseline.completionDate)}
+            </p>
+          ) : null}
           <p className="mt-2 text-xs text-kbc-muted">Projection only: assumes the charge stops, the amount is redirected, contributions continue and there is no interest.</p>
         </KateCard>
       );
