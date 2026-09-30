@@ -1,38 +1,54 @@
 'use client';
 
-// DEMO: Saving concept preview — not connected to the engine.
 import { useSaving } from '@/components/session/SavingProvider';
 import { formatCents, formatDate } from '@/components/format';
 import { Badge, Card, Row } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
-import { plannedMonthlyCents, project, savingScenario } from '@/components/demo/savingPreview';
+import { savingView } from './view';
+
+const viewLabel = {
+  review: 'Ask: review subscriptions', intention: 'Offer: saving intention', planned: 'Quiet: intention planned',
+  kept: 'Quiet: customer keeps service', snoozed: 'Quiet: snoozed 30 days', paused: 'Quiet: suggestions paused', quiet: 'Quiet',
+} as const;
 
 export function SavingPreviewPanel() {
-  const { state } = useSaving();
-  const { goal } = savingScenario;
-  const gap = goal.targetCents - goal.savedCents;
-  const p = project(plannedMonthlyCents(state));
+  const { snapshot } = useSaving();
   return (
-    <Card aria-label="Saving preview details" className="!p-0 overflow-hidden">
+    <Card aria-label="Saving decision details" className="!p-0 overflow-hidden">
       <div className="flex items-center gap-2 bg-kbc-navy px-4 py-3 text-white">
         <Icon name="engine" />
         <div>
           <h2 className="text-base font-semibold">Behind the scenes</h2>
-          <p className="text-xs text-white/80">Saving concept preview</p>
+          <p className="text-xs text-white/80">Saving service (saving-1.0)</p>
         </div>
       </div>
       <div className="space-y-3 p-4 text-sm">
-        <Badge tone="warn">Concept preview — not connected to the engine</Badge>
-        <p className="text-kbc-navy/90">The Saving contract is not agreed yet. This local preview uses fixed synthetic values; the decision engine will replace it.</p>
-        <dl>
-          <Row label="Preview state" value={state.status} />
-          <Row label="Remaining gap" value={formatCents(gap)} />
-          <Row label="Planned per month" value={formatCents(p.monthlyCents)} />
-          <Row label={`ceil(${formatCents(gap)} ÷ ${formatCents(p.monthlyCents)})`} value={`${p.contributions} contributions`} />
-          <Row strong label="Projected finish" value={formatDate(p.completionDate)} />
-          <Row muted label="Actual saved (unchanged by plans)" value={formatCents(goal.savedCents)} />
-        </dl>
-        <p className="text-xs text-kbc-muted">Zero interest, uninterrupted contributions on the first of each month. A plan never increases the saved amount; no investment is used for this near-term goal.</p>
+        <Badge tone="warn">In-process service · synthetic data</Badge>
+        {!snapshot ? <p role="status" className="text-kbc-muted">Loading…</p> : (
+          <>
+            <dl>
+              <Row label="Kate's next step" value={viewLabel[savingView(snapshot)]} />
+              <Row label="Revision" value={snapshot.revision} />
+              <Row label="Subscriptions detected" value={`${snapshot.subscriptions.length} (three equal monthly charges)`} />
+              <Row label="Remaining gap" value={formatCents(snapshot.projected.remainingCents)} />
+            </dl>
+            <div className="grid grid-cols-2 gap-2">
+              {([['Baseline', snapshot.baseline], ['With your plan', snapshot.projected]] as const).map(([label, p]) => (
+                <div key={label} className="rounded-lg bg-kbc-bg p-3">
+                  <p className="text-xs font-semibold text-kbc-muted">{label}</p>
+                  <p className="mt-1 tabular-nums">{formatCents(p.monthlyCents)}/month</p>
+                  <p className="tabular-nums">{p.contributionsNeeded ?? '—'} contributions</p>
+                  <p className="font-semibold tabular-nums">{p.completionDate ? formatDate(p.completionDate) : '—'}</p>
+                  <p className="text-xs text-kbc-muted">At deadline: {formatCents(p.deadlineBalanceCents)}</p>
+                </div>
+              ))}
+            </div>
+            <dl><Row muted label="Actual saved (only changes with recorded contributions)" value={formatCents(snapshot.goal.savedCents)} /></dl>
+            <ul className="list-disc space-y-0.5 pl-5 text-xs text-kbc-muted">
+              {snapshot.projected.assumptions.map(a => <li key={a}>{a}</li>)}
+            </ul>
+          </>
+        )}
       </div>
     </Card>
   );

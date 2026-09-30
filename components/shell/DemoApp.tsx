@@ -13,7 +13,6 @@ import { SavingHome } from '@/components/saving/SavingHome';
 import { SavingKate } from '@/components/saving/SavingKate';
 import { SavingKnows } from '@/components/saving/SavingKnows';
 import { SavingPreviewPanel } from '@/components/saving/SavingPreviewPanel';
-import { SAVING_PREVIEW_LABEL } from '@/components/demo/savingPreview';
 
 export type Scenario = 'saving' | 'moving';
 export type Tab = 'home' | 'kate' | 'knows';
@@ -42,7 +41,7 @@ function DemoShell() {
   const saving = useSaving();
 
   const reset = () => {
-    if (scenario === 'saving') saving.dispatch({ type: 'RESET' });
+    if (scenario === 'saving') void saving.send({ type: 'RESET_DEMO' });
     else void moments.send({ type: 'RESET_DEMO' });
     setTab('home');
   };
@@ -100,7 +99,7 @@ function PhoneFrame({ scenario, tab, onTab }: { scenario: Scenario; tab: Tab; on
             <p className="text-base font-semibold">Lotte</p>
           </div>
           <div className="flex items-center gap-2">
-            {scenario === 'saving' ? <Badge tone="sky">{SAVING_PREVIEW_LABEL}</Badge> : <Badge tone="sky">Synthetic fixtures</Badge>}
+            <Badge tone="sky">Synthetic data</Badge>
             <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-sm font-semibold">L</span>
           </div>
         </div>
