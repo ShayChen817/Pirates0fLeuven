@@ -32,8 +32,9 @@ Moving starts at €2,850 potentially available. Confirming a €2,500 move leav
 
 ## Layout and interaction
 
-- Custom KBC-inspired palette: ink navy `#183449`, muted blue `#007da9`, warm canvas `#f8f8f5`, white surfaces and restrained green. These are prototype design choices, not exact KBC brand tokens. Albert Sans is self-hosted.
+- Custom KBC-inspired palette: ink navy `#073b63`, clear blue `#0079b8`, pale sky canvas `#f5faff`, white surfaces and fresh green. These are prototype design choices, not exact KBC brand tokens. Albert Sans is self-hosted.
 - Profile shows identity, a short introduction and grouped settings. Bio, preference, goal and evidence details open in bottom sheets instead of filling a long nested-card page.
+- Kate uses a continuous light header with customer-facing copy. The empty Today placeholder is removed, bringing the next action closer to the header. History uses pale blue assistant bubbles.
 - Calculation details and the judge-facing trace are collapsed initially.
 - The CSS phone fits available height, with a titanium rim, camera detail and status bar. Below 640 px the app fills the screen; demo controls remain below it.
 - Tab scroll containers remain mounted. Action titles do not key/remount cards. Device scaling has no competing entrance animation. Service responses update the existing view instead of replaying screen transitions.

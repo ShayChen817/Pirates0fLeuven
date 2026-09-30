@@ -158,3 +158,8 @@ Frontend: Profile now has a short introduction and three grouped settings. Bio, 
 Interaction fix: retain tab scroll containers instead of keying/remounting them on navigation; remove title-keyed Kate card entrances; keep device scale separate from animation transforms. A service response updates the existing content. Sheet focus is trapped and restored with `preventScroll`; rejected confirmations keep the editor open. Only local amount, progress, control and sheet feedback animates.
 
 Reset clears the active domain session and the shared Profile. Refreshing the document resets all in-memory services. Cross-scenario ranking, a live bio model, persistent storage, recognition UI and voice remain deferred. Verification is recorded in FRONTEND.md; no automated test suite is added in this stage.
+
+
+## Kate header and brighter palette
+
+User feedback: the Kate header had an abrupt dark band under the light status bar and too much empty space; the overall palette looked grey. Updated Kate to a continuous light header, removed the empty Today row and replaced the mechanical input hint with customer-facing copy. Brightened shared canvas, blue accents, primary buttons, avatars and navigation highlights. No contracts, state transitions or screen-mount behaviour changed.

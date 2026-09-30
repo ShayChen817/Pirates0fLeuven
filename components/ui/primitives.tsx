@@ -8,7 +8,7 @@ import { formatCents } from '@/components/format';
 type Variant = 'primary' | 'secondary' | 'chip' | 'text';
 
 const variants: Record<Variant, string> = {
-  primary: 'min-h-12 rounded-2xl bg-kbc-navy px-5 text-[15px] font-semibold text-white shadow-soft hover:bg-kbc-navy-2 hover:shadow-lift',
+  primary: 'min-h-12 rounded-2xl bg-kbc-blue px-5 text-[15px] font-semibold text-white shadow-soft hover:bg-kbc-blue-ink hover:shadow-lift',
   secondary: 'min-h-12 rounded-2xl bg-tint px-5 text-[15px] font-semibold text-ink hover:bg-[oklch(93%_0.035_235)]',
   chip: 'h-10 rounded-full bg-surface px-4 text-sm font-semibold text-ink ring-1 ring-line hover:ring-kbc-blue',
   text: 'h-10 rounded-full px-2 text-sm font-semibold text-kbc-blue-ink hover:text-kbc-navy',
@@ -33,7 +33,7 @@ export function Card({ children, className = '', ...rest }:
 export function KateAvatar({ size = 'h-10 w-10 text-base' }: { size?: string }) {
   return (
     <span aria-hidden="true"
-      className={`${size} inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#83b6c1] to-[#256b82] font-bold text-white shadow-soft`}>
+      className={`${size} inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#34bee9] to-[#087bbd] font-bold text-white shadow-soft`}>
       K
     </span>
   );
