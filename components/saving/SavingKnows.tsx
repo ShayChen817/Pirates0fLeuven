@@ -27,16 +27,16 @@ export function SavingKnows() {
     <div className="space-y-4">
       <div>
         <h2 className="text-xl font-bold">What Kate knows</h2>
-        <p className="text-sm text-kbc-muted">For your {goal.title} goal. Synthetic data, this demo session only.</p>
+        <p className="text-sm text-ink-3">For your {goal.title} goal. Synthetic data, this demo session only.</p>
       </div>
       {error ? <Notice tone="error" title="Not changed" onClose={clearError}>{error.message}</Notice> : null}
       <Card aria-label="Suggestions">
         <div className="flex items-center justify-between gap-2">
           <div>
             <h3 className="text-sm font-semibold">Saving suggestions</h3>
-            <p className="text-xs text-kbc-muted">{snapshot.proactiveEnabled ? 'On. Kate may suggest one next step.' : 'Paused. Kate stays quiet.'}</p>
+            <p className="text-xs text-ink-3">{snapshot.proactiveEnabled ? 'On. Kate may suggest one next step.' : 'Paused. Kate stays quiet.'}</p>
           </div>
-          <Button variant="secondary" className="!px-3 !py-2 text-sm" busy={pending === 'SET_PROACTIVE'} disabled={busy}
+          <Button variant="secondary" className="min-h-9 min-w-[5.5rem] !px-3 !py-2 text-sm" busy={pending === 'SET_PROACTIVE'} disabled={busy}
             onClick={() => void send({ type: 'SET_PROACTIVE', enabled: !snapshot.proactiveEnabled })}>
             {snapshot.proactiveEnabled ? 'Pause' : 'Resume'}
           </Button>
@@ -45,15 +45,15 @@ export function SavingKnows() {
       <Card aria-label="Facts">
         <ul className="space-y-2">
           {facts.map(f => (
-            <li key={f.key} className="rounded-lg bg-kbc-bg p-3 text-sm">
+            <li key={f.key} className="rounded-lg bg-canvas p-3 text-sm">
               <div className="flex items-baseline justify-between gap-2"><span className="font-medium">{f.label}</span>
                 <Badge tone={f.kind === 'Observed' ? 'muted' : 'ok'}>{f.kind}</Badge></div>
-              <p className="mt-0.5 text-kbc-navy/90">{f.value}</p>
+              <p className="mt-0.5 text-ink-2">{f.value}</p>
             </li>
           ))}
         </ul>
       </Card>
-      <p className="text-xs text-kbc-muted">Lifestyle preferences are not inferred from your spending. They would only ever be something you choose to share.</p>
+      <p className="text-xs text-ink-3">Lifestyle preferences are not inferred from your spending. They would only ever be something you choose to share.</p>
     </div>
   );
 }

@@ -1,96 +1,125 @@
 'use client';
 
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icon';
+import { formatCents } from '@/components/format';
 
 type Variant = 'primary' | 'secondary' | 'chip' | 'text';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-kbc-navy text-white hover:bg-kbc-navy-dark disabled:bg-kbc-muted/60 px-4 py-3 rounded-lg font-semibold',
-  secondary: 'border border-kbc-navy text-kbc-navy bg-white hover:bg-kbc-kate px-4 py-3 rounded-lg font-medium',
-  chip: 'border border-kbc-sky text-kbc-navy bg-white hover:bg-kbc-kate px-3.5 py-2 rounded-full text-sm font-medium',
-  text: 'text-kbc-sky-dark underline-offset-2 hover:underline px-1 py-1 text-sm font-medium',
+  primary: 'h-12 rounded-full bg-kbc-navy px-5 text-[15px] font-semibold text-white shadow-soft hover:bg-kbc-navy-2 hover:shadow-lift',
+  secondary: 'h-12 rounded-full bg-tint px-5 text-[15px] font-semibold text-ink hover:bg-[oklch(93%_0.035_235)]',
+  chip: 'h-10 rounded-full bg-surface px-4 text-sm font-semibold text-ink ring-1 ring-line hover:ring-kbc-blue',
+  text: 'h-10 rounded-full px-2 text-sm font-semibold text-kbc-blue-ink hover:text-kbc-navy',
 };
 
 export function Button({ variant = 'primary', className = '', busy, children, ...rest }:
   ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; busy?: boolean }) {
   return (
     <button type="button" {...rest} disabled={rest.disabled || busy} aria-busy={busy || undefined}
-      className={`inline-flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${variants[variant]} ${className}`}>
+      className={`press inline-flex select-none items-center justify-center gap-2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-55 ${variants[variant]} ${className}`}>
       {busy ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" /> : null}
       {children}
     </button>
   );
 }
 
-export function Card({ children, className = '', as: Tag = 'section', ...rest }:
-  { children: ReactNode; className?: string; as?: 'section' | 'div' | 'article'; 'aria-label'?: string; 'aria-labelledby'?: string }) {
-  return <Tag {...rest} className={`rounded-lg border border-kbc-line bg-kbc-card p-4 shadow-card ${className}`}>{children}</Tag>;
+export function Card({ children, className = '', ...rest }:
+  { children: ReactNode; className?: string; 'aria-label'?: string; 'aria-labelledby'?: string }) {
+  return <section {...rest} className={`rounded-[var(--radius-card)] bg-surface p-5 shadow-soft ${className}`}>{children}</section>;
 }
 
-export function KateAvatar({ size = 'h-9 w-9' }: { size?: string }) {
+export function KateAvatar({ size = 'h-10 w-10 text-base' }: { size?: string }) {
   return (
     <span aria-hidden="true"
-      className={`${size} inline-flex shrink-0 items-center justify-center rounded-full bg-kbc-navy text-sm font-bold text-white ring-2 ring-kbc-sky`}>
+      className={`${size} inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-kbc-sky to-kbc-blue font-bold text-white shadow-soft`}>
       K
     </span>
   );
 }
 
-/** Proactive Kate advice card — the single primary action lives here. */
-export function KateCard({ title, children, footer, tone = 'kate', label = 'Kate' }:
-  { title: string; children: ReactNode; footer?: ReactNode; tone?: 'kate' | 'quiet'; label?: string }) {
+/** Kate's proactive advice card: the single primary action of a screen lives here. */
+export function KateCard({ title, children, actions, quiet, eyebrow = 'Kate' }:
+  { title: string; children?: ReactNode; actions?: ReactNode; quiet?: boolean; eyebrow?: string }) {
   return (
-    <article aria-label={`${label}: ${title}`}
-      className={`rounded-lg border-l-4 border-kbc-sky p-4 shadow-card ${tone === 'kate' ? 'bg-kbc-kate' : 'bg-white'}`}>
-      <div className="flex gap-3">
+    <article key={title} aria-label={`${eyebrow}: ${title}`}
+      className={`animate-rise rounded-[var(--radius-card)] p-5 ${quiet ? 'bg-surface/70 ring-1 ring-line' : 'bg-surface shadow-lift'}`}>
+      <div className="flex items-start gap-3">
         <KateAvatar />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wide text-kbc-sky-dark">{label}</p>
-          <h3 className="mt-0.5 text-base font-semibold leading-snug text-kbc-navy">{title}</h3>
-          <div className="mt-1.5 text-sm leading-relaxed text-kbc-navy/90">{children}</div>
+          <p className="text-xs font-semibold text-kbc-blue-ink">{eyebrow}</p>
+          <h3 className="mt-0.5 text-[17px] font-semibold leading-snug text-ink">{title}</h3>
         </div>
       </div>
-      {footer ? <div className="mt-3 flex flex-wrap gap-2">{footer}</div> : null}
+      {children ? <div className="mt-3 text-[15px] leading-relaxed text-ink-2">{children}</div> : null}
+      {actions ? <div className="mt-4 flex flex-wrap items-center gap-2">{actions}</div> : null}
     </article>
   );
 }
 
-export function ProgressBar({ value, max, label }: { value: number; max: number; label: string }) {
+export function ProgressBar({ value, max, label, tone = 'blue' }: { value: number; max: number; label: string; tone?: 'blue' | 'green' | 'light' }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const [shown, setShown] = useState(0);
+  useEffect(() => { const id = requestAnimationFrame(() => setShown(pct)); return () => cancelAnimationFrame(id); }, [pct]);
+  const fill = tone === 'green' ? 'bg-kbc-green' : tone === 'light' ? 'bg-white' : 'bg-kbc-blue';
+  const track = tone === 'light' ? 'bg-white/20' : 'bg-line';
   return (
     <div role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value}
-      className="h-3 w-full overflow-hidden rounded-full bg-kbc-line">
-      <div className="h-full rounded-full bg-kbc-sky" style={{ width: `${pct}%` }} />
+      className={`h-2 w-full overflow-hidden rounded-full ${track}`}>
+      <div className={`h-full rounded-full ${fill} transition-[width] duration-700 ease-[var(--ease-out)]`} style={{ width: `${shown}%` }} />
     </div>
   );
 }
 
-export function Badge({ children, tone = 'sky' }: { children: ReactNode; tone?: 'sky' | 'ok' | 'warn' | 'muted' | 'navy' }) {
+/** Counts from the previous amount to the new one, so a change is felt, not just shown. */
+export function AnimatedAmount({ cents, className = '' }: { cents: number; className?: string }) {
+  const [shown, setShown] = useState(cents);
+  const from = useRef(cents);
+  useEffect(() => {
+    const start = from.current;
+    if (start === cents) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { from.current = cents; setShown(cents); return; }
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / 650);
+      const eased = 1 - Math.pow(1 - p, 3);
+      if (p < 1) { setShown(Math.round((start + (cents - start) * eased) / 100) * 100); raf = requestAnimationFrame(tick); }
+      else { setShown(cents); from.current = cents; }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); from.current = cents; };
+  }, [cents]);
+  return (
+    <span className={`tabular-nums ${className}`}>
+      <span aria-hidden="true">{formatCents(shown)}</span>
+      <span className="sr-only">{formatCents(cents)}</span>
+    </span>
+  );
+}
+
+export function Badge({ children, tone = 'tint' }: { children: ReactNode; tone?: 'tint' | 'ok' | 'warn' | 'muted' | 'navy' }) {
   const tones = {
-    sky: 'bg-kbc-kate text-kbc-navy', ok: 'bg-kbc-ok-soft text-kbc-ok', warn: 'bg-kbc-warn-soft text-kbc-warn',
-    muted: 'bg-kbc-bg text-kbc-muted', navy: 'bg-kbc-navy text-white',
+    tint: 'bg-tint text-kbc-blue-ink', ok: 'bg-ok-soft text-kbc-green-ink', warn: 'bg-warn-soft text-warn',
+    muted: 'bg-canvas text-ink-3', navy: 'bg-kbc-navy text-white',
   } as const;
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${tones[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold leading-none ${tones[tone]}`}>{children}</span>;
 }
 
 export function Notice({ tone, title, children, onClose }:
   { tone: 'error' | 'info' | 'ok'; title: string; children?: ReactNode; onClose?: () => void }) {
-  const styles = {
-    error: 'border-kbc-error bg-kbc-error-soft text-kbc-error',
-    info: 'border-kbc-sky bg-kbc-kate text-kbc-navy',
-    ok: 'border-kbc-ok bg-kbc-ok-soft text-kbc-ok',
-  } as const;
+  const styles = { error: 'bg-error-soft text-error', info: 'bg-tint text-ink', ok: 'bg-ok-soft text-kbc-green-ink' } as const;
   return (
-    <div role={tone === 'error' ? 'alert' : 'status'} className={`rounded-lg border-l-4 p-3 text-sm ${styles[tone]}`}>
-      <div className="flex items-start gap-2">
+    <div role={tone === 'error' ? 'alert' : 'status'} className={`animate-rise rounded-2xl p-4 text-sm ${styles[tone]}`}>
+      <div className="flex items-start gap-2.5">
         <Icon name={tone === 'ok' ? 'check' : 'info'} className="mt-0.5 h-4 w-4 shrink-0" />
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{title}</p>
-          {children ? <div className="mt-0.5 text-kbc-navy/90">{children}</div> : null}
+          {children ? <div className="mt-0.5 text-ink-2">{children}</div> : null}
         </div>
         {onClose ? (
-          <button type="button" onClick={onClose} className="rounded p-0.5 hover:bg-black/5" aria-label="Dismiss message">
+          <button type="button" onClick={onClose} className="press -m-1 rounded-full p-1 hover:bg-black/5" aria-label="Dismiss message">
             <Icon name="close" className="h-4 w-4" />
           </button>
         ) : null}
@@ -99,30 +128,66 @@ export function Notice({ tone, title, children, onClose }:
   );
 }
 
-/** Bottom sheet inside the phone frame (evidence drawers, forms, confirmation). */
+/** iOS-style bottom sheet inside the phone screen. */
 export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
-  return (
-    <div className="absolute inset-0 z-30 flex flex-col justify-end bg-kbc-navy/40" role="presentation"
-      onKeyDown={e => { if (e.key === 'Escape') onClose(); }}>
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => { setTarget(document.getElementById('phone-screen')); }, []);
+  if (!target) return null;
+  return createPortal(
+    <div className="absolute inset-0 z-40 flex flex-col justify-end" onKeyDown={e => { if (e.key === 'Escape') onClose(); }}>
+      <button type="button" aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 animate-fade bg-kbc-navy/35 backdrop-blur-[2px]" />
       <div role="dialog" aria-modal="true" aria-label={title}
-        className="max-h-[88%] overflow-y-auto rounded-t-2xl bg-white p-4 pb-6 shadow-raised">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-kbc-navy">{title}</h2>
-          <button type="button" onClick={onClose} autoFocus className="rounded-full p-1.5 text-kbc-muted hover:bg-kbc-bg" aria-label="Close">
-            <Icon name="close" />
+        className="no-scrollbar relative max-h-[86%] animate-sheet overflow-y-auto rounded-t-[28px] bg-surface px-5 pb-8 pt-2 shadow-lift">
+        <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-line" aria-hidden="true" />
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h2 className="text-xl font-semibold text-ink">{title}</h2>
+          <button type="button" onClick={onClose} autoFocus className="press rounded-full bg-canvas p-2 text-ink-2 hover:bg-tint" aria-label="Close">
+            <Icon name="close" className="h-4 w-4" />
           </button>
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    target,
   );
 }
 
 export function Row({ label, value, strong, muted }: { label: ReactNode; value: ReactNode; strong?: boolean; muted?: boolean }) {
   return (
-    <div className={`flex items-baseline justify-between gap-3 py-1.5 text-sm ${strong ? 'border-t border-kbc-line pt-2 font-semibold' : ''} ${muted ? 'text-kbc-muted' : ''}`}>
+    <div className={`flex items-baseline justify-between gap-3 py-2 text-[15px] ${strong ? 'mt-1 border-t border-line pt-3 font-semibold text-ink' : muted ? 'text-ink-3' : 'text-ink-2'}`}>
       <dt>{label}</dt>
       <dd className="tabular-nums">{value}</dd>
     </div>
+  );
+}
+
+/** Navy header block that the status bar sits on, like the KBC Mobile home. */
+export function Hero({ eyebrow, title, children }: { eyebrow?: ReactNode; title?: ReactNode; children?: ReactNode }) {
+  return (
+    <div className="bg-kbc-navy px-5 pb-8 pt-2 text-white">
+      {eyebrow ? <div className="text-[13px] font-medium text-white/70">{eyebrow}</div> : null}
+      {title ? <h2 className="mt-1 text-[28px] font-bold leading-tight tracking-tight">{title}</h2> : null}
+      {children}
+    </div>
+  );
+}
+
+/** White content sheet overlapping the hero with rounded top corners. */
+export function Body({ children }: { children: ReactNode }) {
+  return <div className="stagger relative -mt-4 space-y-4 rounded-t-[24px] bg-canvas px-4 pb-6 pt-5">{children}</div>;
+}
+
+export function Checklist({ items }: { items: { ok: boolean; text: ReactNode }[] }) {
+  return (
+    <ul className="space-y-2 text-[15px] text-ink-2">
+      {items.map((it, i) => (
+        <li key={i} className="flex gap-2.5">
+          <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${it.ok ? 'bg-ok-soft text-kbc-green-ink' : 'bg-tint text-kbc-blue-ink'}`}>
+            <Icon name={it.ok ? 'check' : 'info'} className="h-3 w-3" />
+          </span>
+          <span>{it.text}</span>
+        </li>
+      ))}
+    </ul>
   );
 }

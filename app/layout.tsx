@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Albert_Sans } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const albert = Albert_Sans({ subsets: ['latin'], variable: '--font-albert', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Life Goals with Kate — Pirates0fLeuven',
@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#003768',
+  themeColor: '#0d2a50',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+    <html lang="en" className={albert.variable}>
+      <body className="min-h-dvh font-sans">{children}</body>
     </html>
   );
 }

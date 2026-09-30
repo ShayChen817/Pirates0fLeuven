@@ -3,13 +3,13 @@
 import type { SavingSnapshot } from '@/lib/saving-types';
 import { useSaving } from '@/components/session/SavingProvider';
 import { formatCents } from '@/components/format';
-import { BubbleList } from '@/components/moving/MovingKate';
+import { KateScreen, type Bubble } from '@/components/ui/KateScreen';
 import { SavingKateCard } from './SavingCard';
 import { subscriptionById } from './view';
 
 /** Guided history derived from the saving snapshot — the same state the home screen reads. */
-function history(s: SavingSnapshot) {
-  const out: { from: 'kate' | 'customer'; text: string }[] = [];
+function history(s: SavingSnapshot): Bubble[] {
+  const out: Bubble[] = [];
   if (!s.reviews.length && !s.snoozedUntil) return out;
   const total = s.subscriptions.reduce((sum, x) => sum + x.monthlyCents, 0);
   out.push({ from: 'kate', text: `You have ${s.subscriptions.length} recurring streaming charges totalling ${formatCents(total)}/month. Is there one you no longer use?` });
@@ -28,10 +28,8 @@ function history(s: SavingSnapshot) {
 export function SavingKate() {
   const { snapshot } = useSaving();
   return (
-    <div className="space-y-3">
-      <p className="text-center text-xs text-kbc-muted">Kate · guided advice. Replies use the buttons; there is no free-text chat in this prototype.</p>
-      {snapshot ? <BubbleList items={history(snapshot)} /> : null}
+    <KateScreen history={snapshot ? history(snapshot) : []}>
       <SavingKateCard />
-    </div>
+    </KateScreen>
   );
 }

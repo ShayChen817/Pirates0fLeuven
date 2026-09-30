@@ -1,40 +1,83 @@
 @import "tailwindcss";
 
-/* KBC-inspired tokens (see skills/kbc-design). Values marked approx in docs/DESIGN.md. */
+/*
+  KBC-inspired tokens. Navy #0d2a50 and blue #0097db are taken from kbc.be; sky #00aeef and
+  green #80c342 from KBC's own stylesheet. Neutrals are tinted towards the brand blue (no pure greys).
+*/
 @theme {
-  --color-kbc-navy: #003768;
-  --color-kbc-navy-dark: #002549;
+  --color-kbc-navy: #0d2a50;
+  --color-kbc-navy-2: #16396a;
+  --color-kbc-blue: #0097db;
+  --color-kbc-blue-ink: #00699a;
   --color-kbc-sky: #00aeef;
-  --color-kbc-sky-dark: #0077a8;
-  --color-kbc-kate: #e8f4f8;
-  --color-kbc-bg: #f5f5f5;
-  --color-kbc-card: #ffffff;
-  --color-kbc-muted: #5c6670;
-  --color-kbc-line: #e0e0e0;
-  --color-kbc-ok: #2e7d32;
-  --color-kbc-ok-soft: #e8f5e9;
-  --color-kbc-warn: #b45309;
-  --color-kbc-warn-soft: #fff4e5;
-  --color-kbc-error: #b3261e;
-  --color-kbc-error-soft: #fdecea;
+  --color-kbc-green: #80c342;
+  --color-kbc-green-ink: #3f7a16;
 
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-ink: #0d2a50;
+  --color-ink-2: oklch(42% 0.03 255);
+  --color-ink-3: oklch(55% 0.025 250);
+  --color-surface: #ffffff;
+  --color-canvas: oklch(97.2% 0.008 240);
+  --color-tint: oklch(95.5% 0.025 235);
+  --color-line: oklch(91.5% 0.012 245);
+  --color-warn: oklch(55% 0.13 60);
+  --color-warn-soft: oklch(96% 0.035 75);
+  --color-error: oklch(52% 0.18 27);
+  --color-error-soft: oklch(96% 0.025 25);
+  --color-ok-soft: oklch(96% 0.04 135);
 
-  --shadow-card: 0 2px 4px rgba(0, 55, 104, 0.08);
-  --shadow-raised: 0 4px 12px rgba(0, 55, 104, 0.14);
+  --font-sans: var(--font-albert), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-field: 10px;
+  --radius-card: 16px;
+
+  --shadow-soft: 0 1px 2px oklch(30% 0.05 255 / 0.06), 0 4px 16px oklch(30% 0.05 255 / 0.06);
+  --shadow-lift: 0 2px 4px oklch(30% 0.05 255 / 0.08), 0 10px 28px oklch(30% 0.05 255 / 0.12);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  --animate-rise: rise 380ms var(--ease-out) both;
+  --animate-fade: fade 220ms var(--ease-out) both;
+  --animate-sheet: sheet 420ms var(--ease-ios) both;
+  --animate-pop: pop 420ms var(--ease-spring) both;
 }
+
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
 
 html,
 body {
-  background: #dfe6ee;
-  color: var(--color-kbc-navy);
+  background: oklch(93% 0.018 245);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Visible keyboard focus everywhere. */
+/* Staggered entrance: children of .stagger rise in 70ms apart. */
+.stagger > * { animation: var(--animate-rise); }
+.stagger > *:nth-child(2) { animation-delay: 70ms; }
+.stagger > *:nth-child(3) { animation-delay: 140ms; }
+.stagger > *:nth-child(4) { animation-delay: 210ms; }
+.stagger > *:nth-child(5) { animation-delay: 280ms; }
+.stagger > *:nth-child(n + 6) { animation-delay: 350ms; }
+
+/* Tactile controls: 150ms hover lift, 160ms press. */
+.press {
+  transition: transform 160ms var(--ease-out), box-shadow 150ms var(--ease-out), background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.press:hover:not(:disabled) { transform: translateY(-1px); }
+.press:active:not(:disabled) { transform: scale(0.96); }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 :focus-visible {
   outline: 3px solid var(--color-kbc-sky);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -42,6 +85,7 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
   }
 }

@@ -3,11 +3,9 @@
 import type { Snapshot } from '@/lib/types';
 import { useMoments } from '@/components/session/MomentsProvider';
 import { formatCents, formatDate } from '@/components/format';
-import { KateAvatar } from '@/components/ui/primitives';
+import { KateScreen, type Bubble } from '@/components/ui/KateScreen';
 import { PrimaryActionCard } from './PrimaryAction';
 import { byRule } from './copy';
-
-type Bubble = { from: 'kate' | 'customer'; text: string };
 
 /** Guided history derived from the shared snapshot — the same state the home screen reads. */
 function history(snapshot: Snapshot): Bubble[] {
@@ -44,25 +42,8 @@ function history(snapshot: Snapshot): Bubble[] {
 export function MovingKate() {
   const { snapshot } = useMoments();
   return (
-    <div className="space-y-3">
-      <p className="text-center text-xs text-kbc-muted">Kate · guided advice. Replies use the buttons; there is no free-text chat in this prototype.</p>
-      {snapshot ? <BubbleList items={history(snapshot)} /> : null}
+    <KateScreen history={snapshot ? history(snapshot) : []}>
       <PrimaryActionCard />
-    </div>
-  );
-}
-
-export function BubbleList({ items }: { items: Bubble[] }) {
-  return (
-    <ol className="space-y-2" aria-label="Conversation history">
-      {items.map((b, i) => (
-        <li key={i} className={`flex gap-2 ${b.from === 'customer' ? 'justify-end' : ''}`}>
-          {b.from === 'kate' ? <KateAvatar size="h-7 w-7" /> : null}
-          <p className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${b.from === 'kate' ? 'rounded-tl-sm bg-kbc-kate text-kbc-navy' : 'rounded-tr-sm bg-kbc-navy text-white'}`}>
-            <span className="sr-only">{b.from === 'kate' ? 'Kate: ' : 'You: '}</span>{b.text}
-          </p>
-        </li>
-      ))}
-    </ol>
+    </KateScreen>
   );
 }
