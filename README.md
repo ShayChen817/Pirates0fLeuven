@@ -38,7 +38,7 @@ The PR proposes model-assisted candidate selection. For the first slice, use det
 
 **Profile → understand and confirm → relevant evidence → one suggestion → feedback updates the shared context.**
 
-Shay enters a Japan goal and a bio asking to review subscriptions. Kate proposes the subscription-review preference; Shay confirms it. Synthetic recurring charges support a review, and Shay identifies Stream A as unused. Accepting a €13/month intention changes the projected completion from September to August; actual savings remain €650. If Shay instead asks only about coffee, do not present the streaming card as a matching recommendation: the shipped data has no coffee alternative, so explain the limitation or ask whether she wants a subscription review. Do not invent merchant prices.
+Shay enters a Japan goal and a bio asking to review subscriptions. Kate proposes the subscription-review preference; Shay confirms it. Synthetic recurring charges support a review, and Shay identifies Netflix as unused. Accepting a €13/month intention changes the projected completion from September to August; actual savings remain €650. If Shay instead asks only about coffee, do not present the streaming card as a matching recommendation: the shipped data has no coffee alternative, so explain the limitation or ask whether she wants a subscription review. Familiar merchant names use clearly labelled synthetic amounts, not current subscription prices. No price comparison is claimed.
 
 Moving is a second demonstration of the same concept: an explicitly confirmed plan feeds the existing commitment/coverage journey. The separate long-term investment simulation does not fund the near-term Japan target.
 
@@ -453,6 +453,14 @@ Prioritise the Profile-to-Saving story and visible customer corrections. Profile
 
 No user-study results, time savings or financial benefits have been measured yet. Any later comparison should state its baseline, sample and method.
 
+## Spending and emergency-buffer context (PR #2)
+
+Saving Home now includes a compact spending donut and an emergency-buffer overview, styled with the same blue/white tokens and expandable details as Profile. The September 2026 summary covers **selected synthetic categories (€635 total)**, not a complete budget. Its €38 subscription category comes from the same synthetic charges shown in Kate: Netflix €13, Amazon Prime €15 and Disney+ €10. These are example amounts, not verified prices.
+
+`createSavingInsightsService()` owns the independent `saving-insights-1.0` session: spending totals, a synthetic €3,500 buffer against an illustrative €5,000 target, presenter fixture changes and an optional educational projection. This leaves Moving v1 and Saving `saving-1.0` unchanged. Reset also resets the buffer; switching tabs or scenarios preserves it. The presenter control is under **Behind the experience**, outside the customer phone.
+
+Reaching the fixture target does not establish investment suitability. A customer must explicitly open the 10-year example. It uses a **separate hypothetical €100/month**, with constant annual assumptions of −4%, 0% and +4%; fees, taxes, inflation and volatility are excluded. It neither reuses the €13 Japan intention nor changes actual savings. Pausing or snoozing Saving hides the optional entry. Named-index return claims and the unsupported KBC liability statement from the original PR are not used.
+
 ## Stack and implementation status
 
 - **Next.js + TypeScript** for one web application.
@@ -494,7 +502,7 @@ The fixtures are synthetic expected results. The implemented services reproduce 
 
 **Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration remains future work. Synthetic recognition has a separate implemented contract; it proposes a mission and requires an explicit handoff to Moving. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
 
-**Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. Replace the temporary frontend Saving preview with this service; use returned projections instead of UI-owned financial calculations. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
+**Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. The frontend consumes this service and its returned projections. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
 
 ## Running the project
 

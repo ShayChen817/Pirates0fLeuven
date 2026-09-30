@@ -146,3 +146,18 @@ Canonical types and implementation: `lib/profile.ts`. This addition does not wid
 Every dispatch requires `expectedRevision`. Success increments the revision and returns a copied snapshot. `INVALID_EVENT` and `REVISION_CONFLICT` return authoritative state without mutation. One shared Profile session is read by Home, Kate and Profile. Domain sessions keep independent revisions and balances. Reset of either scenario also clears the shared Profile; ordinary scenario switching preserves it.
 
 `source: local-keywords` identifies proposed interpretation; `source: customer` identifies manual confirmation. Unknown bio text can yield an empty proposal. Confirmation is required before a preference influences subscription discovery. This release does not implement cross-domain ranking, a live LLM, external data ingestion or persisted customer records.
+
+
+## Separate Saving insights contract: `saving-insights-1.0`
+
+Canonical types: `lib/saving-insights-types.ts`. Implementation: `createSavingInsightsService()` in `lib/saving-insights.ts`. Seed: `data/saving-insights-fixtures.ts`. This educational context is not a cash ledger or an investment allocation. Existing Moving/Saving/Profile unions and revisions are unchanged.
+
+The snapshot includes independent `revision`, spending period/categories/total, emergency amount/target/gap/status, `longTermRequested`, and a nullable `illustration`. The illustration is returned only after the fixture buffer reaches its target and the customer requests it. Values use EUR integer cents.
+
+| Event | Effect |
+|---|---|
+| `SET_DEMO_FUNDED { funded: boolean }` | Presenter-only fixture switch between seeded buffer and target; invalidates previous example request |
+| `REQUEST_LONG_TERM_EXAMPLE` | Rejected below target; otherwise records explicit request and returns the hypothetical calculation |
+| `RESET_DEMO` | Restores original buffer and spending; clears the request |
+
+Dispatch requires `expectedRevision`. Accepted events increment revisions. Unknown fields/events return `INVALID_EVENT`, stale revisions return `REVISION_CONFLICT`, and a gated request returns `ACTION_NOT_AVAILABLE`; all errors include a copied current snapshot without mutation. The service is not connected to any bank API. The shell resets this session alongside Saving. Saving pause/snooze suppresses the optional UI entry without changing historical observations.

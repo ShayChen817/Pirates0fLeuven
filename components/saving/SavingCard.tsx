@@ -45,14 +45,14 @@ export function SavingKateCard({ onProfile }: { onProfile: () => void }) {
       card = (
         <KateCard title="A small review for your goal" actions={<>
           <Button className="w-full" disabled={busy} onClick={() => setSheet('evidence')}>Review the charges</Button>{secondary(true)}
-        </>}><p className="mb-2 text-xs font-medium text-kbc-blue-ink">Matches your preference · review subscriptions</p>{snapshot.primary!.message}</KateCard>
+        </>}><p className="mb-2 text-xs font-medium text-kbc-blue-ink">Matches your preference · review subscriptions</p>{snapshot.primary!.message}<p className="mt-2 text-xs text-ink-3">Choose an unused service, then confirm a plan. Nothing is cancelled here.</p></KateCard>
       );
       break;
     case 'intention': {
       const sub = subscriptionById(snapshot, snapshot.primary!.merchantId)!;
       // Preview with the backend's own projection function; nothing is recorded until "Add to my plan".
-      const revised = projectGoal(snapshot.goal, sub.monthlyCents);
-      const baseline = snapshot.baseline;
+      const revised = projectGoal(snapshot.goal, snapshot.intentions.reduce((sum, i) => sum + i.monthlyCents, 0) + sub.monthlyCents);
+      const baseline = snapshot.projected;
       card = (
         <KateCard title={`Put ${formatCents(sub.monthlyCents)}/month towards ${snapshot.goal.title}?`} actions={<>
           <Button className="flex-1" busy={pending === 'ADD_SAVING_INTENTION'} disabled={busy}
@@ -72,6 +72,9 @@ export function SavingKateCard({ onProfile }: { onProfile: () => void }) {
               <p className="mt-0.5"><s className="text-ink-3">{monthName(baseline.completionDate).slice(0, 3)}</s> <strong className="text-lg text-kbc-green-ink">{revised.completionDate ? formatMonth(revised.completionDate) : '—'}</strong></p>
             </div>
           </div>
+          {revised.completionDate && baseline.completionDate && revised.completionDate < baseline.completionDate ? (
+            <p className="mt-3 flex items-start gap-2 text-sm font-medium text-kbc-green-ink"><Icon name="check" className="mt-0.5 h-4 w-4 shrink-0" />Projected to reach your goal sooner.</p>
+          ) : null}
           <p className="mt-2 text-xs text-ink-3">A projection: the charge stops, contributions continue, no interest.</p>
         </KateCard>
       );
@@ -139,7 +142,7 @@ function EvidenceSheet({ onClose }: { onClose: () => void }) {
                 <span className="font-semibold">{s.label}</span>
                 <span className="tabular-nums">{formatCents(s.monthlyCents)}/month</span>
               </div>
-              <p className="mt-0.5 text-xs text-ink-3">Synthetic charges on {evidenceDates(s.evidenceIds).map(formatDate).join(', ')}</p>
+              <p className="mt-0.5 text-xs text-ink-3">Example prices · synthetic charges on {evidenceDates(s.evidenceIds).map(formatDate).join(', ')}</p>
               {review ? <p className="mt-2 text-sm font-medium text-kbc-green-ink">You said: {review.decision === 'keep' ? 'keep it' : 'no longer used'}</p> : (
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Button variant="chip" disabled={!!pending} onClick={() => void answer(s.merchantId, 'unused')}>I no longer use this</Button>

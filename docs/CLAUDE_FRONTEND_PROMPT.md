@@ -66,15 +66,15 @@ Use these exact synthetic values:
 | Actually saved | €650 (32.5% of target) |
 | Remaining gap | €1,350 |
 | Contributions | €125 on the first of each month, starting 2026-11-01 |
-| Synthetic monthly subscriptions | Stream A €13; Stream B €15; Stream C €10 |
+| Synthetic monthly subscriptions | Netflix €13; Amazon Prime €15; Disney+ €10 |
 | Baseline projection | 11 contributions, completion 2027-09-01 |
-| Potential change after customer identifies Stream A | Redirect €13/month; planned contribution becomes €138 |
+| Potential change after customer identifies Netflix | Redirect €13/month; planned contribution becomes €138 |
 | Revised projection | 10 contributions, completion 2027-08-01 |
 
 Service-backed sequence:
 
 1. Show Japan target, saved amount, deadline and one Kate card: “You have three recurring streaming charges totalling €38/month. Is there one you no longer use?”
-2. Evidence drawer lists synthetic recurring charges. Let the customer identify Stream A; never label it unused merely from the transaction pattern.
+2. Evidence drawer lists synthetic recurring charges. Let the customer identify Netflix; never label it unused merely from the transaction pattern.
 3. Show the conditional comparison: €125 → €138 planned per month; September → August projected finish, assuming the charge stops and that amount is redirected, with zero interest and uninterrupted contributions.
 4. **Add to my plan** records a saving intention. Keep saved amount €650 and progress 32.5%. Display “Planned; subscription not cancelled.” Do not animate the saved balance upward.
 5. **Keep this service**, **Not now**, **Why this?**, and reset have clear outcomes through the Saving service. No provider is contacted. No new suggestion should immediately replace a dismissed one after dismissal.

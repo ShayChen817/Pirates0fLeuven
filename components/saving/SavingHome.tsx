@@ -5,6 +5,8 @@ import { formatCents, formatDate, formatMonth } from '@/components/format';
 import { AnimatedAmount, Body, Card, Hero, Notice, ProgressBar } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
 import { SavingKateCard } from './SavingCard';
+import { SpendingOverview } from './SpendingOverview';
+import { InvestTip } from './InvestTip';
 
 export function SavingHome({ onProfile }: { onProfile: () => void }) {
   const { snapshot, transportError, reload } = useSaving();
@@ -42,7 +44,7 @@ export function SavingHome({ onProfile }: { onProfile: () => void }) {
           <p className="mt-1 flex items-baseline gap-2">
             {improved && baseline.completionDate ? <s className="text-lg text-ink-3">{formatMonth(baseline.completionDate)}</s> : null}
             <span key={projected.completionDate} className="animate-pop text-2xl font-bold text-ink">
-              {projected.completionDate ? formatMonth(projected.completionDate) : 'Not reachable'}
+              {projected.remainingCents === 0 ? 'Goal reached' : projected.completionDate ? formatMonth(projected.completionDate) : 'Not reachable'}
             </span>
           </p>
           <p className={`mt-1 text-sm font-semibold ${projected.onTrack ? 'text-kbc-green-ink' : 'text-warn'}`}>
@@ -58,6 +60,8 @@ export function SavingHome({ onProfile }: { onProfile: () => void }) {
             <p className="mt-3 text-xs leading-relaxed text-ink-3">No interest assumed. Only real contributions change what you have saved.</p>
           </details>
         </Card>
+        <InvestTip />
+        <SpendingOverview />
       </Body>
     </>
   );

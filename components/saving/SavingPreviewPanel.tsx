@@ -2,7 +2,8 @@
 
 import { useSaving } from '@/components/session/SavingProvider';
 import { formatCents, formatMonth } from '@/components/format';
-import { Badge } from '@/components/ui/primitives';
+import { Badge, Button, Notice } from '@/components/ui/primitives';
+import { useSavingInsights } from '@/components/session/SavingInsightsProvider';
 import { savingView } from './view';
 import { useProfile } from '@/components/session/ProfileProvider';
 import { subscriptionRelevance } from '@/lib/profile';
@@ -14,6 +15,7 @@ const viewLabel = {
 
 export function SavingPreviewPanel() {
   const { snapshot } = useSaving();
+  const insights = useSavingInsights();
   const { snapshot: profile } = useProfile();
   const relevance = profile ? subscriptionRelevance(profile) : 'setup';
   const view = snapshot ? savingView(snapshot) : null;
@@ -44,6 +46,14 @@ export function SavingPreviewPanel() {
           <p className="mt-4 text-[13px] leading-snug text-ink-3">
             Evidence: {snapshot.subscriptions.length} charges seen three times, a month apart. Saved stays {formatCents(snapshot.goal.savedCents)}: plans move the projection, never the balance. No interest assumed.
           </p>
+          {insights.snapshot ? <div className="mt-4 border-t border-line pt-4">
+            <p className="text-xs font-semibold text-ink">Presenter controls · synthetic fixture</p>
+            <p className="mt-1 text-xs leading-relaxed text-ink-3">Emergency buffer: {formatCents(insights.snapshot.emergencyFundCents)}. Changing it moves no money and does not affect the Japan plan.</p>
+            <Button variant="secondary" className="mt-3 w-full text-sm" busy={!!insights.pending} onClick={() => void insights.send({ type: 'SET_DEMO_FUNDED', funded: !insights.snapshot!.bufferFunded })}>
+              {insights.snapshot.bufferFunded ? 'Reset demo buffer' : 'Simulate funded buffer'}
+            </Button>
+            {insights.error || insights.transportError ? <Notice tone="error" title="Not updated">{insights.error?.message ?? insights.transportError}</Notice> : null}
+          </div> : null}
         </>
       )}
     </section>

@@ -114,3 +114,12 @@ const confirmed = await profile.dispatch({ expectedRevision: review.snapshot.rev
 The parser is local regex matching, not an LLM. Allowed tags: `subscriptions`, `coffee`, `moving`, `saving`. Saving a bio (max 800 characters) invalidates old confirmed tags. Manual confirmation can correct or remove any proposal, including confirming an empty list. `CLEAR_PROFILE` empties the bio and both tag lists. Accepted events advance the revision; invalid events and revision conflicts return the current snapshot without mutation. Unknown request/event fields and duplicate or unknown preference tags are rejected.
 
 `subscriptionRelevance(snapshot)` returns `setup`, `review`, `matched` or `unmatched`. The UI uses it to filter optional subscription discovery only. It neither changes financial eligibility nor removes existing saving intentions or Moving commitments. Coffee has no merchant-alternative dataset. Cross-scenario ranking and model prompting are deferred; no bio is sent to the explanation service.
+
+
+## Saving insights and educational projection
+
+Use `createSavingInsightsService()` separately from `createSavingService()`. It owns the seeded spending total and buffer fixture, and returns its projection only after the buffer gate and explicit request. See CONTRACT for `saving-insights-1.0`. Snapshot copies, revision conflicts and exact-field event validation follow the other services.
+
+`projectMonthlyIllustration(monthlyCents, annualRatePercent, years)` converts an annual effective rate to a monthly rate and computes end-of-month contributions. It accepts nonnegative safe cents, integer horizons from 1–100 years and finite rates above −100% through 100%; unsupported or overflowing results throw. The UI never calculates returns. The shipped example uses €100/month over 10 years at −4%, 0% and +4%, with no fees, tax, inflation or volatility. These are assumptions, not historical returns. Nothing is allocated from Japan, the emergency buffer or Moving.
+
+Subscription IDs remain `stream-a/b/c`, but presentation labels are Netflix, Amazon Prime and Disney+. Their charges remain synthetic. The overview's €38 subscription category is derived from September purchases in the same Saving seed, while other categories are explicit presentation fixtures. The resulting €635 covers selected categories only.

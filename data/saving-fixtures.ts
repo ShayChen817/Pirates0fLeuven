@@ -1,10 +1,11 @@
 import type { Purchase, SavingSeed } from '../lib/saving-types.ts';
 
-// DEMO: fictional merchants and posted purchases, already reflected in account balances.
+// DEMO: synthetic charges using familiar merchant names; amounts are not current prices.
+// Historical purchases are already reflected in account balances.
 const purchases: Purchase[] = [
-  { merchantId: 'stream-a', merchantLabel: 'Stream A', amountCents: 1300 },
-  { merchantId: 'stream-b', merchantLabel: 'Stream B', amountCents: 1500 },
-  { merchantId: 'stream-c', merchantLabel: 'Stream C', amountCents: 1000 },
+  { merchantId: 'stream-a', merchantLabel: 'Netflix', amountCents: 1300 },
+  { merchantId: 'stream-b', merchantLabel: 'Amazon Prime', amountCents: 1500 },
+  { merchantId: 'stream-c', merchantLabel: 'Disney+', amountCents: 1000 },
 ].flatMap(merchant => ['07', '08', '09'].map(month => ({
   ...merchant, id: `${merchant.merchantId}-2026-${month}`, category: 'streaming' as const,
   currency: 'EUR' as const, channel: 'online' as const, postedAt: `2026-${month}-15T12:00:00.000Z`,

@@ -13,6 +13,7 @@ import { SavingPreviewPanel } from '@/components/saving/SavingPreviewPanel';
 import { IPhone } from './IPhone';
 import { ProfileProvider, useProfile } from '@/components/session/ProfileProvider';
 import { ProfileScreen } from '@/components/profile/ProfileScreen';
+import { SavingInsightsProvider, useSavingInsights } from '@/components/session/SavingInsightsProvider';
 
 export type Scenario = 'saving' | 'moving';
 export type Tab = 'home' | 'kate' | 'knows';
@@ -32,9 +33,9 @@ export function DemoApp() {
   // Providers stay mounted, so each scenario keeps its own session while you switch.
   return (
     <MomentsProvider>
-      <SavingProvider><ProfileProvider>
+      <SavingProvider><SavingInsightsProvider><ProfileProvider>
         <DemoShell />
-      </ProfileProvider></SavingProvider>
+      </ProfileProvider></SavingInsightsProvider></SavingProvider>
     </MomentsProvider>
   );
 }
@@ -45,10 +46,14 @@ function DemoShell() {
   const moments = useMoments();
   const saving = useSaving();
   const profile = useProfile();
-  const resetting = !!profile.pending || !!(scenario === 'saving' ? saving.pending : moments.pending);
+  const insights = useSavingInsights();
+  const resetting = !!insights.pending || !!profile.pending || !!(scenario === 'saving' ? saving.pending : moments.pending);
 
   const reset = () => {
-    if (scenario === 'saving') void saving.send({ type: 'RESET_DEMO' });
+    if (scenario === 'saving') {
+      void saving.send({ type: 'RESET_DEMO' });
+      void insights.send({ type: 'RESET_DEMO' });
+    }
     else void moments.send({ type: 'RESET_DEMO' });
     void profile.send({ type: 'CLEAR_PROFILE' });
     setTab('home');

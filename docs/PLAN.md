@@ -163,3 +163,14 @@ Reset clears the active domain session and the shared Profile. Refreshing the do
 ## Kate header and brighter palette
 
 User feedback: the Kate header had an abrupt dark band under the light status bar and too much empty space; the overall palette looked grey. Updated Kate to a continuous light header, removed the empty Today row and replaced the mechanical input hint with customer-facing copy. Brightened shared canvas, blue accents, primary buttons, avatars and navigation highlights. No contracts, state transitions or screen-mount behaviour changed.
+
+
+## PR #2 — coordinated front/back integration
+
+PR head `810c711` was based on frontend stage 4 and conflicted with the current Home/Card implementation. Integrate its spending donut, buffer overview, merchant labels and two-step saving confirmation into the current phone, Profile gate, light Kate header and stable tab containers. Keep the Every day motion and new blue/white tokens.
+
+Shared interface addition: independent `saving-insights-1.0` (`lib/saving-insights-types.ts`, `lib/saving-insights.ts`), plus `data/saving-insights-fixtures.ts`. A dedicated provider shares this session between Home and the presenter panel. Existing Moving and Saving contracts are not widened. The service owns totals, hypothetical end-of-month contribution calculations, buffer gating and explicit example requests; components render returned values.
+
+Financial boundaries: €5,000 is a demo target, not a recommended universal buffer or proof of suitability. Replace unsourced named-index averages with explicit −4%/0%/+4% assumptions. The educational €100/month budget is independent of Japan and subscription intentions. Remove the unsupported KBC liability claim. Fictional subscription prices use familiar merchant labels, while stable evidence IDs remain stream-a/b/c. Historical spending does not shrink when a saving intention is added.
+
+Presenter control lives outside the phone under Behind the experience. Buffer changes and Reset invalidate previous long-term requests. Below target, no projection is returned. Saving pause/snooze also hides the optional example entry. Build and browser observations are recorded in FRONTEND.md; no automated tests added or run in this integration stage.
