@@ -18,10 +18,15 @@ The current README leads with *life events* (moving, baby, business). This propo
 
 | Lever | What Kate does | Signal it runs on |
 |---|---|---|
-| ✂️ **Spend smarter** | Spot a recurring or above-average spend and suggest one concrete, optional swap that frees cash toward the goal. | Recurring-merchant / category-outlier pattern in synthetic transactions. |
+| ✂️ **Spend smarter** | Spot a recurring or above-average spend — in shops, **online, or as subscriptions** — and suggest one concrete, optional swap to a **cheaper or better** alternative that frees cash toward the goal. | Recurring-merchant / category-outlier / duplicate-subscription pattern in synthetic transactions (physical **and** online). |
 | 📈 **Invest idle cash** | Offer an adjustable investment simulation when there is genuinely spare cash and the goal horizon fits. | The existing `explore-investment` rule / idle-cash detection. |
 
-A **Life Mission** is then just a *kind of goal*: **Moving** is a near-term spending/planning goal; **"Save €2,000 for Japan"** is a savings goal. Both are instantiated from the same Moments Engine, the same context, the same `Snapshot`/`Action` contract.
+Goals come in two kinds, both **explicitly set by the customer**:
+
+- **Financial goals** — "€2,000 for Japan by August", "drop unused subscriptions".
+- **Opt-in lifestyle goals** — "eat healthier", "buy more sustainably". Kate helps with these *only when the customer chooses them*; it never infers a lifestyle or health goal from spending data (see the red line below).
+
+A **Life Mission** is then just a *kind of goal*: **Moving** is a near-term spending/planning goal; **"Save €2,000 for Japan"** is a savings goal; **"eat healthier"** is an opt-in lifestyle goal. All are instantiated from the same Moments Engine, the same context, the same `Snapshot`/`Action` contract.
 
 ## Why this fits the brief better
 
@@ -34,6 +39,17 @@ KBC asked us to *"save time and money"* and to *not think like a bank*. Leading 
 | **Scale** | "Saving toward a goal" is one reusable mission template; "Moving" is another. New missions reuse the same pipeline with their own rules. |
 
 ---
+
+## Kate as a consent-based buddy
+
+The intent is that Kate feels like **a buddy who's on your side**, not a bank pushing products. That means suggesting the *cheaper or better* option toward whatever the customer is trying to do — across physical shops, online stores and subscriptions.
+
+Two guardrails keep "buddy" from becoming "surveillance":
+
+- **Cheaper is always fair game; "better/healthier" is opt-in only.** Kate suggests a healthier or more sustainable alternative **only** when the customer has explicitly set that goal. It never infers the goal.
+- **The red line (shared with the team's existing README):** *do not infer pregnancy, health, religion or other sensitive characteristics from shopping or location history.* A buddy helps with the goals you told it about; it does not diagnose you from your groceries.
+
+**Online and subscriptions are the cleanest signal — lead with them.** Recurring online charges and subscriptions are unambiguous (same merchant, same amount, monthly) and need no location or menu guessing. *"You have 3 streaming subscriptions totalling €38/month — dropping one reaches your Japan goal ~5 weeks sooner"* is a fully-mockable, high-impact demo moment, and a safer opener than the coffee example.
 
 ## Kate here is deliberately *not* a chatbot
 
@@ -56,14 +72,14 @@ Like a profile an assistant already knows without re-asking, the customer's dura
 A customer sets a goal. Kate maintains a plan toward it and, when helpful, suggests **one** optional next step.
 
 1. **Set the goal.** "€2,000 for a trip to Japan by August." Recorded once as intent + amount + deadline.
-2. **Detect a leak (deterministic).** Over 90 days of synthetic transactions, a rule flags a recurring or above-category-average spend — e.g. *"coffee at MadMum, €4.20 × ~22/month = ~€92/month."* Each flag carries its evidence (which transactions, which rule).
-3. **Suggest one swap.** Kate proposes a single, optional, respectful alternative that frees cash toward the goal, with the projected impact: *"Bringing this closer to your usual €1.10 would free ~€68/month — that's your goal reached ~3 weeks sooner."*
+2. **Detect a leak (deterministic).** Over 90 days of synthetic transactions — **physical, online and subscriptions** — a rule flags a recurring charge, a duplicate/overlapping subscription, or an above-category-average spend. E.g. *"3 streaming subscriptions = €38/month"* or *"coffee at MadMum, €4.20 × ~22/month = ~€92/month."* Each flag carries its evidence (which transactions, which rule).
+3. **Suggest one swap.** Kate proposes a single, optional, respectful alternative — **cheaper, or (for an opt-in lifestyle goal) better/healthier** — with the projected impact: *"Dropping one overlapping subscription frees €13/month — your goal ~5 weeks sooner"* or *"a healthier own-brand swap here is also ~€2 cheaper."*
 4. **Customer decides.** Confirm (track it as a saving intention), Not now, or Why this? Nothing is automated; no money moves.
 5. **Progress updates.** The goal's progress bar and expected completion date reflect confirmed savings and any idle-cash investment.
 
 ### On price comparison — honest scope
 
-The "where is coffee/groceries cheaper" idea (Google Maps menus, Albert Heijn prices, image recognition) is compelling but is a **hackathon trap if taken literally**: scraping Google Maps is against its terms, isn't buildable in the time we have, and re-introduces exactly the AI-black-box risk we're avoiding. For the demo, **price alternatives are synthetic fixtures** (clearly labelled), and the *swap logic* — detect pattern → compare to a benchmark → project goal impact — is the real, deterministic contribution. Real external price feeds are noted as future work requiring proper data access and customer consent, consistent with the team's stance on purchase/location signals.
+**Online and subscription swaps need no external data at all** — the leak, the overlap and the saving are all computable from the customer's own transactions, so those are both the safest and the most demoable. The harder case is *physical* price comparison ("where is coffee/groceries cheaper" via Google Maps menus, Albert Heijn prices, image recognition). Taken literally that's a **hackathon trap**: scraping Google Maps is against its terms, isn't buildable in the time we have, and re-introduces exactly the AI-black-box risk we're avoiding. For the demo, **physical price alternatives are synthetic fixtures** (clearly labelled), while the *swap logic* — detect pattern → compare to a benchmark → project goal impact — is the real, deterministic contribution. Real external price feeds are future work requiring proper data access and customer consent, consistent with the team's stance on purchase/location signals.
 
 ## Example — Lotte's Japan goal
 
@@ -72,8 +88,9 @@ The "where is coffee/groceries cheaper" idea (Google Maps menus, Albert Heijn pr
 | Goal | €2,000 by August |
 | Saved so far | €650 |
 | Gap | €1,350 |
-| Detected leak (synthetic) | Coffee ~€92/mo vs ~€24 usual |
-| If confirmed swap | +~€68/mo → **goal ~1 month sooner** |
+| Detected leak (online, synthetic) | 3 streaming subs = ~€38/mo; 2 overlap |
+| Detected leak (physical, synthetic) | Coffee ~€92/mo vs ~€24 usual |
+| If confirmed swaps | +~€81/mo → **goal ~1 month sooner** |
 | Idle cash available to invest | see existing `investing` fixture (€1,500 adjustable) |
 
 Kate shows **one** card at a time — the swap *or* the investment, whichever moves the goal most right now — never both at once, and neither if a bill is due or the buffer is thin.
@@ -114,7 +131,9 @@ This is **additive** and does **not** break contract v1.0. `Action.domain` would
 
 | Item | Status |
 |---|---|
-| Goals-as-hero framing + Saving mission concept | Proposed (this document) |
+| Goals-as-hero framing + Saving mission + consent-based buddy | Proposed (this document) |
+| Online/subscription leak signals | Proposed; fully mockable, no external data needed |
+| Opt-in lifestyle goals (e.g. "eat healthier") | Proposed; customer-set only, never inferred |
 | Moments Engine, Life Missions, Moving mission | Documented by team; unchanged |
 | Shared interfaces + six synthetic snapshots | Available in `lib/types.ts`, `data/demo-fixtures.ts` |
 | `saving` domain + leak-detection rule + fixtures | Proposed; contract extension not yet agreed |
