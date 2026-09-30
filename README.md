@@ -6,7 +6,7 @@
 
 The customer's own goal is the centre of the experience: save for a trip, prepare a move, buy a first home or start a business. **Life Missions** turn that goal into a shared, step-by-step plan. **Saving** adds spending reviews and goal projections; **Moving** connects cash planning, existing insurance coverage and information the customer should only need to provide once.
 
-This direction integrates the team's [goals-saving-direction proposal at bc3cf2f](https://github.com/ShayChen817/Pirates0fLeuven/blob/bc3cf2f/README.md) with the existing mission, signal and shared-state design. Moving retains its six v1 fixtures; Saving is the next contract extension, not an already implemented capability.
+This direction integrates the team's [goals-saving-direction proposal at bc3cf2f](https://github.com/ShayChen817/Pirates0fLeuven/blob/bc3cf2f/README.md) with the existing mission, signal and shared-state design. Moving retains its six v1 fixtures; Saving now has a separate `saving-1.0` service contract, preserving the existing Moving interface.
 
 The **Moments Engine** supplies the context, rules and next actions behind each mission. Smart Stock's original investment exploration becomes one possible action when it fits the customer's goal. **Tell Once** becomes a reusable step within the Moving mission: confirm relevant information once and reuse it throughout the journey.
 
@@ -72,7 +72,7 @@ Saving follows the existing one-primary-action policy. Bills and a thin reserve 
 
 > **Rules decide. AI explains. Customers stay in control.**
 
-**Current status:** this repository contains the concept, planning documents, shared TypeScript interfaces and six synthetic demo snapshots. The application and decision service have not been implemented yet. The flows below describe the intended MVP, not verified capabilities.
+**Current status:** Moving and Saving decision services are implemented with runtime validation and synthetic fixtures. Strict TypeScript and 18 backend checks pass. Opus is developing the frontend in parallel; browser integration, optional recognition/voice and production capabilities are not yet verified. See [backend integration](docs/BACKEND.md).
 
 ## Life Missions: one goal, one shared plan
 
@@ -428,10 +428,10 @@ No user-study results, time savings or financial benefits have been measured yet
 |---|---|
 | Product concept and repository instructions | Documented |
 | Life Missions vision and Moving mission presentation | Documented; mission UI not implemented |
-| Goals-first home, Saving mission and structured Kate advice | Documented; UI and Saving contract extension pending |
-| Subscription review and reproducible Japan projection | Synthetic example documented; no detector, cancellation or savings transfer implemented |
+| Goals-first home, Saving mission and structured Kate advice | Saving service implemented; UI integration in progress |
+| Subscription review and reproducible Japan projection | Deterministic service and synthetic evidence implemented; no cancellation or transfer |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
-| Cash-context calculation and decision service | Planned |
+| Moving cash-context calculation and decision service | Implemented; backend checks pass |
 | Intent clarification and recommendation changes | Planned |
 | Candidate priority and suppression trace | Planned |
 | Shared action state across home and Kate | Planned |
@@ -455,11 +455,11 @@ The fixtures are synthetic expected results, not evidence that the decision engi
 
 **Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration and transaction-triggered recognition require an agreed contract and PLAN update before implementation. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
 
-**Saving contract extension:** add a goal model (ID, target cents, actual saved cents, deadline and contribution schedule), subscription-review evidence, saving-intention status and a goal projection. A `saving` domain, spending-review rule, events and golden scenarios must land in types, fixtures, CONTRACT and PLAN together before engine integration. Expanding TypeScript unions can affect exhaustive consumers; do not describe this as automatically compatible with v1. Existing Moving/investment fixtures stay valid. Until agreed, the frontend may use an explicitly labelled, isolated Saving preview with the exact example above, not fabricated backend responses.
+**Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. Replace the temporary frontend Saving preview with this service; use returned projections instead of UI-owned financial calculations. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
 
 ## Running the project
 
-There is currently no runnable app, package manifest or `.env.example` in this repository. Installation and start commands will be added and verified when the Next.js scaffold exists.
+Run backend verification with `node scripts/backend-check.mjs` (Node.js 20+ and npm/npx; first run downloads pinned development tools). Import `createMomentsService` from `lib/service.ts` and `createSavingService` from `lib/saving.ts`. Both work without API keys. Frontend start/build instructions will be supplied with the Next.js scaffold by Opus.
 
 The planned optional environment variable is `ANTHROPIC_API_KEY`, for explanation text only. If implemented, keep it server-side in a gitignored `.env` file and document its name in `.env.example`. Template explanations must work without it.
 
@@ -490,6 +490,7 @@ Planned controls include synthetic data only, no committed secrets, validated in
 - [docs/CHALLENGE.md](docs/CHALLENGE.md): challenge analysis and selected approach.
 - [docs/PLAN.md](docs/PLAN.md): MVP implementation plan, contracts and acceptance scenarios.
 - [docs/CONTRACT.md](docs/CONTRACT.md): canonical interface semantics and shared examples.
+- [docs/BACKEND.md](docs/BACKEND.md): implemented service entry points, Saving events and verification commands.
 - [docs/CLAUDE_FRONTEND_PROMPT.md](docs/CLAUDE_FRONTEND_PROMPT.md): frontend handoff, ownership and Goals/Saving preview boundaries.
 - [docs/DESIGN.md](docs/DESIGN.md): KBC-inspired design research.
 - [Shared skills](https://github.com/ShayChen817/Pirates0fLeuven/tree/skills/skills): workflows on the `skills` branch.

@@ -1,6 +1,6 @@
 # Plan — Smart Stock and the Moments Engine
 
-Status: shared TypeScript contracts and six synthetic snapshots are available. UI, decision engine and service implementation remain planned. README defines the product direction.
+Status: Moving v1 and separate Saving v1 services are implemented. Backend typecheck and 18 meaningful checks pass. Opus owns frontend integration. README defines the product direction.
 
 Principle: **Rules decide. AI explains. Customers stay in control.**
 
@@ -98,12 +98,12 @@ These are acceptance criteria, not completed test results. Record actual evidenc
 
 | Workstream | Owner | Files | Ordered work |
 |---|---|---|---|
-| Core engine | TBD | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
-| Frontend | TBD | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
+| Core engine | Codex | `lib/`, `data/` | contracts → fixture → context → policies → shared reducer → templates |
+| Frontend | Opus | `app/`, `components/` | shared provider → home/Kate → context editor → review → trace |
 | Design | TBD | `docs/DESIGN.md`, theme | reuse existing research; readable evidence and primary action |
 | Demo and submission | TBD | demo assets, README | rehearse continuous story → audit/remediation → screenshots → video and links |
 
-Frontend starts against the contract; owners must be assigned before parallel feature work. No agent delegation is required by this plan.
+Frontend is running in parallel under Opus. Codex owns backend files and README/context documents; Opus owns app/components and frontend configuration. Use docs/BACKEND.md for current entry points. Do not change one another's files.
 
 - T+1h: continuous synthetic journey clickable, with real state transitions.
 - T+2h: service reproduces the five golden transitions; rules, corrections and shared state integrated; acceptance scenarios checked.
@@ -117,3 +117,9 @@ Exact deadline remains unknown. Adjust checkpoints once confirmed.
 Use Next.js, TypeScript and Tailwind. Templates are sufficient. Optional `ANTHROPIC_API_KEY` stays server-side, with its name documented in `.env.example` when created. Generated explanations cannot change rule outputs or add claims.
 
 Do not add auth, a database, real transactions, real KBC APIs, persistent memory, external notification delivery or ML infrastructure. Actual multi-channel operation, large-scale performance and improved customer trust require later validation. Update README run commands only after the app exists and they have been checked.
+
+## Backend stage 1 — delivered
+
+Moving uses `createMomentsService()` from `lib/service.ts` without changing the existing v1 unions. Saving uses a separate `saving-1.0` snapshot/event contract (`lib/saving-types.ts`) and `createSavingService()` from `lib/saving.ts`; this coordinated extension replaces the isolated frontend Saving preview. `data/saving-fixtures.ts` defines the Japan seed and expected values. Read `docs/BACKEND.md` for both service boundaries.
+
+Verification: `node scripts/backend-check.mjs` runs strict TypeScript and 18 checks covering both flows, stale revisions, runtime validation, state isolation, projection maths and subscription evidence. Frontend build and browser verification await integration; no HTTP server, database or external transaction was added. Next stage: signal recognition and constrained explanation prompts.

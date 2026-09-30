@@ -1,6 +1,8 @@
 # Shared frontend / engine contract — v1.0
 
-The canonical types are in [`lib/types.ts`](../lib/types.ts). The canonical synthetic examples are in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). Both are available now; the service, UI and decision engine remain to be implemented.
+The canonical Moving types are in [`lib/types.ts`](../lib/types.ts) and examples in [`data/demo-fixtures.ts`](../data/demo-fixtures.ts). The implementation is `createMomentsService()` in [`lib/service.ts`](../lib/service.ts). UI integration is owned by Opus. See [BACKEND.md](BACKEND.md) for usage and checks.
+
+Saving is a separately versioned `saving-1.0` contract in [`lib/saving-types.ts`](../lib/saving-types.ts), implemented by `createSavingService()` in [`lib/saving.ts`](../lib/saving.ts), with [`data/saving-fixtures.ts`](../data/saving-fixtures.ts). The existing v1 unions are unchanged; frontends must use the correct service and snapshot type for each scenario.
 
 ## Parallel work and ownership
 
@@ -20,7 +22,7 @@ interface MomentsService {
 }
 ```
 
-Implement one service instance per demo session. The UI initially renders `getDemoSnapshot('initial')` or any named fixture. For the five documented happy-path interactions, a temporary UI fixture adapter may select the corresponding `demoTransitions` target; label that adapter as mock behaviour. It is not an engine and must not silently accept other events or inputs. Replace it with the service when core logic is ready, without changing render components.
+Create one `createMomentsService()` instance per demo session. Replace temporary fixture adapters with this implementation. `getDemoSnapshot` and `demoTransitions` remain reference examples; they are not the running service.
 
 ```ts
 import type { MomentsService, CustomerEvent, Snapshot } from '../lib/types';

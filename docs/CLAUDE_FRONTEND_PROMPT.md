@@ -1,6 +1,8 @@
 # Copy this prompt into Claude Code
 
-You own the **frontend** of Pirates0fLeuven. Codex owns the **backend decision engine, shared service, synthetic signal recognition, tests and AI explanation prompts**. Implementation is currently paused at the user's request. This is the updated handoff for when the user says to start; do not treat a documentation update as permission to resume development. Once authorised, frontend and backend can proceed in parallel using the boundaries below.
+You own the **frontend** of Pirates0fLeuven. Opus and Codex are now authorised to develop in parallel. Codex owns the **backend decision engine, shared services, signal recognition, tests and AI explanation prompts**. Backend stage 1 has landed: use [BACKEND.md](BACKEND.md) to connect `createMomentsService()` and `createSavingService()`. Moving v1 is unchanged; Saving has its own implemented `saving-1.0` types. The temporary-preview instructions below describe the earlier fallback and must be replaced by the real Saving service wherever available. Do not duplicate calculation logic in the UI.
+
+Current integration priority: import the two real services, replace their respective adapters, keep one instance of each per session, adopt returned snapshots on success and errors, and verify both journeys. Run `node scripts/backend-check.mjs` for backend checks; own the Next.js build and browser flow.
 
 Repository: https://github.com/ShayChen817/Pirates0fLeuven
 
