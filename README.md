@@ -72,7 +72,7 @@ Saving follows the existing one-primary-action policy. Bills and a thin reserve 
 
 > **Rules decide. AI explains. Customers stay in control.**
 
-**Current status:** Moving and Saving decision services are implemented with runtime validation and synthetic fixtures. Strict TypeScript and 18 backend checks pass. Opus is developing the frontend in parallel; browser integration, optional recognition/voice and production capabilities are not yet verified. See [backend integration](docs/BACKEND.md).
+**Current status:** Moving and Saving decision services are implemented with runtime validation and synthetic fixtures. Strict TypeScript and 30 backend checks pass. Opus is developing the frontend in parallel; browser integration, voice and production capabilities are not yet verified. See [backend integration](docs/BACKEND.md).
 
 ## Life Missions: one goal, one shared plan
 
@@ -126,7 +126,7 @@ We propose combining financial facts, behavioural patterns and information the c
 - **Purchase history:** transaction amount, date, merchant/category and recurring payments where available, to identify a change from the customer's usual activity. A payment record does not necessarily reveal individual purchased items.
 - **Saving opportunities:** recurring online/subscription charges and spending against a customer-set budget can prompt a review linked to a stated goal. Ask whether the spending is still wanted before treating it as reducible.
 - **Location context:** a customer-provided destination, available merchant location or optional city-level device context, with their origins kept distinct. A merchant's address is not proof of the customer's physical location.
-- **Possible mission signals:** an explicit moving plan, address-change event or a clearly labelled synthetic moving-related transaction can prompt “Are you moving?” before activating a mission. Transaction-triggered mission detection is a planned extension; the current fixtures begin with a direct clarification.
+- **Possible mission signals:** an explicit moving plan, address-change event or a clearly labelled synthetic moving-related transaction can prompt “Are you moving?” before activating a mission. The separate synthetic recognition service can propose this question; the original Moving fixtures retain the direct clarification route.
 - **Intent and life context:** a stated goal, its amount and deadline, or a confirmed plan such as moving home.
 - **Feedback:** corrected assumptions, reported external coverage, dismissed actions and paused suggestions.
 
@@ -164,7 +164,7 @@ The proposed signal layer checks allowed purpose, customer preferences and fresh
 
 Customers can inspect **What Kate used**, disable optional location use, correct the suggested mission and pause proactive suggestions. Disabling a source removes derived hypotheses that depend on it; a separately confirmed customer goal can remain. Do not infer pregnancy, health, religion or other sensitive characteristics from shopping or location history. The baby mission remains customer-initiated.
 
-**Build boundary:** this is a proposed extension before the current `initial` fixture. New purchase events, source preferences, mission hypotheses and rejection/snooze state need an agreed contract update. The six current snapshots do not contain those features, and this README does not claim they are implemented.
+**Implemented boundary:** `createRecognitionService()` in `lib/recognition.ts` supplies this synthetic signal layer under its own `recognition-1.0` contract, with source preferences and confirmation/rejection/snooze state. It does not alter the six Moving snapshots. After a customer confirms the hypothesis, the UI gathers amount/date and sends the existing `CONFIRM_MOVING` event. There is no real KBC transaction or location access.
 
 ### 2. How can customers be recognized based on their situation, behavior, and intent?
 
@@ -256,7 +256,7 @@ Our proposed contribution is a decision layer that:
 
 ## Main demo: Lotte's Moving mission
 
-The intended mission-led opening is: **synthetic signals arrive → Kate asks whether Lotte is moving → Lotte confirms → a Moving mission appears → the home screen shows her plan → Kate guides the next step, optionally by voice**. The existing fixtures support the customer-confirmation route below; the transaction-triggered opening is not implemented or included in those fixtures yet.
+The intended mission-led opening is: **synthetic signals arrive → Kate asks whether Lotte is moving → Lotte confirms → a Moving mission appears → the home screen shows her plan → Kate guides the next step, optionally by voice**. The existing fixtures support the customer-confirmation route below; the separate recognition service now supplies the synthetic transaction-triggered opening; its UI integration remains to be verified.
 
 Lotte has a synthetic balance of **€7,850**. Initially, the engine knows about a **€4,000 emergency reserve** and **€1,000 of upcoming expenses**.
 
@@ -372,7 +372,7 @@ The example reserve is a synthetic customer setting. Amounts and thresholds are 
 
 The customer can correct a goal, adjust an amount, dismiss an action or pause proactive suggestions. Confirmation is explicit and simulated.
 
-The optional LLM rewrites approved facts in plain language. It must not invent customer facts, alter amounts or eligibility, or add return promises. Templates provide the baseline experience and fallback. The core demo should work without an API key.
+The shipped explanation layer uses approved sentences. An optional model may select and order their IDs; runtime validation prevents new wording, amounts or unsupported claims and retains required caveats. Invalid output, errors or timeout fall back to the template. The core services work without an API key; no live provider is configured. See [the prompt and integration contract](prompts/README.md).
 
 ## Showing reuse and scale
 
@@ -436,9 +436,9 @@ No user-study results, time savings or financial benefits have been measured yet
 | Candidate priority and suppression trace | Planned |
 | Shared action state across home and Kate | Planned |
 | Investment simulation and confirmation | Planned |
-| Template explanations and optional LLM integration | Planned |
-| Transaction-triggered mission suggestion | Optional extension; not in current fixtures |
-| Purchase timeline, optional location and mission confirmation controls | Proposed extension; synthetic examples documented, contract not yet extended |
+| Template explanations and optional LLM integration | Builders, prompt, output validator and fallback implemented; no live provider configured |
+| Transaction-triggered mission suggestion | Synthetic recognition service implemented; separate fixtures and contract |
+| Purchase timeline, optional location and mission confirmation controls | Backend source controls, expiry and feedback implemented; UI integration pending |
 | ElevenLabs voice guidance | Optional; not integrated |
 | Shared adviser mission view and external task execution | Future vision; outside current MVP |
 | Aikido audit and before/after screenshots | Not completed |
@@ -453,7 +453,7 @@ Frontend can render `getDemoSnapshot('initial')` immediately. The main snapshots
 
 The fixtures are synthetic expected results, not evidence that the decision engine has been implemented.
 
-**Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration and transaction-triggered recognition require an agreed contract and PLAN update before implementation. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
+**Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration remains future work. Synthetic recognition has a separate implemented contract; it proposes a mission and requires an explicit handoff to Moving. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
 
 **Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. Replace the temporary frontend Saving preview with this service; use returned projections instead of UI-owned financial calculations. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
 

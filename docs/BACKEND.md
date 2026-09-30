@@ -64,6 +64,25 @@ The result has `goal.savedCents === 65000`, `projected.progressPercent === 32.5`
 
 Subscription detection requires three equal online streaming charges spaced 25–35 days apart, within a 100-day lookback, with the latest charge at most 40 days old. Duplicate transaction IDs count once; conflicting duplicates fail. These are explicit demo heuristics, not actual subscription or cancellation verification.
 
+## Optional purchase/location recognition
+
+`createRecognitionService()` in `lib/recognition.ts` provides a separate `recognition-1.0` service (`lib/recognition-types.ts`). It starts with `data/recognition-fixtures.ts`: synthetic furniture and moving-service payments, with device city context disabled by default.
+
+- Two distinct qualifying categories within 14 days produce a possible mission; neither location alone nor duplicate payments can do so.
+- `SET_SOURCES` takes `purchaseHistory` and `location` booleans. Source withdrawal removes dependent hypotheses. Optional device city context is used only while less than 24 hours old.
+- `RECORD_FEEDBACK` takes the current `hypothesisId` and `decision: 'confirm' | 'reject' | 'later'`. Reject/later suppresses that bundle for 30 days. Confirmation records intent but never assumes a date, destination or cost.
+- `CLEAR_CONFIRMED_MISSION` clears the explicit confirmation and suppresses immediate re-suggestion. `RESET_DEMO` resets the seed and advances revision.
+
+After confirmation, the frontend gathers the remaining cost/date and separately dispatches Moving's `CONFIRM_MOVING` event. This explicit handoff prevents a location hint from silently changing financial commitments. A direct Moving flow still works without recognition. These services have independent revision counters.
+
+`evaluateRecognition(seed, preferences, feedback)` exposes pure evaluation with a supplied clock for checking expiry. The demo session has a fixed clock; there is no continuous real-device tracking or live purchase ingestion.
+
+## Constrained Kate explanations
+
+Use `buildMovingExplanation`, `buildSavingExplanation` or `buildRecognitionExplanation` from `lib/explain.ts`, then call `explain(envelope)`. The default is a template with zero model calls. An optional injected provider may only select/order approved sentence IDs. Runtime validation retains every required sentence and rejects invented output; provider failure or timeout falls back to the template.
+
+See `prompts/kate-explanation.ts` and `prompts/README.md`. Raw merchant labels, customer names, custom goal titles and location strings are not sent to a model. No live model adapter or credentials are included. Discard an explanation if its returned revision/action ID no longer matches the visible scenario.
+
 ## Run backend checks
 
 ```sh

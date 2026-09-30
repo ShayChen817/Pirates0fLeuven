@@ -123,3 +123,9 @@ Do not add auth, a database, real transactions, real KBC APIs, persistent memory
 Moving uses `createMomentsService()` from `lib/service.ts` without changing the existing v1 unions. Saving uses a separate `saving-1.0` snapshot/event contract (`lib/saving-types.ts`) and `createSavingService()` from `lib/saving.ts`; this coordinated extension replaces the isolated frontend Saving preview. `data/saving-fixtures.ts` defines the Japan seed and expected values. Read `docs/BACKEND.md` for both service boundaries.
 
 Verification: `node scripts/backend-check.mjs` runs strict TypeScript and 18 checks covering both flows, stale revisions, runtime validation, state isolation, projection maths and subscription evidence. Frontend build and browser verification await integration; no HTTP server, database or external transaction was added. Next stage: signal recognition and constrained explanation prompts.
+
+## Backend stage 2 — delivered
+
+Recognition is a separate `recognition-1.0` contract/service and seed. It checks two relevant purchase categories, 14-day evidence windows, optional city context freshness and explicit feedback; it never writes financial commitments. UI confirms the remaining details via the unchanged Moving event. Saving remains independent.
+
+Kate explanation builders and the canonical prompt accept only approved sentence selection from an optional provider. Templates, required caveats, output validation and timeout fallback work without keys. No real model integration is claimed. Strict typecheck and 30 backend checks pass; browser and Next.js build checks remain with frontend integration.
