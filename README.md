@@ -1,12 +1,70 @@
-# Smart Stock — Life Missions, powered by a Moments Engine
+# Smart Stock — Life Goals, powered by the Moments Engine
 
 **A proactive financial guidance concept for the Tectonic Hackathon, KBC track.**
 
-Smart Stock helps customers organise their banking around what they are trying to do in life: move home, buy a first home, welcome a baby or start a business. **Life Missions** turn a confirmed goal into a shared, step-by-step plan. The first planned mission is **Moving**, connecting cash planning, existing insurance coverage and information the customer should only need to provide once.
+> **Set a goal. Kate helps you plan the next useful step, spend more intentionally and keep your progress in view.**
+
+The customer's own goal is the centre of the experience: save for a trip, prepare a move, buy a first home or start a business. **Life Missions** turn that goal into a shared, step-by-step plan. **Saving** adds spending reviews and goal projections; **Moving** connects cash planning, existing insurance coverage and information the customer should only need to provide once.
+
+This direction integrates the team's [goals-saving-direction proposal at bc3cf2f](https://github.com/ShayChen817/Pirates0fLeuven/blob/bc3cf2f/README.md) with the existing mission, signal and shared-state design. Moving retains its six v1 fixtures; Saving is the next contract extension, not an already implemented capability.
 
 The **Moments Engine** supplies the context, rules and next actions behind each mission. Smart Stock's original investment exploration becomes one possible action when it fits the customer's goal. **Tell Once** becomes a reusable step within the Moving mission: confirm relevant information once and reuse it throughout the journey.
 
 The next step in that vision is **understanding patterns across purchases, places and plans**. With appropriate data access and customer controls, Kate could connect recent spending with relevant location context to suggest a useful mission before the customer searches for help. The customer can see the evidence and correct the interpretation.
+
+## Goals first: the Saving mission
+
+Home leads with **your goal, saved amount, remaining gap, deadline and one useful Kate suggestion**. Products support the goal when appropriate. The same engine can suggest reviewing spending, retaining cash for a move or exploring a separate long-term investment scenario.
+
+| Way to help | Example | Decision boundary |
+|---|---|---|
+| **Spend more intentionally** | Review recurring online or subscription charges and consider dropping one the customer no longer values. | A recurring payment is evidence of spending, not proof that a service is unused or redundant. |
+| **Plan and reserve** | Allocate future contributions towards a trip or preserve liquidity for a move. | Keep existing obligations and the emergency reserve visible; do not double-allocate the same funds. |
+| **Explore long-term investing** | Review the existing adjustable investment simulation for a separately confirmed long-term goal. | Do not fund a near-term travel target using assumed investment returns. |
+
+### Example: Lotte's Japan goal
+
+All values are synthetic. Use the fixed demo date **1 October 2026**, a deadline of **1 August 2027**, and contributions on the first of each month starting **1 November 2026**.
+
+| Item | Value |
+|---|---:|
+| Target | €2,000 |
+| Actually saved so far | €650 |
+| Remaining gap | €1,350 |
+| Existing monthly contribution plan | €125 |
+| Subscription review candidates | €13 + €15 + €10 = €38/month |
+| Potential saving if the customer drops the €13 service | €13/month |
+| Revised planned contribution, if that saving is redirected | €138/month |
+| Baseline completion | 11 contributions; 1 September 2027 |
+| Revised projected completion | 10 contributions; 1 August 2027 |
+
+The projection uses `ceil((target − saved) / monthly contribution)`, with zero interest and uninterrupted contributions. It is **one monthly contribution earlier under these assumptions**, not a guaranteed result. By the deadline, the baseline plan would total €1,900; the revised plan would total €2,030.
+
+Kate first asks: **“You have three recurring streaming charges totalling €38/month. Is there one you no longer use?”** After Lotte identifies the synthetic €13 service, Kate can show: **“If you stop this charge and put that €13/month towards Japan, your projected finish changes from September to August.”**
+
+The customer can **Add to my plan**, **Keep this service**, **Not now**, or inspect **Why this?** Accepting records a saving intention; it does not cancel a subscription, transfer money or increase the saved balance. The progress bar remains at **€650 / €2,000 (32.5%)**. Only separately recorded actual contributions change saved progress. A projected completion date can change immediately, clearly labelled as a projection.
+
+This saving example is a separate scenario from the existing cash/investment fixtures. A future combined scenario must reserve goal-earmarked cash before computing any investable amount.
+
+### Subscription, online and physical spending
+
+Start with **online and subscription reviews**: repeated merchant/amount/date patterns are easy to demonstrate with synthetic records and do not require location. Customer confirmation establishes whether a charge can be stopped. Transactions alone cannot establish service usage, contractual overlap, cancellation eligibility or the cost of a competing product.
+
+Physical shopping and coffee patterns can later support a spending review. A comparison should use an explicit customer budget or a clearly labelled synthetic benchmark. Specific cheaper alternatives require price information, matching product details and relevant terms; ordinary payment records rarely supply those details. External price feeds, receipt recognition and live scraping are outside this MVP.
+
+### Kate as a customer-directed buddy
+
+Kate supports the goals the customer chooses, with respectful suggestions rather than judgments about purchases. Financial goals such as saving for travel can drive optional spending reviews. Lifestyle preferences such as healthier or more sustainable choices are future, explicit opt-ins; they must never be inferred from purchases or location. No health diagnosis or sensitive-trait inference is part of this concept.
+
+**Tell Once / What Kate knows** becomes an editable structured profile of current goals, preferences and confirmed facts. Each fact keeps its source and validity; only information relevant to the current purpose is used. Session memory is the MVP boundary, not a claim of durable cross-channel storage.
+
+### Advice cards and quick replies
+
+Kate's MVP interaction is a proactive advice card with structured forms and quick replies. The Kate view can show a guided history of the same cards, without an open-ended model chat. “Proactive” means relevant in-app help; it does not require push notifications.
+
+The deterministic experience needs zero model calls. Optional wording or voice adds separate cost. Removing free-text model conversations reduces one attack surface, but does not eliminate prompt injection or other security issues: merchant labels, external data and generated content still require validation and appropriate handling.
+
+Saving follows the existing one-primary-action policy. Bills and a thin reserve suppress inappropriate investment offers, but an optional expense review may still help. Rank actions by the confirmed goal, urgency and evidence rather than automatically hiding every suggestion or maximising product conversion.
 
 **Our vision:** KBC, Kate and the customer's adviser work from the same evolving mission plan, helping the customer complete life goals with less repeated explanation and administration. The prototype focuses on the app and Kate; adviser integration is a future extension.
 
@@ -22,6 +80,7 @@ A mission groups the relevant tasks, information and services around a customer-
 
 | Mission | Customer goal | Illustrative coordinated support | Scope |
 |---|---|---|---|
+| **Saving** | Reach a customer-set amount by a chosen date. | Review recurring costs, record saving intentions and distinguish projected completion from actual progress. | Proposed second mission; contract extension pending. |
 | **Moving** | Be ready for the move without overlooking money or coverage needs. | Confirm the plan once, reserve moving costs, check existing cover and track completed steps. | First planned demo. |
 | **Buying a home** | Understand readiness and the next steps towards a purchase. | Deposit planning, financing preparation and coverage checks. | Reusable-template vision. |
 | **Welcoming a baby** | Prepare household finances for a customer-declared family change. | Review the budget, savings goals and relevant existing cover. | Future, explicitly customer-initiated scenario. |
@@ -65,6 +124,7 @@ We propose combining financial facts, behavioural patterns and information the c
 - **Financial situation:** accessible balances, known upcoming expenses, emergency reserves and existing commitments.
 - **Behaviour over time:** recurring income and essential-spending patterns, using three months of synthetic summaries in the MVP.
 - **Purchase history:** transaction amount, date, merchant/category and recurring payments where available, to identify a change from the customer's usual activity. A payment record does not necessarily reveal individual purchased items.
+- **Saving opportunities:** recurring online/subscription charges and spending against a customer-set budget can prompt a review linked to a stated goal. Ask whether the spending is still wanted before treating it as reducible.
 - **Location context:** a customer-provided destination, available merchant location or optional city-level device context, with their origins kept distinct. A merchant's address is not proof of the customer's physical location.
 - **Possible mission signals:** an explicit moving plan, address-change event or a clearly labelled synthetic moving-related transaction can prompt “Are you moving?” before activating a mission. Transaction-triggered mission detection is a planned extension; the current fixtures begin with a direct clarification.
 - **Intent and life context:** a stated goal, its amount and deadline, or a confirmed plan such as moving home.
@@ -116,6 +176,7 @@ We represent each customer's current context through complementary views:
 | **Behaviour** | Patterns that help identify when a question may be useful. | Three recurring income payments provide background, without guaranteeing future income. |
 | **Possible mission** | A tentative interpretation of permitted purchase and place signals. | Related moving-service and furniture payments suggest a question; a visit to Ghent alone does not establish a move. |
 | **Intent** | What the customer says they want to achieve, and when. | Lotte confirms that she needs €2,500 for a move next month. |
+| **Goal progress** | A target, deadline, actual saved amount and planned future contributions. | The Japan scenario has €650 saved towards €2,000; accepting a saving intention changes the projection, not the saved balance. |
 
 The context changes as the customer's life changes. A current explicit correction overrides a conflicting inference. If a relevant answer is already current, the experience uses it rather than asking the customer to repeat it. “Recognized” here means understood in context; identity verification is outside the prototype.
 
@@ -131,9 +192,11 @@ For Lotte, adding a €2,500 moving commitment reduces potentially available cas
 
 **Planned proof:** the UI updates from the returned shared snapshot after each event. Automatic adaptation does not execute a transaction: investment confirmation is an explicit simulation, and no money moves.
 
+In the Saving extension, a confirmed €13/month intention changes the projected goal date while the actual-progress bar stays unchanged. Keeping the subscription removes that candidate. Editing a target or deadline requires a new projection, not an assumed change to the customer's funds.
+
 ### 4. How can this work seamlessly across products, services, and channels?
 
-Our proposed Moments Engine shares customer context and coordinates actions across cash planning, investment exploration and insurance coverage checks. A Life Mission assembles those actions into one plan around the customer's goal. Each product contributes relevant eligibility rules and a next step. A common coordinator handles priority, suppression and resolution so separate services do not repeatedly ask the same question or present conflicting suggestions.
+Our proposed Moments Engine shares customer context and coordinates actions across saving, cash planning, investment exploration and insurance coverage checks. A Life Mission assembles those actions into one plan around the customer's goal. Each product contributes relevant eligibility rules and a next step. A common coordinator handles priority, suppression and resolution so separate services do not repeatedly ask the same question or present conflicting suggestions.
 
 Each action has a stable identity and a shared status. The home screen and Kate conversation read the same state: an answer entered in one is immediately reflected in the other. A customer correction becomes reusable context for subsequent decisions.
 
@@ -247,12 +310,13 @@ The planned **What Kate knows** panel shows the current goal, its source and dat
 
 | Surface | Customer experience |
 |---|---|
-| **Home** | A confirmed mission, its progress and at most one primary next action; ordinary banking remains accessible. |
+| **Home / Goals** | The active goal, actual progress, deadline and at most one primary next action; ordinary banking remains accessible. |
+| **Saving mission** | Subscription evidence, customer confirmation, a saving intention and a separately labelled completion projection. Proposed extension. |
 | **Moving mission** | One plan linking confirmation, reserve review and existing-cover checks. |
 | **Context and intent** | A short calculation, known assumptions and a relevant clarification when needed. |
 | **Next step** | Keep funds flexible, reserve for a near-term goal, or explore an eligible investment simulation. |
 | **Review and confirmation** | Adjustable amount, reasons and explicit simulated confirmation. |
-| **Kate conversation** | The same mission step and action status as the home screen, with optional user-initiated voice guidance. |
+| **Kate advice view** | The same structured card, quick replies and action status as home, with optional user-initiated voice guidance; no open-ended model chat required. |
 | **Engine view** | Demo-only view of signals, selected action, suppressed candidates and reasons. |
 
 Investment scenarios appear after the intent check. Their labels are **Lower risk**, **Balanced** and **Growth**; lower risk does not mean risk-free. The prototype considers the stated goal, horizon, liquidity needs and completeness of the synthetic investment profile alongside risk tolerance. Missing required information leads to clarification or deferral.
@@ -324,6 +388,10 @@ Meaningful scale also requires consistent treatment of customers with incomplete
 
 ## Demo script: under three minutes
 
+The intended combined pitch opens with the customer's goal. Use the following Saving segment once that extension is implemented, or explicitly label it as a static concept preview: **Japan target → subscription review → customer identifies €13 service → accept a saving intention → projected September becomes August while actual savings remain €650**. Use Moving as the second example of the shared approach, rather than treating two independent demos as one customer balance.
+
+The existing v1 implementation sequence remains:
+
 1. **Recognise the mission:** show the available signals and ask about Lotte's plans. If the optional synthetic transaction trigger exists, use it to introduce the question; otherwise use the existing clarification fixture.
 2. **Adapt the home screen:** confirm the move and €2,500 commitment. Show **Your move**, the €350 remaining amount and the reserve-review step.
 3. **Tell Once:** acknowledge the simulated reserve, then record “already insured elsewhere.” Show that step completing on both home and Kate without repeating the answer.
@@ -360,6 +428,8 @@ No user-study results, time savings or financial benefits have been measured yet
 |---|---|
 | Product concept and repository instructions | Documented |
 | Life Missions vision and Moving mission presentation | Documented; mission UI not implemented |
+| Goals-first home, Saving mission and structured Kate advice | Documented; UI and Saving contract extension pending |
+| Subscription review and reproducible Japan projection | Synthetic example documented; no detector, cancellation or savings transfer implemented |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
 | Cash-context calculation and decision service | Planned |
 | Intent clarification and recommendation changes | Planned |
@@ -384,6 +454,8 @@ Frontend can render `getDemoSnapshot('initial')` immediately. The main snapshots
 The fixtures are synthetic expected results, not evidence that the decision engine has been implemented.
 
 **Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration and transaction-triggered recognition require an agreed contract and PLAN update before implementation. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
+
+**Saving contract extension:** add a goal model (ID, target cents, actual saved cents, deadline and contribution schedule), subscription-review evidence, saving-intention status and a goal projection. A `saving` domain, spending-review rule, events and golden scenarios must land in types, fixtures, CONTRACT and PLAN together before engine integration. Expanding TypeScript unions can affect exhaustive consumers; do not describe this as automatically compatible with v1. Existing Moving/investment fixtures stay valid. Until agreed, the frontend may use an explicitly labelled, isolated Saving preview with the exact example above, not fabricated backend responses.
 
 ## Running the project
 
@@ -418,6 +490,7 @@ Planned controls include synthetic data only, no committed secrets, validated in
 - [docs/CHALLENGE.md](docs/CHALLENGE.md): challenge analysis and selected approach.
 - [docs/PLAN.md](docs/PLAN.md): MVP implementation plan, contracts and acceptance scenarios.
 - [docs/CONTRACT.md](docs/CONTRACT.md): canonical interface semantics and shared examples.
+- [docs/CLAUDE_FRONTEND_PROMPT.md](docs/CLAUDE_FRONTEND_PROMPT.md): frontend handoff, ownership and Goals/Saving preview boundaries.
 - [docs/DESIGN.md](docs/DESIGN.md): KBC-inspired design research.
 - [Shared skills](https://github.com/ShayChen817/Pirates0fLeuven/tree/skills/skills): workflows on the `skills` branch.
 
