@@ -129,3 +129,9 @@ Verification: `node scripts/backend-check.mjs` runs strict TypeScript and 18 che
 Recognition is a separate `recognition-1.0` contract/service and seed. It checks two relevant purchase categories, 14-day evidence windows, optional city context freshness and explicit feedback; it never writes financial commitments. UI confirms the remaining details via the unchanged Moving event. Saving remains independent.
 
 Kate explanation builders and the canonical prompt accept only approved sentence selection from an optional provider. Templates, required caveats, output validation and timeout fallback work without keys. No real model integration is claimed. Strict typecheck and 30 backend checks pass; browser and Next.js build checks remain with frontend integration.
+
+## Backend stage 3 — integration handoff
+
+README and the Claude frontend prompt now reference the delivered Moving, Saving, recognition and explanation services. Removed obsolete instructions to build a local Saving preview or wait for service exports. Contract shapes remain unchanged in this stage. The later direction-branch profile/bio proposal (`0a4df0d`) is explicitly separated from implemented goal editing.
+
+This documentation-only stage adds no runtime changes. Stage 2 strict TypeScript and 30 passing backend checks remain the latest runtime evidence. No additional tests were run for these prose changes. Frontend start/build/browser checks await the Opus scaffold and integration; no full-stack verification is claimed. Each completed backend stage is committed and pushed to `main` as requested.

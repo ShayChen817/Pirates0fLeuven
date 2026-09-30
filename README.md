@@ -342,7 +342,7 @@ flowchart TD
     G -. optional read-aloud .-> V[ElevenLabs voice guide]
 ```
 
-The proposed recognition extension precedes the shared context: **permitted purchase/location signals → source and freshness checks → recent-event summary → mission hypothesis → customer confirmation**. Raw transaction histories or location traces are not needed by the optional explanation model; it receives only the approved facts necessary for the selected action.
+The implemented synthetic recognition service precedes the shared context: **permitted purchase/location signals → source and freshness checks → recent-event summary → mission hypothesis → customer confirmation**. Raw transaction histories or location traces are not needed by the optional explanation model; it receives only the approved facts necessary for the selected action.
 
 ### Context and cash calculation
 
@@ -388,7 +388,7 @@ Meaningful scale also requires consistent treatment of customers with incomplete
 
 ## Demo script: under three minutes
 
-The intended combined pitch opens with the customer's goal. Use the following Saving segment once that extension is implemented, or explicitly label it as a static concept preview: **Japan target → subscription review → customer identifies €13 service → accept a saving intention → projected September becomes August while actual savings remain €650**. Use Moving as the second example of the shared approach, rather than treating two independent demos as one customer balance.
+The intended combined pitch opens with the customer's goal. The implemented Saving service supports this segment for frontend integration: **Japan target → subscription review → customer identifies €13 service → accept a saving intention → projected September becomes August while actual savings remain €650**. Use Moving as the second example of the shared approach, rather than treating two independent demos as one customer balance.
 
 The existing v1 implementation sequence remains:
 
@@ -415,7 +415,7 @@ If time is tight, prioritise the Moving mission's visible plan, context correcti
 
 No user-study results, time savings or financial benefits have been measured yet. Any later comparison should state its baseline, sample and method.
 
-## Planned stack and status
+## Stack and implementation status
 
 - **Next.js + TypeScript** for one web application.
 - **Tailwind CSS** with KBC-inspired tokens; see [design research](docs/DESIGN.md).
@@ -432,10 +432,10 @@ No user-study results, time savings or financial benefits have been measured yet
 | Subscription review and reproducible Japan projection | Deterministic service and synthetic evidence implemented; no cancellation or transfer |
 | Shared interfaces and six unified synthetic snapshots | Available in `lib/types.ts` and `data/demo-fixtures.ts` |
 | Moving cash-context calculation and decision service | Implemented; backend checks pass |
-| Intent clarification and recommendation changes | Planned |
-| Candidate priority and suppression trace | Planned |
-| Shared action state across home and Kate | Planned |
-| Investment simulation and confirmation | Planned |
+| Intent clarification and recommendation changes | Implemented in Moving service |
+| Candidate priority and suppression trace | Implemented in deterministic engine |
+| Shared action state across home and Kate | Service implemented; shared UI provider integration pending |
+| Investment simulation and confirmation | Implemented as a synthetic acknowledgement; no trade |
 | Template explanations and optional LLM integration | Builders, prompt, output validator and fallback implemented; no live provider configured |
 | Transaction-triggered mission suggestion | Synthetic recognition service implemented; separate fixtures and contract |
 | Purchase timeline, optional location and mission confirmation controls | Backend source controls, expiry and feedback implemented; UI integration pending |
@@ -451,11 +451,13 @@ Frontend and core logic share [`lib/types.ts`](lib/types.ts) and [`data/demo-fix
 
 Frontend can render `getDemoSnapshot('initial')` immediately. The main snapshots progress through `initial → moving → coverage-check → covered`; the alternate path is `initial → investing → invested`. Amounts use EUR integer cents. Core logic implements the same `MomentsService` interface and reproduces the typed sample transitions. A shared UI provider keeps home and Kate consistent.
 
-The fixtures are synthetic expected results, not evidence that the decision engine has been implemented.
+The fixtures are synthetic expected results. The implemented services reproduce the golden transitions; backend verification is documented in `docs/BACKEND.md`.
 
 **Mission integration boundary:** v1.0 describes actions and customer context; it does not yet define generic mission templates, mission IDs or adviser/voice APIs. The first Moving mission can present the existing action sequence as a fixed UI plan, deriving step completion from shared action state. Generic mission orchestration remains future work. Synthetic recognition has a separate implemented contract; it proposes a mission and requires an explicit handoff to Moving. The current PLAN and fixtures continue to define the underlying cash/coverage journey.
 
 **Saving integration:** `lib/saving-types.ts` defines the separate `saving-1.0` goal, evidence, intention, contribution and projection model. `createSavingService()` in `lib/saving.ts` implements it using the Japan seed in `data/saving-fixtures.ts`. The existing Moving unions are unchanged. Replace the temporary frontend Saving preview with this service; use returned projections instead of UI-owned financial calculations. Details and event payloads are in [BACKEND.md](docs/BACKEND.md).
+
+**Profile/bio proposal:** the direction branch's later commit `0a4df0d` proposes customer-written bios and model-extracted preferences. This is future work: no profile contract, extraction endpoint or live model adapter exists in the delivered backend. Explicit Saving goal edits already use `UPDATE_GOAL`; profile text must not be treated as verified financial facts or alter deterministic amounts. A future extension needs its own validated schema, customer correction flow and documented interface before frontend integration.
 
 ## Running the project
 
@@ -467,7 +469,7 @@ The planned optional environment variable is `ANTHROPIC_API_KEY`, for explanatio
 
 The participant guide requires an **Aikido security audit**, worth **10% of the submission assessment**, with screenshots **before and after remediation**. These are submission requirements, not completed checks.
 
-Planned controls include synthetic data only, no committed secrets, validated inputs to decision logic, and separation between rule outputs and generated explanations. Deterministic logic still requires verification; it does not by itself establish security.
+Implemented backend controls include synthetic data, runtime input validation, revision checks and separation between rule outputs and generated explanations. No live credentials are required. Deterministic logic still requires verification; it does not by itself establish security.
 
 | Judging criterion | Intended evidence |
 |---|---|
@@ -491,12 +493,12 @@ Planned controls include synthetic data only, no committed secrets, validated in
 - [docs/PLAN.md](docs/PLAN.md): MVP implementation plan, contracts and acceptance scenarios.
 - [docs/CONTRACT.md](docs/CONTRACT.md): canonical interface semantics and shared examples.
 - [docs/BACKEND.md](docs/BACKEND.md): implemented service entry points, Saving events and verification commands.
-- [docs/CLAUDE_FRONTEND_PROMPT.md](docs/CLAUDE_FRONTEND_PROMPT.md): frontend handoff, ownership and Goals/Saving preview boundaries.
+- [docs/CLAUDE_FRONTEND_PROMPT.md](docs/CLAUDE_FRONTEND_PROMPT.md): frontend handoff, ownership and implemented service integration.
 - [docs/DESIGN.md](docs/DESIGN.md): KBC-inspired design research.
 - [Shared skills](https://github.com/ShayChen817/Pirates0fLeuven/tree/skills/skills): workflows on the `skills` branch.
 
-This README defines the product direction. The challenge summary and implementation plan translate it into a bounded MVP; all application capabilities remain planned until implemented and verified.
+This README defines the product direction and current boundaries. Backend stages 1 and 2 are implemented; frontend integration, browser verification and submission evidence remain outstanding. See the status table and `docs/BACKEND.md` for the distinction.
 
 ---
 
-Hackathon concept and planned proof of concept. Not affiliated with or endorsed by KBC. All demo customer data must be synthetic. No real transaction is executed, and illustrative scenarios are not financial advice.
+Hackathon proof of concept in development. Not affiliated with or endorsed by KBC. All demo customer data must be synthetic. No real transaction is executed, and illustrative scenarios are not financial advice.
